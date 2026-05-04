@@ -25,7 +25,7 @@ const testimonials = [
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
     avatar: "/Fiverr.png",
   },
-    {
+  {
     name: "daphaneghw",
     country: "US",
     stars: 5,
@@ -71,6 +71,15 @@ const testimonials = [
       "Enzo understood what I requested very well and delivered exactly what I needed. He provided efficient and clear communication & I'm so happy with the final result. I highly recommend Enzo and will return in the future. Thanks Enzo!!",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
     avatar: "/Fiverr.png",
+  },
+  name: "camiloangari391",
+  country: "US",
+  stars: 5,
+  month: "Mayo 2026",
+  text:
+  "Enzo is truly a visionary, he is able to adapt to your vision, while asking the right questions. He doesn’t execute take the project but he is able to evolve it and future proof it. Thank you, Enzo.",
+  link: "https://es.fiverr.com/enzoth98?public_mode=true",
+  avatar: "/Fiverr.png",
   },
 ];
 
