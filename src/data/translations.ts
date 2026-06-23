@@ -5,7 +5,7 @@ export const translations = {
     nav: {
       home: "Inicio",
       services: "Servicios",
-      about: "Sobre nosotros",
+      about: "Sobre mí",
       cta: "Agendar Llamada",
     },
     hero: {
@@ -19,9 +19,9 @@ export const translations = {
     },
     onboarding: {
       subtitle: "Diagnóstico Operativo",
-      title: "Mirá como podriamos optimizar tus operaciones.",
+      title: "Mirá como podría optimizar tus operaciones.",
       description:
-        "En este cuestionario vamos a detectar cuellos de botella y recomendar una solución.",
+        "En este cuestionario voy a detectar cuellos de botella y recomendar una solución.",
       startCta: "Comenzar ahora",
       progressLabel: "Pregunta",
       progressConnector: "de",
@@ -34,7 +34,7 @@ export const translations = {
       ],
       matchLabel: "Diagnóstico Final",
       resultPrefix: "Tu empresa requiere",
-      resultSuffix: "Ingresá tu correo y analizaremos la infromación de tu diagnóstico, luego te enviaremos un informe detallado.",
+      resultSuffix: "Ingresá tu correo y analizaré la información de tu diagnóstico, luego te enviaré un informe detallado.",
       successMessage: "¡Enviado con éxito!",
       emailPlaceholder: "tu@empresa.com",
       sendingCta: "Enviando...",
@@ -46,45 +46,45 @@ export const translations = {
           id: "current-bottleneck",
           prompt: "¿Cuál es el mayor problema de tu empresa hoy?",
           options: [
-            { value: "many_whatsapps", label: "\uD83D\uDCAC Muchos mensajes que no se responden" },
-            { value: "messy_data", label: "\uD83D\uDCCA Datos desordenados" },
-            { value: "manual_tasks", label: "\u23F3 Tareas manuales inproductivas" },
+            { value: "many_whatsapps", label: "💬 Muchos mensajes que no se responden" },
+            { value: "messy_data", label: "📊 Datos desordenados" },
+            { value: "manual_tasks", label: "⏳ Tareas manuales inproductivas" },
           ],
         },
         {
           id: "people-affected",
           prompt: "¿Cuántas personas pierden tiempo en tareas repetitivas?",
           options: [
-            { value: "one_to_two_people", label: "\uD83D\uDC64 1-2 personas" },
-            { value: "three_to_five_people", label: "\uD83D\uDC65 3-5 personas" },
-            { value: "whole_team", label: "\uD83C\uDFE2 El equipo entero" },
+            { value: "one_to_two_people", label: "👤 1-2 personas" },
+            { value: "three_to_five_people", label: "👥 3-5 personas" },
+            { value: "whole_team", label: "🏢 El equipo entero" },
           ],
         },
         {
           id: "stress-point",
           prompt: "¿Qué área se rompe primero cuando sube la demanda?",
           options: [
-            { value: "sales_follow_up", label: "\uD83D\uDCE5 Atención al cliente" },
-            { value: "reporting_profitability", label: "\uD83D\uDCC8 Reportes y rentabilidad" },
-            { value: "internal_operations", label: "\u2699\uFE0F Operaciones internas" },
+            { value: "sales_follow_up", label: "📥 Atención al cliente" },
+            { value: "reporting_profitability", label: "📈 Reportes y rentabilidad" },
+            { value: "internal_operations", label: "⚙️ Operaciones internas" },
           ],
         },
         {
           id: "integration-level",
           prompt: "¿Qué tan conectadas están hoy las herramientas que más usas?",
           options: [
-            { value: "everything_isolated", label: "\uD83D\uDD0C Todo está aislado" },
-            { value: "manual_patches", label: "\uD83E\uDE79 Hay parches manuales" },
-            { value: "partial_integration", label: "\uD83E\uDDE9 Ya existe una integración parcial" },
+            { value: "everything_isolated", label: "🔌 Todo está aislado" },
+            { value: "manual_patches", label: "🩹 Hay parches manuales" },
+            { value: "partial_integration", label: "🧩 Ya existe una integración parcial" },
           ],
         },
         {
           id: "priority-quarter",
           prompt: "Si pudiéramos intervenir este trimestre, ¿qué es lo que más impacto generaría?",
           options: [
-            { value: "better_capture_close", label: "\uD83D\uDE80 Captar y cerrar los leads mejor" },
-            { value: "real_business_control", label: "\uD83E\uDDED Tener control en tiempo real del negocio" },
-            { value: "remove_manual_work", label: "\u26A1 Sacar tareas manuales del equipo" },
+            { value: "better_capture_close", label: "🚀 Captar y cerrar los leads mejor" },
+            { value: "real_business_control", label: "🧭 Tener control en tiempo real del negocio" },
+            { value: "remove_manual_work", label: "⚡ Sacar tareas manuales del equipo" },
           ],
         },
       ],
@@ -113,7 +113,7 @@ export const translations = {
       subtitle: "Propuesta",
       title: "Infraestructura técnica que trabaja por vos.",
       description:
-        "Conectamos y automatizamos las herramientas que ya usás, eliminando la carga manual y construyendo soluciones a medida.",
+        "Conecto y automatizo las herramientas que ya usás, eliminando la carga manual y construyendo soluciones a medida.",
       points: [
         "<b>Integración de Sistemas:</b> Conectá tu CRM, correos y bases de datos para que hablen entre sí.",
         "<b>Automatización Escalable:</b> Flujos de trabajo que se ejecutan solos, reduciendo tiempos y eliminando el error humano.",
@@ -122,13 +122,13 @@ export const translations = {
       footer: "Tu información ordenada y lista para la toma de decisiones.",
     },
     whoAmI: {
-      subtitle: "Sobre nosotros",
-      title1: "Visón y Criterio",
+      subtitle: "Sobre mí",
+      title1: "Visión y Criterio",
       desc1:
-        "Mi nombre es Enzo, y comencé Workflow Waves con la intención de aprovechar esta revolución tecnológica para implementar soluciones y sistemas a miles de empresas que en su día a día chocan con limites estructurales para crecer. A lo largo de los años he visto en los sectores público y privado la importancia que tienen los sistemas que aportan valor, y como pueden aumentar la productividad lo que lleva a mejorar resultados operativos y financieros",
+        "Soy Enzo, analista de datos y arquitecto de operaciones. Diseño e implemento sistemas que permiten a las empresas superar sus límites de crecimiento. A lo largo de mi trayectoria en los sectores público y privado, comprobé que la visibilidad de los datos y la automatización de procesos repetitivos no solo reducen la carga operativa, sino que tienen un impacto directo en la rentabilidad y la toma de decisiones estratégicas.",
       title2: "Arquitectura de Sistemas",
       desc2:
-        "Tenemos foco en aquellas empresas que necesitan ahorrar tiempo eliminando procesos vacíos y repetitivos. Las arquitecturas que planteamos son simples, pero sumamente escalables y funcionan solas. Nuestro objetivo es que tu negocio dependa de sistemas inteligentes, no de procesos manuales agotadores.",
+        "El nombre Workflow Waves nace de una convicción: los flujos de trabajo de una empresa deben comportarse como las olas, siendo fluidas, continuas y con la fuerza necesaria para modelar y estructurar la operación sin generar fricción. Diseño soluciones que eliminan tareas manuales e integran sistemas para que la información fluya. Mi objetivo es estructurar arquitecturas escalables para que los negocios dependan de sistemas eficientes, no de procesos manuales propensos a errores.",
     },
     testimonials: {
       subtitle: "Proyectos anteriores",
@@ -139,7 +139,7 @@ export const translations = {
       subtitle: "Contacto",
       otherProjects: "Otros proyectos",
       miAdmiLabel: "App de gestión de finanzas personales",
-      description: "Si sentís que necesitás ordenar tu situación, escribinos.",
+      description: "Si sentís que necesitás ordenar tu situación, escribime.",
       copy: "Copiar mail",
       copied: "Copiado",
     },
@@ -151,7 +151,7 @@ export const translations = {
     nav: {
       home: "Home",
       services: "Services",
-      about: "About Us",
+      about: "About me",
       cta: "Schedule a Call",
     },
     hero: {
@@ -165,9 +165,9 @@ export const translations = {
     },
     onboarding: {
       subtitle: "Operational Diagnosis",
-      title: "See how we could optimize your operations.",
+      title: "See how I could optimize your operations.",
       description:
-        "In this questionnaire, we'll identify bottlenecks and recommend a solution.",
+        "In this questionnaire, I'll identify bottlenecks and recommend a solution.",
       startCta: "Start now",
       progressLabel: "Question",
       progressConnector: "of",
@@ -181,7 +181,7 @@ export const translations = {
       matchLabel: "Final Diagnosis",
       resultPrefix: "Your company needs a",
       resultSuffix:
-        "Enter your email and we'll review the information from your diagnosis, then send you a detailed report.",
+        "Enter your email and I'll review the information from your diagnosis, then send you a detailed report.",
       successMessage: "Sent successfully!",
       emailPlaceholder: "you@company.com",
       sendingCta: "Sending...",
@@ -193,45 +193,45 @@ export const translations = {
           id: "current-bottleneck",
           prompt: "What is your company's biggest problem today?",
           options: [
-            { value: "many_whatsapps", label: "\uD83D\uDCAC Too many unanswered messages" },
-            { value: "messy_data", label: "\uD83D\uDCCA Disorganized data" },
-            { value: "manual_tasks", label: "\u23F3 Unproductive manual tasks" },
+            { value: "many_whatsapps", label: "💬 Too many unanswered messages" },
+            { value: "messy_data", label: "📊 Disorganized data" },
+            { value: "manual_tasks", label: "⏳ Unproductive manual tasks" },
           ],
         },
         {
           id: "people-affected",
           prompt: "How many people lose time on repetitive tasks?",
           options: [
-            { value: "one_to_two_people", label: "\uD83D\uDC64 1-2 people" },
-            { value: "three_to_five_people", label: "\uD83D\uDC65 3-5 people" },
-            { value: "whole_team", label: "\uD83C\uDFE2 The entire team" },
+            { value: "one_to_two_people", label: "👤 1-2 people" },
+            { value: "three_to_five_people", label: "👥 3-5 people" },
+            { value: "whole_team", label: "🏢 The entire team" },
           ],
         },
         {
           id: "stress-point",
           prompt: "Which area breaks first when demand increases?",
           options: [
-            { value: "sales_follow_up", label: "\uD83D\uDCE5 Customer service" },
-            { value: "reporting_profitability", label: "\uD83D\uDCC8 Reporting and profitability" },
-            { value: "internal_operations", label: "\u2699\uFE0F Internal operations" },
+            { value: "sales_follow_up", label: "📥 Customer service" },
+            { value: "reporting_profitability", label: "📈 Reporting and profitability" },
+            { value: "internal_operations", label: "⚙️ Internal operations" },
           ],
         },
         {
           id: "integration-level",
           prompt: "How connected are the tools you use most today?",
           options: [
-            { value: "everything_isolated", label: "\uD83D\uDD0C Everything is isolated" },
-            { value: "manual_patches", label: "\uD83E\uDE79 There are manual patches" },
-            { value: "partial_integration", label: "\uD83E\uDDE9 A partial integration already exists" },
+            { value: "everything_isolated", label: "🔌 Everything is isolated" },
+            { value: "manual_patches", label: "🩹 There are manual patches" },
+            { value: "partial_integration", label: "🧩 A partial integration already exists" },
           ],
         },
         {
           id: "priority-quarter",
           prompt: "If we could intervene this quarter, what would generate the greatest impact?",
           options: [
-            { value: "better_capture_close", label: "\uD83D\uDE80 Capture and close leads better" },
-            { value: "real_business_control", label: "\uD83E\uDDED Have real-time control of the business" },
-            { value: "remove_manual_work", label: "\u26A1 Remove manual tasks from the team" },
+            { value: "better_capture_close", label: "🚀 Capture and close leads better" },
+            { value: "real_business_control", label: "🧭 Have real-time control of the business" },
+            { value: "remove_manual_work", label: "⚡ Remove manual tasks from the team" },
           ],
         },
       ],
@@ -260,7 +260,7 @@ export const translations = {
       subtitle: "Proposal",
       title: "Technical infrastructure that works for you.",
       description:
-        "We connect and automate the tools you already use, eliminating manual workload and building custom solutions.",
+        "I connect and automate the tools you already use, eliminating manual workload and building custom solutions.",
       points: [
         "<b>Systems Integration:</b> Connect your CRM, emails, and databases so they work together.",
         "<b>Scalable Automation:</b> Workflows that run on their own, reducing time and eliminating human error.",
@@ -269,13 +269,13 @@ export const translations = {
       footer: "Your information, organized and ready for decision-making.",
     },
     whoAmI: {
-      subtitle: "About Us",
+      subtitle: "About me",
       title1: "Vision and Judgment",
       desc1:
-        "My name is Enzo, and I started Workflow Waves with the intention of taking advantage of this technological revolution to implement solutions and systems for thousands of companies that, in their day-to-day operations, run into structural limits to growth. Over the years, I have seen in both the public and private sectors how important value-generating systems are, and how they can increase productivity, leading to better operational and financial results.",
+        "I am Enzo, a data analyst and operations architect. I design and implement systems that enable businesses to overcome structural limits to growth. Throughout my career in both the public and private sectors, I have verified that data visibility and the automation of repetitive processes not only reduce operational load but also directly impact profitability and strategic decision-making.",
       title2: "Systems Architecture",
       desc2:
-        "We focus on companies that need to save time by eliminating wasteful and repetitive processes. The architectures we design are simple, highly scalable, and run on their own. Our goal is for your business to rely on intelligent systems, not exhausting manual processes.",
+        "The name Workflow Waves stems from a conviction: a company's workflows should behave like waves, being fluid, continuous, and with the necessary force to shape and structure operations without friction. I design solutions that eliminate manual tasks and integrate systems so that information flows. My goal is to build scalable architectures so that businesses rely on efficient systems rather than error-prone manual processes.",
     },
     testimonials: {
       subtitle: "Previous Projects",
@@ -286,7 +286,7 @@ export const translations = {
       subtitle: "Contact",
       otherProjects: "Other projects",
       miAdmiLabel: "Personal finance management app",
-      description: "If you feel you need to get organized, write to us.",
+      description: "If you feel you need to get organized, write to me.",
       copy: "Copy email",
       copied: "Copied",
     },

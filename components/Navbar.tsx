@@ -59,7 +59,7 @@ export default function Navbar() {
               {t.nav.services}
             </Link>
             <Link
-              href="/about-us"
+              href="/about-me"
               className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
             >
               {t.nav.about}

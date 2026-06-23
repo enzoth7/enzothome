@@ -24,7 +24,7 @@ const PAGE_COPY = {
     eyebrow: "Servicios",
     title: "Proyectos trabajados",
     lead:
-      "A continuación se muestran ejemplos de los sistemas diseñados con una lógica industrial: control visual, automatizaci\u00f3n operativa y estructuras listas para escalar con precisi\u00f3n.",
+      "Una muestra de los proyectos que diseñé e implementé para resolver problemas operativos reales. Son soluciones prácticas creadas para automatizar procesos repetitivos, centralizar la información y dar soporte a decisiones estratégicas en cada negocio.",
     close: "Cerrar",
     previous: "Anterior",
     next: "Siguiente",
@@ -33,7 +33,7 @@ const PAGE_COPY = {
     eyebrow: "Services",
     title: "Projects completed",
     lead:
-      "Below are examples of systems designed using industrial logic: visual control, operational automation, and structures ready for precise scaling.",
+      "A showcase of projects I designed and implemented to solve real operational challenges. These are practical solutions built to automate repetitive processes, centralize data, and support strategic decision-making in every business.",
     close: "Close",
     previous: "Previous",
     next: "Next",

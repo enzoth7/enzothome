@@ -122,7 +122,7 @@ export default function ContactoSection() {
               </a>
 
               <a
-                href="https://www.linkedin.com/in/enzo-thome-one"
+                href="https://www.linkedin.com/in/enzothome/"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
