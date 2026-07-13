@@ -108,7 +108,7 @@ export const translations = {
     },
     whatIDo: {
       subtitle: "Propuesta",
-      title: "Un sistema diseñado para darte el control.",
+      title: "Un sistema diseñado para darte el control",
       description:
         "Obtené una estructura operativa a tu medida para eliminar la carga manual de tu equipo, conectar tus herramientas y ganar el control absoluto de tu negocio.",
       points: [
@@ -146,9 +146,9 @@ export const translations = {
         "Todo sistema bien diseñado debe ser fluido, continuo y capaz de adaptarse al crecimiento del negocio. Cuando los procesos están fragmentados, la información se pierde, las tareas se duplican y las decisiones llegan tarde. Pero si se eliminan las tareas manuales y se integran sistemas, la información fluye y los datos dejan de ser simples registros para convertirse en un activo estratégico. El dato se vuelve accionable, el conocimiento se convierte en decisión y el negocio adquiere la capacidad de escalar.",
     },
     testimonials: {
-      subtitle: "Proyectos anteriores",
+      subtitle: "Proyectos desarrollados",
       title: "Opiniones de clientes",
-      description: "Resultados reales en diversos proyectos, desde automatizar una pequeña operativa hasta desarrollar herramientas de alto impacto",
+      description: "Resultados reales en diversos proyectos, desde automatizar una pequeña operativa hasta desarrollar soluciones de alto impacto.",
     },
     contact: {
       subtitle: "Contacto",
@@ -270,7 +270,7 @@ export const translations = {
     },
     whatIDo: {
       subtitle: "Proposal",
-      title: "A system designed to give you control.",
+      title: "A system designed to give you control",
       description:
         "Get a tailored operational structure to eliminate your team's manual workload, connect your tools, and gain absolute control over your business.",
       points: [
@@ -308,9 +308,9 @@ export const translations = {
         "Every well-designed system must be seamless, continuous, and capable of adapting to business growth. When processes are fragmented, information is lost, tasks are duplicated, and decisions are delayed. But if manual tasks are eliminated and systems are integrated, information flows freely, and data ceases to be mere records and becomes a strategic asset. Data becomes actionable, knowledge turns into decisions, and the business gains the ability to scale.",
     },
     testimonials: {
-      subtitle: "Previous Projects",
+      subtitle: "Projects developed",
       title: "Client Feedback",
-      description: "Real results across different projects, from automating a small operation to building high-impact tools.",
+      description: "Real results across different projects, from automating a small operation to building high-impact solutions.",
     },
     contact: {
       subtitle: "Contact",
