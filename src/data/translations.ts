@@ -5,6 +5,7 @@ export const translations = {
     nav: {
       home: "Inicio",
       services: "Servicios",
+      projects: "Proyectos",
       about: "Sobre mí",
       cta: "Agendar Llamada",
     },
@@ -107,7 +108,7 @@ export const translations = {
     },
     whatIDo: {
       subtitle: "Propuesta",
-      title: "Un sistema diseñado para darte control y tiempo.",
+      title: "Un sistema diseñado para darte el control.",
       description:
         "Obtené una estructura operativa a tu medida para eliminar la carga manual de tu equipo, conectar tus herramientas y ganar el control absoluto de tu negocio.",
       points: [
@@ -116,6 +117,24 @@ export const translations = {
         "Tomar decisiones con datos, no con intuición|Ganá claridad absoluta sobre el rumbo de tu negocio para tomar decisiones estratégicas basadas en certezas, no en suposiciones."
       ],
       footer: "",
+    },
+    projects: {
+      subtitle: "Proyectos",
+      title: "Trabajos completados",
+      lead: "Aquí se pueden ver conceptual y tecnicamente algunos de los proyectos que he desarrollado.",
+      project1: {
+        title: "Agente de ventas en WhatsApp",
+        description: "Diseño e implementación de un flujo automatizado para conectar un Agente de IA al WhatsApp de la empresa para responder dudas y ofrecer productos. Conectado al catálogo y bases de datos, esto redujo el tiempo de respuesta a leads en un 90% y eliminó la duplicación manual de registros de ventas.",
+      },
+      project2: {
+        title: "Visualización de Datos y Reportes",
+        description: "Creación de un dashboard centralizado de KPIs operativos conectado a múltiples fuentes de datos. Permitió ver de forma clara la evolución del turismo y su impacto en las distintas ciudades. Esto permitió optimizar la toma de decisiones en las áreas más críticas.",
+      },
+      project3: {
+        title: "Automatización de Órdenes de Producción",
+        description: "Diseño y desarrollo de un flujo de trabajo integrado para sincronizar la Tienda web de una empresa con la base del datos de taller. Eliminó el registro manual en papel, automatizó la transferencia de especificaciones de diseño y optimizó la producción y los tiempos de ventas.",
+      },
+      cta: "Ver más",
     },
     whoAmI: {
       subtitle: "Sobre mí",
@@ -147,6 +166,7 @@ export const translations = {
     nav: {
       home: "Home",
       services: "Services",
+      projects: "Projects",
       about: "About me",
       cta: "Schedule a Call",
     },
@@ -250,7 +270,7 @@ export const translations = {
     },
     whatIDo: {
       subtitle: "Proposal",
-      title: "A system designed to give you control and time.",
+      title: "A system designed to give you control.",
       description:
         "Get a tailored operational structure to eliminate your team's manual workload, connect your tools, and gain absolute control over your business.",
       points: [
@@ -259,6 +279,24 @@ export const translations = {
         "Make decisions with data, not intuition|Gain absolute clarity on your business direction to make strategic decisions based on facts, not assumptions."
       ],
       footer: "",
+    },
+    projects: {
+      subtitle: "Projects",
+      title: "Completed Projects",
+      lead: "Here you can see some of the projects I've developed, both conceptually and technically.",
+      project1: {
+        title: "WhatsApp Sales Agent",
+        description: "Design and implementation of an automated workflow to connect an AI agent to the company's WhatsApp account to answer questions and offer products. Connected to the product catalog and databases, this reduced response time to leads by 90% and eliminated the manual duplication of sales records.",
+      },
+      project2: {
+        title: "Data Visualization and Reporting",
+        description: "Creation of a centralized dashboard of operational KPIs connected to multiple data sources. It provided a clear view of tourism trends and their impact on different cities. This enabled optimized decision-making in the most critical areas.",
+      },
+      project3: {
+        title: "Production Order Automation",
+        description: "Design and development of an integrated workflow to synchronize a company's online store with its workshop database. This eliminated manual paper-based record-keeping, automated the transfer of design specifications, and optimized production and sales lead times.",
+      },
+      cta: "See more",
     },
     whoAmI: {
       subtitle: "About me",

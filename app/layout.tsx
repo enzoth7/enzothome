@@ -39,9 +39,6 @@ export const metadata: Metadata = {
     "n8n Uruguay",
     "Data & Automation Uruguay",
   ],
-  icons: {
-    icon: "/LogoET.png",
-  },
   openGraph: {
     title: "Enzo Thome | Data & Automation",
     description: SEO_DESCRIPTION,

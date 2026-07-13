@@ -109,6 +109,25 @@ export default function ContactoSection() {
 
             <div className="mt-2 flex items-center gap-4 lg:hidden">
               <a
+                href="https://es.fiverr.com/enzoth98"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Fiverr"
+                title="Fiverr"
+                className="rounded-full border border-neutral-200 bg-slate-50/90 p-2.5 text-slate-500 shadow-sm transition hover:border-neutral-300 hover:bg-white hover:text-neutral-950"
+              >
+                <svg
+                  viewBox="-2.5 -2 24 24"
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M16.25 16.25v-10h-10v-.625c0-1.034.841-1.875 1.875-1.875H10V0H8.125A5.632 5.632 0 0 0 2.5 5.625v.625H0V10h2.5v6.25H0V20h8.75v-3.75h-2.5V10h6.285v6.25H10V20h8.75v-3.75h-2.5z" />
+                  <circle cx="14.375" cy="1.875" r="1.875" />
+                </svg>
+              </a>
+
+              <a
                 href="https://github.com/enzoth7"
                 target="_blank"
                 rel="noreferrer"

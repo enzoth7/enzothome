@@ -32,7 +32,7 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label="Enzo Thome"
-          className="flex items-center w-[220px] md:w-[280px]"
+          className="flex items-center w-[120px] sm:w-[180px] md:w-[280px]"
         >
           <Image
             src="/logotransp4.png"
@@ -49,7 +49,7 @@ export default function Navbar() {
           <div className="flex items-center justify-end gap-3 pr-1 sm:gap-5 md:justify-center md:gap-10 md:pr-0">
             <Link
               href="/"
-              className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
+              className="hidden sm:block whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
             >
               {t.nav.home}
             </Link>
@@ -58,6 +58,12 @@ export default function Navbar() {
               className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
             >
               {t.nav.services}
+            </Link>
+            <Link
+              href="/projects"
+              className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
+            >
+              {t.nav.projects}
             </Link>
             <Link
               href="/about-me"
