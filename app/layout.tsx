@@ -16,37 +16,42 @@ const newsreader = Newsreader({
 });
 
 const SEO_DESCRIPTION =
-  "Workflow Waves dise\u00f1a sistemas escalables de automatizaci\u00f3n, datos y operaciones para empresas que quieren crecer con control.";
+  "Desde Uruguay, Enzo Thome diseña sistemas a medida de automatización, datos y operaciones para empresas que quieren crecer con orden y control.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://workflowwaves.vercel.app"),
-  title: "Workflow Waves | Arquitectura de Datos y Automatizaci\u00f3n",
+  metadataBase: new URL("https://enzothome.com"),
+  title: "Enzo Thome | Data & Automation",
   description: SEO_DESCRIPTION,
   keywords: [
-    "Workflow Waves",
-    "automatizaci\u00f3n de procesos",
+    "Enzo Thome",
+    "automatización de procesos",
     "arquitectura de datos",
     "sistemas eficientes",
     "sistemas escalables",
     "n8n",
-    "optimizaci\u00f3n de PYMES",
+    "optimización de PYMES",
     "Uruguay",
-    "Espa\u00f1a",
+    "España",
+    "Enzo Thome Uruguay",
+    "automatización de procesos Uruguay",
+    "arquitectura de datos Uruguay",
+    "n8n Uruguay",
+    "Data & Automation Uruguay",
   ],
   icons: {
-    icon: "/logo1.png",
+    icon: "/LogoET.png",
   },
   openGraph: {
-    title: "Workflow Waves | Arquitectura de Datos y Automatizaci\u00f3n",
+    title: "Enzo Thome | Data & Automation",
     description: SEO_DESCRIPTION,
-    url: "https://workflowwaves.vercel.app",
-    siteName: "Workflow Waves",
+    url: "https://enzothome.com",
+    siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Workflow Waves | Arquitectura de Datos y Automatizaci\u00f3n",
+    title: "Enzo Thome | Data & Automation",
     images: ["/logo1.png"],
   },
   alternates: {

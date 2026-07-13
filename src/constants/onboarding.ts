@@ -9,13 +9,9 @@ export type OnboardingQuestionTemplate = {
 };
 
 export const ONBOARDING_CATEGORY_ORDER = [
-  "CP-001",
-  "AA-112",
-  "DB-025",
-  "WF-009",
-  "WF-055",
-  "AA-201",
-  "AA-147",
+  "process_automation",
+  "data_bi",
+  "ai_solutions",
 ] as const satisfies readonly ServiceId[];
 
 export const ONBOARDING_QUESTION_TEMPLATES: OnboardingQuestionTemplate[] = [
@@ -24,15 +20,15 @@ export const ONBOARDING_QUESTION_TEMPLATES: OnboardingQuestionTemplate[] = [
     options: [
       {
         value: "many_whatsapps",
-        scores: { "AA-112": 3, "AA-147": 1 },
+        scores: { ai_solutions: 3, process_automation: 1 },
       },
       {
         value: "messy_data",
-        scores: { "DB-025": 3, "WF-055": 1 },
+        scores: { data_bi: 3 },
       },
       {
         value: "manual_tasks",
-        scores: { "CP-001": 3, "AA-201": 2, "WF-009": 1 },
+        scores: { process_automation: 3, data_bi: 1 },
       },
     ],
   },
@@ -41,15 +37,15 @@ export const ONBOARDING_QUESTION_TEMPLATES: OnboardingQuestionTemplate[] = [
     options: [
       {
         value: "one_to_two_people",
-        scores: { "WF-055": 2, "AA-201": 2 },
+        scores: { process_automation: 2, data_bi: 1 },
       },
       {
         value: "three_to_five_people",
-        scores: { "AA-112": 1, "WF-009": 2 },
+        scores: { process_automation: 2, ai_solutions: 2 },
       },
       {
         value: "whole_team",
-        scores: { "CP-001": 4, "DB-025": 2, "AA-147": 1 },
+        scores: { process_automation: 3, data_bi: 3, ai_solutions: 3 },
       },
     ],
   },
@@ -58,15 +54,15 @@ export const ONBOARDING_QUESTION_TEMPLATES: OnboardingQuestionTemplate[] = [
     options: [
       {
         value: "sales_follow_up",
-        scores: { "AA-112": 3, "WF-009": 1 },
+        scores: { ai_solutions: 3, process_automation: 1 },
       },
       {
         value: "reporting_profitability",
-        scores: { "DB-025": 3 },
+        scores: { data_bi: 3 },
       },
       {
         value: "internal_operations",
-        scores: { "CP-001": 3, "AA-201": 1, "AA-147": 1 },
+        scores: { process_automation: 3, data_bi: 1, ai_solutions: 1 },
       },
     ],
   },
@@ -75,15 +71,15 @@ export const ONBOARDING_QUESTION_TEMPLATES: OnboardingQuestionTemplate[] = [
     options: [
       {
         value: "everything_isolated",
-        scores: { "CP-001": 4, "WF-009": 2 },
+        scores: { process_automation: 3, data_bi: 2 },
       },
       {
         value: "manual_patches",
-        scores: { "AA-112": 1, "AA-201": 2, "AA-147": 1 },
+        scores: { process_automation: 2, ai_solutions: 1 },
       },
       {
         value: "partial_integration",
-        scores: { "DB-025": 2, "AA-112": 1 },
+        scores: { data_bi: 2, ai_solutions: 1 },
       },
     ],
   },
@@ -92,15 +88,15 @@ export const ONBOARDING_QUESTION_TEMPLATES: OnboardingQuestionTemplate[] = [
     options: [
       {
         value: "better_capture_close",
-        scores: { "AA-112": 3, "WF-009": 1 },
+        scores: { ai_solutions: 3, process_automation: 1 },
       },
       {
         value: "real_business_control",
-        scores: { "DB-025": 3, "WF-055": 1 },
+        scores: { data_bi: 3 },
       },
       {
         value: "remove_manual_work",
-        scores: { "CP-001": 3, "AA-201": 2, "AA-147": 1 },
+        scores: { process_automation: 3 },
       },
     ],
   },
@@ -115,3 +111,4 @@ export const ONBOARDING_SCORE_MAP = ONBOARDING_QUESTION_TEMPLATES.reduce<
 
   return scoreMap;
 }, {});
+

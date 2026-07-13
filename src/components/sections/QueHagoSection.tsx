@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useLanguage } from "@/src/context/LanguageContext";
 
 function SectionEyebrow({ label }: { label: string }) {
@@ -18,36 +19,47 @@ export default function QueHagoSection() {
 
   return (
     <section id="que-hago" className="border-t border-neutral-200 py-24 sm:py-28">
-      <div className="flex flex-col gap-10 sm:gap-12">
-        <div className="max-w-4xl space-y-8">
+      <div className="flex flex-col gap-12 sm:gap-16">
+        
+        {/* Cabecera de ancho completo */}
+        <div className="max-w-none w-full space-y-8">
           <SectionEyebrow label={t.whatIDo.subtitle} />
           <h2 className="font-sans text-4xl font-black tracking-tighter text-neutral-900 sm:text-5xl lg:text-6xl">
             {t.whatIDo.title}
           </h2>
-          <p className="max-w-3xl text-base font-light leading-relaxed tracking-[0.04em] text-neutral-600 sm:text-lg">
+          <p className="max-w-none text-lg sm:text-xl text-neutral-600 font-light leading-relaxed tracking-[0.04em]">
             {t.whatIDo.description}
           </p>
         </div>
 
-        <div className="max-w-4xl">
-          <ul className="space-y-6">
-            {t.whatIDo.points.map((point, index) => (
-              <li
+        {/* Listado Vertical de Beneficios */}
+        <div className="w-full border-b border-neutral-200/80">
+          {t.whatIDo.points.map((point: string, index: number) => {
+            const [title, description] = point.split("|");
+
+            return (
+              <div
                 key={index}
-                className="flex items-start gap-4 text-base font-light leading-relaxed tracking-[0.04em] text-neutral-700 sm:text-lg"
+                className="grid lg:grid-cols-[1fr_2fr] gap-6 lg:gap-12 border-t border-neutral-200 py-8 lg:py-10"
               >
-                <span className="mt-[0.9em] h-px w-10 shrink-0 bg-[#064e3b]/24" aria-hidden="true" />
-                <span dangerouslySetInnerHTML={{ __html: point }} />
-              </li>
-            ))}
-          </ul>
+                {/* Columna Izquierda (Beneficio) */}
+                <div>
+                  <h3 className="text-neutral-900 font-bold text-xl md:text-2xl leading-tight">
+                    {title}
+                  </h3>
+                </div>
+
+                {/* Columna Derecha (Explicación sin tags) */}
+                <div className="flex flex-col justify-start">
+                  <p className="text-neutral-800 font-light text-lg md:text-xl leading-relaxed">
+                    {description}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="max-w-4xl">
-          <p className="pl-14 text-base font-light italic leading-relaxed tracking-[0.04em] text-neutral-500">
-            {t.whatIDo.footer}
-          </p>
-        </div>
       </div>
     </section>
   );

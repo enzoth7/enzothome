@@ -86,13 +86,9 @@ export default function OnboardingFunnel() {
 
   const category = useMemo(() => {
     const scores: Record<ServiceId, number> = {
-      "CP-001": 0,
-      "DB-025": 0,
-      "AA-112": 0,
-      "WF-009": 0,
-      "AA-147": 0,
-      "AA-201": 0,
-      "WF-055": 0,
+      process_automation: 0,
+      data_bi: 0,
+      ai_solutions: 0,
     };
 
     answers.forEach((answer) => {

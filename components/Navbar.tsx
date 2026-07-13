@@ -20,27 +20,28 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-        isScrolled
-          ? "bg-[#0f172a]/80 border-b border-white/10 shadow-lg backdrop-blur-lg"
-          : "bg-transparent border-b border-transparent"
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${isScrolled
+        ? "bg-[#0f172a]/80 border-b border-white/10 shadow-lg backdrop-blur-lg"
+        : "bg-transparent border-b border-transparent"
+        }`}
     >
       <div
-        className={`relative mx-auto grid max-w-[95%] grid-cols-[auto_1fr] items-center gap-3 px-3 transition-all duration-500 sm:px-5 md:grid-cols-[auto_1fr_auto] md:gap-3 ${
-          isScrolled ? "py-4 sm:py-3 md:py-1" : "py-4 sm:py-4 md:py-1.5"
-        }`}
+        className={`relative mx-auto grid max-w-[95%] grid-cols-[auto_1fr] items-center gap-3 px-3 transition-all duration-500 sm:px-5 md:grid-cols-[auto_1fr_auto] md:gap-3 ${isScrolled ? "py-4 sm:py-3 md:py-1" : "py-4 sm:py-4 md:py-1.5"
+          }`}
       >
-        <Link href="/" aria-label="Workflow Waves" className="flex items-center leading-none">
+        <Link
+          href="/"
+          aria-label="Enzo Thome"
+          className="flex items-center w-[220px] md:w-[280px]"
+        >
           <Image
-            src="/logotransp.png"
-            alt="Workflow Waves"
-            width={720}
-            height={180}
+            src="/logotransp4.png"
+            alt="Enzo Thome"
+            width={1200}
+            height={250}
             priority
-            className={`block w-auto object-contain transition-all duration-500 ${
-              isScrolled ? "h-9 sm:h-11 md:h-14" : "h-10 sm:h-12 md:h-16"
-            }`}
+            className={`w-full object-contain transition-all duration-500 ${isScrolled ? "h-12 md:h-14" : "h-14 md:h-16"
+              }`}
           />
         </Link>
 

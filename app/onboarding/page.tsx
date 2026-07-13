@@ -77,13 +77,9 @@ function OnboardingContent() {
 
   const CATEGORY_LABELS = useMemo<Record<ServiceId, string>>(
     () => ({
-      "CP-001": t.onboarding.categories["CP-001"],
-      "DB-025": t.onboarding.categories["DB-025"],
-      "AA-112": t.onboarding.categories["AA-112"],
-      "WF-009": t.onboarding.categories["WF-009"],
-      "AA-147": t.onboarding.categories["AA-147"],
-      "AA-201": t.onboarding.categories["AA-201"],
-      "WF-055": t.onboarding.categories["WF-055"],
+      process_automation: t.onboarding.categories.process_automation,
+      data_bi: t.onboarding.categories.data_bi,
+      ai_solutions: t.onboarding.categories.ai_solutions,
     }),
     [t]
   );
@@ -152,13 +148,9 @@ function OnboardingContent() {
 
   const category = useMemo(() => {
     const scores: Record<ServiceId, number> = {
-      "CP-001": 0,
-      "DB-025": 0,
-      "AA-112": 0,
-      "WF-009": 0,
-      "AA-147": 0,
-      "AA-201": 0,
-      "WF-055": 0,
+      process_automation: 0,
+      data_bi: 0,
+      ai_solutions: 0,
     };
 
     answers.forEach((answer) => {

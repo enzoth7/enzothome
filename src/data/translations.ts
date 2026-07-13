@@ -89,13 +89,9 @@ export const translations = {
         },
       ],
       categories: {
-        "DB-025": SERVICES_DATA["DB-025"].title_es,
-        "AA-112": SERVICES_DATA["AA-112"].title_es,
-        "WF-009": SERVICES_DATA["WF-009"].title_es,
-        "AA-147": SERVICES_DATA["AA-147"].title_es,
-        "AA-201": SERVICES_DATA["AA-201"].title_es,
-        "WF-055": SERVICES_DATA["WF-055"].title_es,
-        "CP-001": SERVICES_DATA["CP-001"].title_es,
+        process_automation: SERVICES_DATA["process_automation"].title_es,
+        data_bi: SERVICES_DATA["data_bi"].title_es,
+        ai_solutions: SERVICES_DATA["ai_solutions"].title_es,
       },
       emailSubject: "Diagnóstico operativo completado",
       emailIntro: "Nuevo diagnóstico",
@@ -111,24 +107,24 @@ export const translations = {
     },
     whatIDo: {
       subtitle: "Propuesta",
-      title: "Infraestructura técnica que trabaja por vos.",
+      title: "Un sistema diseñado para darte control y tiempo.",
       description:
-        "Conecto y automatizo las herramientas que ya usás, eliminando la carga manual y construyendo soluciones a medida.",
+        "Obtené una estructura operativa a tu medida para eliminar la carga manual de tu equipo, conectar tus herramientas y ganar el control absoluto de tu negocio.",
       points: [
-        "<b>Integración de Sistemas:</b> Conectá tu CRM, correos y bases de datos para que hablen entre sí.",
-        "<b>Automatización Escalable:</b> Flujos de trabajo que se ejecutan solos, reduciendo tiempos y eliminando el error humano.",
-        "<b>Dashboards Ejecutivos:</b> Visibilidad en tiempo real de toda la operación de tu empresa, automatizada y sin intervención manual.",
+        "Tiempo libre para hacer crecer tu negocio|Un sistema autónomo que hace que tu operación diaria funcione sin depender de tu presencia constante.",
+        "Control de tus operaciones|Sabé en tiempo real cómo está tu negocio para no esperar a procesos manuales que son inexactos y toman tiempo.",
+        "Tomar decisiones con datos, no con intuición|Ganá claridad absoluta sobre el rumbo de tu negocio para tomar decisiones estratégicas basadas en certezas, no en suposiciones."
       ],
-      footer: "Tu información ordenada y lista para la toma de decisiones.",
+      footer: "",
     },
     whoAmI: {
       subtitle: "Sobre mí",
       title1: "Visión y Criterio",
       desc1:
-        "Soy Enzo, analista de datos y arquitecto de operaciones. Diseño e implemento sistemas que permiten a las empresas superar sus límites de crecimiento. A lo largo de mi trayectoria en los sectores público y privado, comprobé que la visibilidad de los datos y la automatización de procesos repetitivos no solo reducen la carga operativa, sino que tienen un impacto directo en la rentabilidad y la toma de decisiones estratégicas.",
+        "Me llamo Enzo y me he desarrollado como analista de datos orientado a brindar soluciones para profesionales y empresas. Mi trayectoria en los sectores público y privado me ha permitido entender que las herramientas no son el fin, sino el medio. Brindar datos o automatizar procesos no sirve de nada si eso no se traduce en mejores decisiones o en un ahorro real de tiempo y dinero. Por eso, además de ofrecer un servicio, acompaño a mis clientes para que cada solución genere un beneficio concreto para su negocio.",
       title2: "Arquitectura de Sistemas",
       desc2:
-        "El nombre Workflow Waves nace de una convicción: los flujos de trabajo de una empresa deben comportarse como las olas, siendo fluidas, continuas y con la fuerza necesaria para modelar y estructurar la operación sin generar fricción. Diseño soluciones que eliminan tareas manuales e integran sistemas para que la información fluya. Mi objetivo es estructurar arquitecturas escalables para que los negocios dependan de sistemas eficientes, no de procesos manuales propensos a errores.",
+        "Todo sistema bien diseñado debe ser fluido, continuo y capaz de adaptarse al crecimiento del negocio. Cuando los procesos están fragmentados, la información se pierde, las tareas se duplican y las decisiones llegan tarde. Pero si se eliminan las tareas manuales y se integran sistemas, la información fluye y los datos dejan de ser simples registros para convertirse en un activo estratégico. El dato se vuelve accionable, el conocimiento se convierte en decisión y el negocio adquiere la capacidad de escalar.",
     },
     testimonials: {
       subtitle: "Proyectos anteriores",
@@ -236,13 +232,9 @@ export const translations = {
         },
       ],
       categories: {
-        "DB-025": SERVICES_DATA["DB-025"].title_en,
-        "AA-112": SERVICES_DATA["AA-112"].title_en,
-        "WF-009": SERVICES_DATA["WF-009"].title_en,
-        "AA-147": SERVICES_DATA["AA-147"].title_en,
-        "AA-201": SERVICES_DATA["AA-201"].title_en,
-        "WF-055": SERVICES_DATA["WF-055"].title_en,
-        "CP-001": SERVICES_DATA["CP-001"].title_en,
+        process_automation: SERVICES_DATA["process_automation"].title_en,
+        data_bi: SERVICES_DATA["data_bi"].title_en,
+        ai_solutions: SERVICES_DATA["ai_solutions"].title_en,
       },
       emailSubject: "Operational diagnostic completed",
       emailIntro: "New diagnosis",
@@ -258,24 +250,24 @@ export const translations = {
     },
     whatIDo: {
       subtitle: "Proposal",
-      title: "Technical infrastructure that works for you.",
+      title: "A system designed to give you control and time.",
       description:
-        "I connect and automate the tools you already use, eliminating manual workload and building custom solutions.",
+        "Get a tailored operational structure to eliminate your team's manual workload, connect your tools, and gain absolute control over your business.",
       points: [
-        "<b>Systems Integration:</b> Connect your CRM, emails, and databases so they work together.",
-        "<b>Scalable Automation:</b> Workflows that run on their own, reducing time and eliminating human error.",
-        "<b>Executive Dashboards:</b> Real-time visibility into your entire operation, automated and free of manual intervention.",
+        "Free time to grow your business|An autonomous system that keeps your daily operations running without relying on your constant presence.",
+        "Control over your operations|Know in real time how your business is doing, instead of waiting for manual processes that are slow and inaccurate.",
+        "Make decisions with data, not intuition|Gain absolute clarity on your business direction to make strategic decisions based on facts, not assumptions."
       ],
-      footer: "Your information, organized and ready for decision-making.",
+      footer: "",
     },
     whoAmI: {
       subtitle: "About me",
       title1: "Vision and Judgment",
       desc1:
-        "I am Enzo, a data analyst and operations architect. I design and implement systems that enable businesses to overcome structural limits to growth. Throughout my career in both the public and private sectors, I have verified that data visibility and the automation of repetitive processes not only reduce operational load but also directly impact profitability and strategic decision-making.",
+        "My name is Enzo, and I have developed my career as a data analyst focused on providing solutions for professionals and companies. My experience in both the public and private sectors has taught me that tools are not the end goal, but rather the means to an end. Providing data or automating processes is useless if it doesn’t lead to better decisions or real savings in time and money. That’s why, in addition to offering a service, I work closely with my clients to ensure that every solution delivers a tangible benefit for their business.",
       title2: "Systems Architecture",
       desc2:
-        "The name Workflow Waves stems from a conviction: a company's workflows should behave like waves, being fluid, continuous, and with the necessary force to shape and structure operations without friction. I design solutions that eliminate manual tasks and integrate systems so that information flows. My goal is to build scalable architectures so that businesses rely on efficient systems rather than error-prone manual processes.",
+        "Every well-designed system must be seamless, continuous, and capable of adapting to business growth. When processes are fragmented, information is lost, tasks are duplicated, and decisions are delayed. But if manual tasks are eliminated and systems are integrated, information flows freely, and data ceases to be mere records and becomes a strategic asset. Data becomes actionable, knowledge turns into decisions, and the business gains the ability to scale.",
     },
     testimonials: {
       subtitle: "Previous Projects",
