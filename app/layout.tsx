@@ -46,11 +46,12 @@ export const metadata: Metadata = {
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
+    images: ["/LogoET.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Enzo Thome | Data & Automation",
-    images: ["/logo1.png"],
+    images: ["/LogoET.png"],
   },
   alternates: {
     canonical: "/",
