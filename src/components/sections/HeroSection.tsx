@@ -12,22 +12,22 @@ export default function HeroSection() {
       {/* Background System Architecture Layer */}
       <SystemMap />
 
-      <div className="relative z-10 grid min-h-screen w-full grid-cols-1 gap-16 px-6 pt-25 pb-66 text-center sm:px-10 sm:pt-20 sm:pb-20 md:grid-cols-2 md:gap-0 md:px-12 md:py-0">
-        <div className="order-1 flex items-start justify-center md:order-2 md:items-center md:justify-end md:pr-28">
-          <div className="flex max-w-md flex-col items-center md:w-full md:max-w-[36rem] md:items-end md:text-right xl:max-w-[40rem]">
-            <h1 className="font-sans text-6xl font-black leading-[0.95] tracking-tighter text-white sm:text-6xl md:max-w-[min-content] md:text-7xl xl:text-[9.5rem]">
-              <span className="block text-right opacity-90">{t.hero.titleLine1}</span>
-              <span className="block opacity-80 md:ml-auto">{t.hero.titleLine2}</span>
-              <span className="block opacity-90">{t.hero.titleLine3}</span>
+      <div className="relative z-10 grid min-h-screen w-full grid-cols-1 gap-12 md:gap-0 px-6 pt-32 sm:pt-28 md:pt-0 pb-16 sm:pb-20 md:py-0 text-center sm:px-10 sm:pb-20 md:grid-cols-2 md:px-12 md:py-0">
+        <div className="order-1 flex items-start justify-center md:order-2 md:items-center md:justify-center md:pr-16 lg:pr-28 xl:pr-40">
+          <div className="flex max-w-md flex-col items-center text-center justify-center w-full md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto">
+            <h1 className="font-sans text-6xl sm:text-7xl md:text-6xl lg:text-7xl xl:text-[7.5rem] font-black leading-[0.95] tracking-tighter text-white text-center mx-auto w-full">
+              <span className="block opacity-90 text-center">{t.hero.titleLine1}</span>
+              <span className="block opacity-90 text-center">{t.hero.titleLine2}</span>
+              <span className="block opacity-90 text-center">{t.hero.titleLine3}</span>
             </h1>
-            <div className="mt-6 h-px w-20 bg-gradient-to-r from-transparent via-white/40 to-transparent md:mt-8 md:w-24 md:bg-gradient-to-l md:from-white/40 md:via-transparent md:to-transparent" />
-            <p className="mt-6 max-w-md text-sm font-light leading-relaxed tracking-wide text-white/60 sm:text-base md:mt-8 md:max-w-sm">
+            <div className="mt-6 h-px w-20 bg-gradient-to-r from-transparent via-white/40 to-transparent md:mt-8 md:w-24" />
+            <p className="mt-8 max-w-md text-base font-normal leading-relaxed text-white sm:text-lg md:text-xl text-center mx-auto">
               {t.hero.description}
             </p>
           </div>
         </div>
 
-        <div className="order-2 flex items-start justify-center md:order-1 md:items-center">
+        <div className="order-2 flex items-end justify-center mt-24 sm:mt-28 md:mt-0 md:order-1 md:items-center pb-4 md:pb-0">
           <div className="flex max-w-sm flex-col items-center text-center">
             {/* Raiz del Mindmap a partir de este botón */}
             <Link
@@ -38,7 +38,7 @@ export default function HeroSection() {
               {/* Sutil resplandor interior */}
               <div className="absolute inset-0 rounded-[1.125rem] bg-gradient-to-tr from-white/0 to-white/5 opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
             </Link>
-            <p className="mt-6 max-w-[18rem] text-center text-[10px] font-extralight uppercase tracking-[0.3em] text-white/30">
+            <p className="mt-8 max-w-[18rem] text-center text-[10px] font-normal uppercase tracking-[0.3em] text-white/60">
               {t.hero.subtext}
             </p>
           </div>

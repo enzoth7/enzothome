@@ -4,7 +4,7 @@ import React from "react";
 
 export default function SystemMap() {
   return (
-    <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-30">
+    <div className="hidden md:block absolute inset-0 pointer-events-none select-none overflow-hidden opacity-30">
       <svg
         viewBox="0 0 1600 900"
         fill="none"

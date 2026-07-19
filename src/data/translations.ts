@@ -10,13 +10,13 @@ export const translations = {
       cta: "Agendar Llamada",
     },
     hero: {
-      ctaPrimary: "COMENZAR",
-      subtext: "Mira cómo podrían mejorar tus procesos en tu empresa",
-      titleLine1: "Arquitectura",
-      titleLine2: "de",
-      titleLine3: "sistemas",
+      ctaPrimary: "DIAGNOSTICAR MI OPERACIÓN",
+      subtext: "Cuestionario para evaluar tu situación actual.",
+      titleLine1: "Orden en",
+      titleLine2: "operaciones",
+      titleLine3: "y datos",
       description:
-        "Diseño de infraestructuras digitales para la escalabilidad y eficiencia de tus operaciones.",
+        "Estructuración de datos y conexión de herramientas para tener control en tiempo real sobre tu operación.",
     },
     onboarding: {
       subtitle: "Diagnóstico Operativo",
@@ -171,13 +171,13 @@ export const translations = {
       cta: "Schedule a Call",
     },
     hero: {
-      ctaPrimary: "START",
-      subtext: "See how your company's processes could improve.",
-      titleLine1: "Architecture",
-      titleLine2: "of",
-      titleLine3: "systems",
+      ctaPrimary: "DIAGNOSE MY OPERATION",
+      subtext: "Questionnaire to evaluate your current situation.",
+      titleLine1: "Order in",
+      titleLine2: "operations",
+      titleLine3: "and data",
       description:
-        "Digital infrastructure design for the scalability and efficiency of your operations.",
+        "Data structuring and tool integration to gain real-time control over your operations.",
     },
     onboarding: {
       subtitle: "Operational Diagnosis",

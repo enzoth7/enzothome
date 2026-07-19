@@ -26,13 +26,13 @@ export default function Navbar() {
         }`}
     >
       <div
-        className={`relative mx-auto grid max-w-[95%] grid-cols-[auto_1fr] items-center gap-3 px-3 transition-all duration-500 sm:px-5 md:grid-cols-[auto_1fr_auto] md:gap-3 ${isScrolled ? "py-4 sm:py-3 md:py-1" : "py-4 sm:py-4 md:py-1.5"
+        className={`relative mx-auto grid max-w-[95%] grid-cols-[auto_1fr] items-center gap-3 px-2 sm:px-5 transition-all duration-500 md:grid-cols-[auto_1fr_auto] md:gap-3 ${isScrolled ? "py-4 sm:py-3 md:py-1" : "py-4 sm:py-4 md:py-1.5"
           }`}
       >
         <Link
           href="/"
           aria-label="Enzo Thome"
-          className="flex items-center w-[120px] sm:w-[180px] md:w-[280px]"
+          className="flex items-center w-[120px] sm:w-[180px] md:w-[280px] -translate-y-[3px] -ml-1 sm:translate-y-0 sm:ml-0"
         >
           <Image
             src="/logotransp4.png"
