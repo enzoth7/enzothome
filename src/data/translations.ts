@@ -171,11 +171,11 @@ export const translations = {
       cta: "Schedule a Call",
     },
     hero: {
-      ctaPrimary: "DIAGNOSE MY OPERATION",
+      ctaPrimary: "START OPERATIONAL DIAGNOSTIC",
       subtext: "Questionnaire to evaluate your current situation.",
-      titleLine1: "Order in",
-      titleLine2: "operations",
-      titleLine3: "and data",
+      titleLine1: "Operational",
+      titleLine2: "clarity &",
+      titleLine3: "data",
       description:
         "Data structuring and tool integration to gain real-time control over your operations.",
     },
