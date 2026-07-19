@@ -35,7 +35,7 @@ export default function Navbar() {
           className="flex items-center w-[120px] sm:w-[180px] md:w-[280px] -translate-y-[3px] -ml-1 sm:translate-y-0 sm:ml-0"
         >
           <Image
-            src="/logotransp4.png"
+            src="/LogoTransp.png"
             alt="Enzo Thome"
             width={1200}
             height={250}
