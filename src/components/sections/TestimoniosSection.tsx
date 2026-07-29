@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/src/context/LanguageContext";
+import TiltCard from "@/src/components/TiltCard";
 
 const testimonials = [
   {
@@ -427,58 +428,65 @@ export default function TestimoniosSection() {
             className="no-scrollbar relative flex snap-x snap-mandatory gap-8 overflow-x-auto pb-6 pt-2"
           >
             {LOOPED_TESTIMONIALS.map((testimonial, index) => (
-              <a
+              <TiltCard
                 key={`${testimonial.name}-${index}`}
                 data-testimonial
-                href={testimonial.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex h-full w-[300px] shrink-0 snap-start flex-col gap-5 rounded-none border border-white/10 bg-[#0f172a] p-8 shadow-2xl transition-all duration-300 hover:border-white/20 sm:w-[360px] lg:w-[420px]"
-                aria-label={`Ver reseña de ${testimonial.name}`}
+                maxTilt={22}
+                showGlare={false}
+                className="h-full shrink-0 snap-start w-[300px] sm:w-[360px] lg:w-[420px]"
               >
-                <div className="flex items-center gap-4">
-                  <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/10 bg-white/5">
-                    <Image
-                      src={testimonial.avatar}
-                      alt={`Avatar de ${testimonial.name}`}
-                      fill
-                      sizes="56px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2 text-sm font-black uppercase tracking-tighter text-white/90">
-                      <span>
-                        {testimonial.name}
-                      </span>
-                      <span
-                        className="relative block h-3.5 w-5 overflow-hidden rounded-none border border-white/10"
-                        aria-label={testimonial.country}
-                      >
-                        <FlagIcon country={testimonial.country} />
-                      </span>
+                <a
+                  href={testimonial.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ transformStyle: "preserve-3d" }}
+                  className="group flex h-full w-full flex-col gap-5 rounded-none border border-white/10 bg-[#0f172a] p-8 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] transition-shadow duration-150 transition-colors duration-150 hover:border-white/20"
+                  aria-label={`Ver reseña de ${testimonial.name}`}
+                >
+                  <div style={{ transform: "translateZ(35px)" }} className="flex items-center gap-4">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/10 bg-white/5">
+                      <Image
+                        src={testimonial.avatar}
+                        alt={`Avatar de ${testimonial.name}`}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
                     </div>
-                    <div className="flex items-center gap-1 text-[#D4AF37]">
-                      {Array.from({ length: testimonial.stars }).map(
-                        (_, starIndex) => (
-                          <StarIcon key={starIndex} />
-                        )
-                      )}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 text-sm font-black uppercase tracking-tighter text-white/90">
+                        <span>
+                          {testimonial.name}
+                        </span>
+                        <span
+                          className="relative block h-3.5 w-5 overflow-hidden rounded-none border border-white/10"
+                          aria-label={testimonial.country}
+                        >
+                          <FlagIcon country={testimonial.country} />
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[#D4AF37]">
+                        {Array.from({ length: testimonial.stars }).map(
+                          (_, starIndex) => (
+                            <StarIcon key={starIndex} />
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <p className="text-sm font-light leading-relaxed tracking-[0.04em] text-white/70 sm:text-base">
-                  &ldquo;{testimonial.text}&rdquo;
-                </p>
+                  <p style={{ transform: "translateZ(35px)" }} className="text-sm font-light leading-relaxed tracking-[0.04em] text-white/70 sm:text-base">
+                    &ldquo;{testimonial.text}&rdquo;
+                  </p>
 
-                <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Fiverr.com</span>
-                  <span className="text-[11px] font-light italic tracking-widest text-white/40">
-                    {testimonial.month}
-                  </span>
-                </div>
-              </a>
+                  <div style={{ transform: "translateZ(35px)" }} className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Fiverr.com</span>
+                    <span className="text-[11px] font-light italic tracking-widest text-white/40">
+                      {testimonial.month}
+                    </span>
+                  </div>
+                </a>
+              </TiltCard>
             ))}
           </div>
         </div>
