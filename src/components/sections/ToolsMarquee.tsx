@@ -51,7 +51,7 @@ function ToolTile({ tool }: { tool: Tool }) {
 
 export default function ToolsMarquee() {
   return (
-    <section className="border-t border-neutral-200 py-8 sm:py-10" aria-label="Herramientas">
+    <section className="py-8 sm:py-10" aria-label="Herramientas">
       <div
         className="tools-marquee relative overflow-x-auto overflow-y-hidden sm:overflow-hidden"
         tabIndex={0}

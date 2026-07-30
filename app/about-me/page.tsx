@@ -5,6 +5,7 @@ import MobileLanguageToggle from "@/components/MobileLanguageToggle";
 import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
 import Background from "@/src/components/sections/Background";
+import ContactoSection from "@/src/components/sections/ContactoSection";
 import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
 
 function AboutContent() {
@@ -84,6 +85,12 @@ function AboutContent() {
             </div>
           </section>
         </main>
+
+        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+            <ContactoSection />
+          </div>
+        </section>
       </div>
     </div>
   );

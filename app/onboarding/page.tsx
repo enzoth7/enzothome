@@ -11,6 +11,7 @@ import {
 import type { ServiceId } from "@/src/constants/services";
 import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
 import Background from "@/src/components/sections/Background";
+import ContactoSection from "@/src/components/sections/ContactoSection";
 import SystemMap from "@/src/components/sections/SystemMap";
 
 const ANALYSIS_DURATION_MS = 3000;
@@ -246,7 +247,7 @@ function OnboardingContent() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#08111f] text-slate-100">
+    <div className="relative min-h-screen overflow-x-hidden bg-[#08111f] text-slate-100">
       <div className="absolute top-8 right-8 z-50">
         <LanguageToggle inline dark />
       </div>
@@ -444,6 +445,12 @@ function OnboardingContent() {
           </div>
         </div>
       </main>
+
+      <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+        <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+          <ContactoSection />
+        </div>
+      </section>
     </div>
   );
 }

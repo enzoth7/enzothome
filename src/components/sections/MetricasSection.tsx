@@ -8,8 +8,8 @@ import TiltCard from "@/src/components/TiltCard";
 function SectionEyebrow({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-4 mb-8">
-      <span className="h-px w-10 bg-[#064e3b]/28" />
-      <span className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+      <span className="h-px w-10 bg-slate-300" />
+      <span className="text-sm font-semibold uppercase tracking-[0.3em] text-[#475569]">
         {label}
       </span>
     </div>
@@ -26,8 +26,8 @@ function AnimatedCounter({ value }: { value: string }) {
   const suffix = match ? match[3] : value;
 
   const spring = useSpring(0, {
-    stiffness: 60,
-    damping: 20,
+    stiffness: 140,
+    damping: 14,
     restDelta: 0.01,
   });
 
@@ -54,7 +54,7 @@ export default function MetricasSection() {
   const metrics = [
     {
       id: "uptime",
-      value: "20+",
+      value: "50+",
       label: t.precisionMetrics.uptimeLabel,
     },
     {
@@ -69,13 +69,13 @@ export default function MetricasSection() {
     },
     {
       id: "hours-saved",
-      value: "50h+",
+      value: "100h+",
       label: t.precisionMetrics.hoursSavedLabel,
     },
   ];
 
   return (
-    <section aria-label="Metricas de precision" className="py-24 sm:py-28 border-t border-neutral-200">
+    <section aria-label="Metricas de precision" className="py-8 sm:py-12">
       <div className="flex flex-col">
         <SectionEyebrow label={t.precisionMetrics.eyebrow} />
         <div className="grid grid-cols-2 gap-x-4 gap-y-12 xl:flex xl:flex-row xl:items-center xl:gap-8">
@@ -85,13 +85,13 @@ export default function MetricasSection() {
                 <TiltCard
                   maxTilt={25}
                   whileHover={{ y: -4 }}
-                  className="flex flex-col items-center text-center bg-transparent hover:bg-black/[0.025] border border-transparent hover:border-black/5 shadow-none hover:shadow-2xl rounded-2xl p-6 md:p-8 cursor-pointer transition-shadow duration-150 transition-colors duration-150 w-full"
+                  className="bg-transparent border-none shadow-none p-4 cursor-pointer w-full flex flex-col items-center text-center"
                 >
-                  <div style={{ transform: "translateZ(40px)", transformStyle: "preserve-3d" }} className="flex flex-col items-center">
-                    <p className="font-sans text-4xl font-black tracking-tighter text-neutral-900 sm:text-6xl">
+                  <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }} className="flex flex-col items-center">
+                    <p className="font-sans text-4xl font-black tracking-tighter text-[#0f172a] sm:text-6xl">
                       <AnimatedCounter value={metric.value} />
                     </p>
-                    <p className="mt-4 text-[10px] font-light uppercase tracking-widest leading-5 text-slate-600 sm:text-xs sm:leading-6">
+                    <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest leading-5 text-[#475569] sm:text-xs sm:leading-6">
                       {metric.label}
                     </p>
                   </div>
@@ -100,7 +100,7 @@ export default function MetricasSection() {
               {index < metrics.length - 1 ? (
                 <div
                   aria-hidden="true"
-                  className="hidden h-20 w-[1px] shrink-0 self-center bg-neutral-200 xl:block"
+                  className="hidden h-20 w-[1px] shrink-0 self-center bg-slate-200 xl:block"
                 />
               ) : null}
             </Fragment>

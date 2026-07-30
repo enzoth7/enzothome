@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import MobileLanguageToggle from "@/components/MobileLanguageToggle";
@@ -9,9 +8,12 @@ import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
 import { SERVICE_ORDER, SERVICES_DATA } from "@/src/constants/services";
 import Background from "@/src/components/sections/Background";
+import ContactoSection from "@/src/components/sections/ContactoSection";
+import ToolsMarquee from "@/src/components/sections/ToolsMarquee";
 import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
 
 type Language = "es" | "en";
+
 
 type ServiceItem = {
   id: string;
@@ -266,17 +268,18 @@ function ServicesContent() {
                 ))}
               </div>
 
-              <div className="mt-16 mb-8 flex justify-center">
-                <Link
-                  href="/#contacto"
-                  className="inline-flex items-center justify-center rounded-none bg-[#0f172a] px-8 py-4 text-base font-semibold tracking-wide text-white transition-all duration-300 hover:bg-[#1e293b] hover:scale-[1.02] shadow-[0_8px_20px_rgba(15,23,42,0.15)] hover:shadow-[0_12px_28px_rgba(15,23,42,0.25)]"
-                >
-                  {copy.contact}
-                </Link>
+              <div className="mt-16 mb-12">
+                <ToolsMarquee />
               </div>
             </section>
           </div>
         </main>
+
+        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+            <ContactoSection />
+          </div>
+        </section>
       </div>
 
       <AnimatePresence>

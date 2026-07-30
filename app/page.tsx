@@ -7,15 +7,13 @@ import HeroSection from "@/src/components/sections/HeroSection";
 import MetricasSection from "@/src/components/sections/MetricasSection";
 import QueHagoSection from "@/src/components/sections/QueHagoSection";
 import TestimoniosSection from "@/src/components/sections/TestimoniosSection";
-import ToolsMarquee from "@/src/components/sections/ToolsMarquee";
-import VideoSection from "@/src/components/sections/VideoSection";
 import { LanguageProvider } from "@/src/context/LanguageContext";
 
 export default function Home() {
   return (
     <LanguageProvider>
-      <div className="relative min-h-screen overflow-x-hidden bg-[#f8fafc] text-[#171717]">
-        <div className="absolute inset-0 z-0">
+      <div className="relative min-h-screen overflow-x-hidden text-[#FAF9F6]">
+        <div className="fixed inset-0 z-0">
           <Background variant="wallpaper" />
         </div>
 
@@ -29,22 +27,40 @@ export default function Home() {
 
         <MobileLanguageToggle />
 
-        <div className="relative z-20">
+        {/* Section 1: Hero */}
+        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
           <HeroSection />
-          <div className="relative z-30 px-3 pb-24 sm:px-5 sm:pb-28 lg:px-8">
-            <main className="relative z-30 mx-auto max-w-[1400px] overflow-hidden bg-[#FAF9F6] shadow-[0_0_50px_rgba(0,0,0,0.3)]">
-              <div className="px-6 sm:px-10 lg:px-12">
-                <MetricasSection />
-                {/* <VideoSection /> */}
-                <QueHagoSection />
-                <TestimoniosSection />
-                <ToolsMarquee />
-                <ContactoSection />
-              </div>
-            </main>
+        </section>
+
+        {/* Section 2: Metricas */}
+        <section className="w-full bg-[#FAF9F6]/45 backdrop-blur-md text-[#0f172a] relative z-20">
+          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+            <MetricasSection />
           </div>
-        </div>
+        </section>
+
+        {/* Section 3: Que Hago */}
+        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+            <QueHagoSection />
+          </div>
+        </section>
+
+        {/* Section 4: Testimonios */}
+        <section className="w-full bg-[#FAF9F6]/45 backdrop-blur-md text-[#0f172a] relative z-20">
+          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+            <TestimoniosSection />
+          </div>
+        </section>
+
+        {/* Section 5: Contacto */}
+        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+            <ContactoSection />
+          </div>
+        </section>
       </div>
     </LanguageProvider>
   );
 }
+

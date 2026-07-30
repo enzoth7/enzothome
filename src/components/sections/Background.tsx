@@ -22,12 +22,12 @@ export default function Background({ variant = "default" }: BackgroundProps) {
             className="object-cover object-center"
           />
         </div>
-        <div className="absolute inset-0 bg-[#0f172a]/80" />
+        <div className="absolute inset-0 bg-[#0f172a]/70" />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(circle at 72% 22%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 18%), linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.22) 48%, rgba(15,23,42,0.46) 100%)",
+              "radial-gradient(circle at 72% 22%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 18%), linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.25) 100%)",
           }}
         />
       </div>
