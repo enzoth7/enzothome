@@ -23,7 +23,7 @@ const testimonials = [
     text:
       "Todo perfecto, un gran profesional, muy rápido, muy buen precio. Perfecta comunicación. LO RECOMIENDO!!!!!!",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "daphaneghw",
@@ -32,7 +32,7 @@ const testimonials = [
     month: "Enero 2026",
     text: "Amazing job and exceeded expectations!",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "tomwdallas",
@@ -42,7 +42,7 @@ const testimonials = [
     text:
       "Working with Enzo was great. Very good communicator and handled everything we needed with the Excel file.",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "maverickhauling",
@@ -51,7 +51,7 @@ const testimonials = [
     month: "Febrero 2026",
     text: "Grateful for people that know what they are doing",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "dmoskat",
@@ -60,7 +60,7 @@ const testimonials = [
     month: "Febrero 2026",
     text: "Accomplished everything I needed at a fair price. Thank you!",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "anitabarry303",
@@ -70,7 +70,7 @@ const testimonials = [
     text:
       "Enzo understood what I requested very well and delivered exactly what I needed. He provided efficient and clear communication & I'm so happy with the final result. I highly recommend Enzo and will return in the future. Thanks Enzo!!",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "camiloangari391",
@@ -80,7 +80,7 @@ const testimonials = [
     text:
       "Enzo is truly a visionary, he is able to adapt to your vision, while asking the right questions. He doesn’t execute take the project but he is able to evolve it and future proof it. Thank you, Enzo.",
     link: "https://es.fiverr.com/enzoth98?public_mode=true",
-    avatar: "/testimonials/Fiverr.png",
+    avatar: "/testimonials/Fiverr1.png",
   },
   {
     name: "Pearl Connexions",
@@ -88,7 +88,7 @@ const testimonials = [
     stars: 5,
     month: "Junio 2026",
     text:
-      "We are changing and improving all our organizations thanks to Enzo.",
+      "We are changing and improving all our organization thanks to Enzo.",
     link: "https://www.pearlconnexions.com/",
     avatar: "/testimonials/PearlConnexionss.jpg",
   },
@@ -285,13 +285,13 @@ export default function TestimoniosSection() {
                   className="group flex flex-col items-center justify-center text-center w-full transition-transform duration-300 hover:scale-[1.02]"
                   aria-label={`Ver reseña de ${testimonial.name}`}
                 >
-                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-full mx-auto shrink-0 shadow-md border-2 border-white/80 overflow-hidden bg-slate-100 mt-1">
+                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-full mx-auto shrink-0 shadow-md overflow-hidden bg-transparent mt-1">
                     <Image
                       src={testimonial.avatar}
                       alt={`Avatar de ${testimonial.name}`}
                       fill
                       sizes="80px"
-                      className="object-cover"
+                      className={`object-cover ${testimonial.avatar.includes("Fiverr") ? "scale-[1.22]" : ""}`}
                     />
                   </div>
 
