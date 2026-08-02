@@ -1,8 +1,32 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Enzo Thome | Proyectos",
-  description: "Explora los casos de estudio y proyectos de optimización de operaciones y analítica de datos.",
+  title: "Proyectos | Enzo Thome — Casos de Automatización y Datos",
+  description:
+    "Casos de estudio reales: automatización de operaciones, dashboards de datos e integraciones de IA implementadas por Enzo Thome para empresas en Uruguay y España.",
+  keywords: [
+    "proyectos automatización Uruguay",
+    "casos de estudio n8n",
+    "ejemplos automatización PYMES",
+    "dashboards datos Uruguay",
+    "portfolio freelance automatización",
+    "proyectos IA Uruguay",
+  ],
+  openGraph: {
+    title: "Proyectos | Enzo Thome",
+    description:
+      "Casos reales de automatización, datos e IA. Mirá cómo empresas optimizaron sus operaciones con soluciones a medida.",
+    url: "https://enzothome.com/projects",
+    siteName: "Enzo Thome",
+    locale: "es_UY",
+    type: "website",
+    images: ["/LogoET.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Proyectos | Enzo Thome",
+    images: ["/LogoET.png"],
+  },
   alternates: {
     canonical: "/projects",
   },

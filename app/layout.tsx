@@ -19,7 +19,8 @@ const newsreader = Newsreader({
 });
 
 const SEO_DESCRIPTION =
-  "Desde Uruguay, Enzo Thome diseña sistemas a medida de automatización, datos y operaciones para empresas que quieren crecer con orden y control.";
+  "Automatización de procesos con n8n, integraciones de IA y arquitectura de datos para empresas en Uruguay y España. Eliminá tareas repetitivas y tomá decisiones con datos reales.";
+
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://enzothome.com"),
@@ -91,7 +92,48 @@ export default function RootLayout({
         {children}
         <Analytics />
         <WhatsAppButton />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "name": "Enzo Thome",
+                "jobTitle": "Especialista en Automatización, Datos e IA",
+                "url": "https://enzothome.com",
+                "image": "https://enzothome.com/LogoET.png",
+                "description": "Automatización de procesos con n8n, integraciones de IA y arquitectura de datos para empresas en Uruguay y España.",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressCountry": "UY",
+                  "addressLocality": "Montevideo"
+                },
+                "knowsAbout": [
+                  "Automatización de procesos",
+                  "n8n",
+                  "Inteligencia Artificial",
+                  "Arquitectura de datos",
+                  "Business Intelligence",
+                  "Integraciones de sistemas"
+                ],
+                "sameAs": [
+                  "https://www.linkedin.com/in/enzothome"
+                ]
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "Enzo Thome",
+                "url": "https://enzothome.com",
+                "description": "Automatización de procesos, IA y datos para empresas en Uruguay y España.",
+                "inLanguage": ["es", "en"]
+              }
+            ])
+          }}
+        />
       </body>
+
 
     </html>
   );
