@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import "./globals.css";
+
 
 const plexSans = IBM_Plex_Sans({
   variable: "--font-plex-sans",
@@ -88,7 +90,9 @@ export default function RootLayout({
       <body className={`${plexSans.variable} ${newsreader.variable} antialiased`}>
         {children}
         <Analytics />
+        <WhatsAppButton />
       </body>
+
     </html>
   );
 }

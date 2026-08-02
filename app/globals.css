@@ -165,3 +165,49 @@ html {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+/* ── WhatsApp Floating Button ── */
+.whatsapp-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25d366;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.45);
+  transition: transform 200ms cubic-bezier(0.22, 0.8, 0.36, 1),
+    box-shadow 200ms ease;
+  animation: wapp-entrance 600ms cubic-bezier(0.22, 0.8, 0.36, 1) both;
+  animation-delay: 1.2s;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.6);
+}
+
+.whatsapp-float:active {
+  transform: scale(0.96);
+}
+
+@keyframes wapp-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-float {
+    animation: none;
+  }
+}
