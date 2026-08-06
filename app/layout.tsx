@@ -118,7 +118,10 @@ export default function RootLayout({
                   "Integraciones de sistemas"
                 ],
                 "sameAs": [
-                  "https://www.linkedin.com/in/enzothome"
+                  "https://www.instagram.com/enzo.th/",
+                  "https://www.linkedin.com/in/enzothome",
+                  "https://github.com/enzoth7",
+                  "https://es.fiverr.com/enzoth98"
                 ]
               },
               {
