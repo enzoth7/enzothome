@@ -8,6 +8,14 @@ import { useLanguage } from "@/src/context/LanguageContext";
 const EMAIL = "enzothome1@gmail.com";
 const PROJECTS = [
   {
+    name: "Polarist",
+    href: "https://polarist.app",
+    src: "/Polarist.png",
+    width: 200,
+    height: 200,
+    className: "h-12 w-auto",
+  },
+    {
     name: "Mi Admi",
     href: "https://miadmi.com",
     src: "/Mi Admi.png",
@@ -15,10 +23,10 @@ const PROJECTS = [
     height: 200,
     className: "h-12 w-auto",
   },
-  {
-    name: "Polarist",
-    href: "https://polarist.app",
-    src: "/polarist.jpeg",
+    {
+    name: "Techs Uruguay",
+    href: "https://techsuruguay.vercel.app/",
+    src: "/TechsUruguay.png",
     width: 200,
     height: 200,
     className: "h-12 w-auto",
