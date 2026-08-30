@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
   title: "Onboarding | Enzo Thome — Empezá tu proyecto",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     title: "Onboarding | Enzo Thome",
     description:
       "Contame tu proyecto de automatización, datos o IA. Empezamos a construir la solución juntos.",
-    url: "https://enzothome.com/onboarding",
+    url: `${SITE_URL}/onboarding`,
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/LogoET.png"],
   },
   alternates: {
-    canonical: "/onboarding",
+    canonical: `${SITE_URL}/onboarding`,
   },
   robots: {
     index: false,

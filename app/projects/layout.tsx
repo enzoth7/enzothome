@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
   title: "Proyectos | Enzo Thome — Casos de Automatización y Datos",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     title: "Proyectos | Enzo Thome",
     description:
       "Casos reales de automatización, datos e IA. Mirá cómo empresas optimizaron sus operaciones con soluciones a medida.",
-    url: "https://enzothome.com/projects",
+    url: `${SITE_URL}/projects`,
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     images: ["/LogoET.png"],
   },
   alternates: {
-    canonical: "/projects",
+    canonical: `${SITE_URL}/projects`,
   },
 };
 

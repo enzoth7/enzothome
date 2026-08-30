@@ -3,6 +3,7 @@ import { IBM_Plex_Sans, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { INSTAGRAM_URL, SITE_URL } from "@/src/constants/seo";
 import "./globals.css";
 
 
@@ -23,7 +24,7 @@ const SEO_DESCRIPTION =
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://enzothome.com"),
+  metadataBase: new URL(SITE_URL),
   title: "Enzo Thome | Data & Automation",
   description: SEO_DESCRIPTION,
   keywords: [
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Enzo Thome | Data & Automation",
     description: SEO_DESCRIPTION,
-    url: "https://enzothome.com",
+    url: SITE_URL,
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     images: ["/LogoET.png"],
   },
   alternates: {
-    canonical: "/",
+    canonical: SITE_URL,
   },
   robots: {
     index: true,
@@ -101,8 +102,8 @@ export default function RootLayout({
                 "@type": "Person",
                 "name": "Enzo Thome",
                 "jobTitle": "Especialista en Automatización, Datos e IA",
-                "url": "https://enzothome.com",
-                "image": "https://enzothome.com/LogoET.png",
+                "url": SITE_URL,
+                "image": `${SITE_URL}/LogoET.png`,
                 "description": "Automatización de procesos con n8n, integraciones de IA y arquitectura de datos para empresas en Uruguay y España.",
                 "address": {
                   "@type": "PostalAddress",
@@ -118,7 +119,7 @@ export default function RootLayout({
                   "Integraciones de sistemas"
                 ],
                 "sameAs": [
-                  "https://www.instagram.com/enzo.th/",
+                  INSTAGRAM_URL,
                   "https://www.linkedin.com/in/enzothome",
                   "https://github.com/enzoth7",
                   "https://es.fiverr.com/enzoth98"
@@ -128,9 +129,10 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 "name": "Enzo Thome",
-                "url": "https://enzothome.com",
+                "url": SITE_URL,
                 "description": "Automatización de procesos, IA y datos para empresas en Uruguay y España.",
-                "inLanguage": ["es", "en"]
+                "inLanguage": ["es", "en"],
+                "sameAs": [INSTAGRAM_URL]
               }
             ])
           }}

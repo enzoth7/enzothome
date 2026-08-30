@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
   title: "Sobre Mí | Enzo Thome — Especialista en Automatización y Datos",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     title: "Sobre Mí | Enzo Thome",
     description:
       "Especialista en automatización de procesos, n8n e IA. Basado en Uruguay, ayudo a empresas a operar con datos y sin tareas manuales.",
-    url: "https://enzothome.com/about-me",
+    url: `${SITE_URL}/about-me`,
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "profile",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     images: ["/LogoET.png"],
   },
   alternates: {
-    canonical: "/about-me",
+    canonical: `${SITE_URL}/about-me`,
   },
 };
 

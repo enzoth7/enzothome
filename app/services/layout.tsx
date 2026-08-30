@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
   title: "Servicios | Enzo Thome — Automatización, IA y Datos",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
     title: "Servicios | Enzo Thome — Automatización, IA y Datos",
     description:
       "Automatización de procesos con n8n, dashboards de datos e integraciones de IA. Para empresas en Uruguay y España.",
-    url: "https://enzothome.com/services",
+    url: `${SITE_URL}/services`,
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     images: ["/LogoET.png"],
   },
   alternates: {
-    canonical: "/services",
+    canonical: `${SITE_URL}/services`,
   },
 };
 

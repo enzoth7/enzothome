@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "enzothome.com" }],
+        destination: "https://www.enzothome.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   /* Al habilitar esta configuración permitimos que Next.js pida imágenes de mayor ancho 
      para densidades Retina y controlamos mejor la compresión. */
   images: {
