@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Onboarding | Enzo Thome — Empezá tu proyecto",
+  title: "Onboarding — Empezá tu proyecto",
   description:
     "Iniciá el proceso de trabajo con Enzo Thome. Contame tu proyecto de automatización, datos o IA y empecemos a construir la solución juntos.",
   keywords: [
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "empezar proyecto datos Uruguay",
   ],
   openGraph: {
-    title: "Onboarding | Enzo Thome",
+    title: "Enzo Thome | Onboarding",
     description:
       "Contame tu proyecto de automatización, datos o IA. Empezamos a construir la solución juntos.",
     url: `${SITE_URL}/onboarding`,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Onboarding | Enzo Thome",
+    title: "Enzo Thome | Onboarding",
     images: ["/LogoET.png"],
   },
   alternates: {

@@ -121,7 +121,7 @@ export const translations = {
     projects: {
       subtitle: "Proyectos",
       title: "Trabajos completados",
-      lead: "Aquí se pueden ver conceptual y tecnicamente algunos de los proyectos que he desarrollado.",
+      lead: "Una selección de proyectos donde los datos, la automatización, la inteligencia artificial y el desarrollo web se convierten en soluciones concretas para cada negocio.",
       project1: {
         title: "Agente de ventas en WhatsApp",
         description: "Diseño e implementación de un flujo automatizado para conectar un Agente de IA al WhatsApp de la empresa para responder dudas y ofrecer productos. Conectado al catálogo y bases de datos, esto redujo el tiempo de respuesta a leads en un 90% y eliminó la duplicación manual de registros de ventas.",
@@ -133,6 +133,11 @@ export const translations = {
       project3: {
         title: "Automatización de Órdenes de Producción",
         description: "Diseño y desarrollo de un flujo de trabajo integrado para sincronizar la Tienda web de una empresa con la base del datos de taller. Eliminó el registro manual en papel, automatizó la transferencia de especificaciones de diseño y optimizó la producción y los tiempos de ventas.",
+      },
+      project4: {
+        title: "Desarrollo de Sitios Web",
+        description: "Diseño y desarrollo sitios web a medida, desde landing pages enfocadas en captar oportunidades hasta e-commerce preparados para vender. Cada proyecto se piensa como parte de la operación: conectado a formularios, pagos, bases de datos y automatizaciones para que la web no sea solo una vidriera, sino una herramienta que acompañe el crecimiento del negocio.",
+        cta: "Contame tu idea",
       },
       cta: "Ver más",
     },
@@ -283,7 +288,7 @@ export const translations = {
     projects: {
       subtitle: "Projects",
       title: "Completed Projects",
-      lead: "Here you can see some of the projects I've developed, both conceptually and technically.",
+      lead: "A selection of projects where data, automation, artificial intelligence, and web development become practical solutions for each business.",
       project1: {
         title: "WhatsApp Sales Agent",
         description: "Design and implementation of an automated workflow to connect an AI agent to the company's WhatsApp account to answer questions and offer products. Connected to the product catalog and databases, this reduced response time to leads by 90% and eliminated the manual duplication of sales records.",
@@ -295,6 +300,11 @@ export const translations = {
       project3: {
         title: "Production Order Automation",
         description: "Design and development of an integrated workflow to synchronize a company's online store with its workshop database. This eliminated manual paper-based record-keeping, automated the transfer of design specifications, and optimized production and sales lead times.",
+      },
+      project4: {
+        title: "Website Development",
+        description: "I design and build tailored websites, from landing pages focused on capturing opportunities to e-commerce stores ready to sell. Every project is conceived as part of the operation, connected to forms, payments, databases, and automations so the website is not just a showcase, but a tool that supports business growth.",
+        cta: "Tell me your idea",
       },
       cta: "See more",
     },

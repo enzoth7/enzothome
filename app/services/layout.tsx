@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Servicios | Enzo Thome — Automatización, IA y Datos",
+  title: "Servicios — Automatización, IA y Datos",
   description:
     "Automatización de procesos con n8n, dashboards de datos, integraciones de IA y sistemas escalables para empresas en Uruguay y España. Eliminá tareas manuales y operá con datos.",
   keywords: [
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "consultor automatización Uruguay",
   ],
   openGraph: {
-    title: "Servicios | Enzo Thome — Automatización, IA y Datos",
+    title: "Enzo Thome | Servicios — Automatización, IA y Datos",
     description:
       "Automatización de procesos con n8n, dashboards de datos e integraciones de IA. Para empresas en Uruguay y España.",
     url: `${SITE_URL}/services`,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Servicios | Enzo Thome",
+    title: "Enzo Thome | Servicios",
     images: ["/LogoET.png"],
   },
   alternates: {

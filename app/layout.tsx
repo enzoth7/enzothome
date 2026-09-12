@@ -25,7 +25,10 @@ const SEO_DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Enzo Thome | Data & Automation",
+  title: {
+    default: "Enzo Thome | Data & Automation",
+    template: "Enzo Thome | %s",
+  },
   description: SEO_DESCRIPTION,
   keywords: [
     "Enzo Thome",

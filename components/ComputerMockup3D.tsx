@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 interface ComputerMockup3DProps {
   mediaItems: string[];
   direction: "left" | "right";
   containerRef: React.RefObject<HTMLElement | null>;
+  edgeBlur?: boolean;
 }
 
 export default function ComputerMockup3D({
   mediaItems,
   direction,
   containerRef,
+  edgeBlur = false,
 }: ComputerMockup3DProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -92,6 +94,28 @@ export default function ComputerMockup3D({
                 alt={`Diapositiva ${currentIndex + 1}`}
                 className="h-full w-full object-cover"
               />
+            )}
+
+            {edgeBlur && (
+              <>
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-20"
+                  style={{
+                    backgroundColor: "rgba(0, 0, 0, 0.06)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    maskImage:
+                      "linear-gradient(to right, black 0%, rgba(0, 0, 0, 0.9) 14%, transparent 36%, transparent 64%, rgba(0, 0, 0, 0.9) 86%, black 100%)",
+                    WebkitMaskImage:
+                      "linear-gradient(to right, black 0%, rgba(0, 0, 0, 0.9) 14%, transparent 36%, transparent 64%, rgba(0, 0, 0, 0.9) 86%, black 100%)",
+                  }}
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_88px_30px_rgba(0,0,0,0.78)]"
+                />
+              </>
             )}
 
             {/* Controles del Carrusel (Flechas Flotantes) */}

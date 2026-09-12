@@ -25,11 +25,13 @@ function ProyectosContent() {
   const project1Ref = useRef<HTMLDivElement>(null);
   const project2Ref = useRef<HTMLDivElement>(null);
   const project3Ref = useRef<HTMLDivElement>(null);
+  const project4Ref = useRef<HTMLDivElement>(null);
 
   // Arreglos de prueba para el carrusel de los mockups
   const project1Media = ["/projects/Project1.png"];
   const project2Media = ["/projects/Project2.png"];
   const project3Media = ["/projects/Project3.png"];
+  const project4Media = ["/projects/Project4.png"];
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#0f172a] text-[#171717]">
@@ -169,8 +171,37 @@ function ProyectosContent() {
             </div>
           </section>
 
+          {/* Proyecto 4: Desarrollo web */}
+          <section
+            ref={project4Ref}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center border-t border-neutral-200 py-16 lg:py-24 px-6 sm:px-10 lg:px-12 overflow-visible"
+          >
+            <div className="w-[85vw] sm:w-[70vw] lg:w-[48vw] xl:w-[50vw] -translate-x-[2%] sm:-translate-x-[5%] lg:-translate-x-[26%] xl:-translate-x-[28%] select-none order-last lg:order-first">
+              <ComputerMockup3D
+                mediaItems={project4Media}
+                direction="left"
+                containerRef={project4Ref}
+                edgeBlur
+              />
+            </div>
 
-
+            <div className="space-y-6 order-first lg:order-last">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 leading-tight">
+                {t.projects.project4.title}
+              </h2>
+              <p className="text-neutral-600 font-light text-base sm:text-lg leading-relaxed">
+                {t.projects.project4.description}
+              </p>
+              <div className="pt-2">
+                <a
+                  href="#contacto"
+                  className="inline-block rounded-none bg-[#0f172a] hover:bg-[#1e293b] px-6 py-3 text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:scale-[1.02] shadow-[0_10px_30px_rgba(15,23,42,0.15)]"
+                >
+                  {t.projects.project4.cta}
+                </a>
+              </div>
+            </div>
+          </section>
         </main>
 
         <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
