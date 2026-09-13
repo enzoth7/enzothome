@@ -31,6 +31,14 @@ const PROJECTS = [
     height: 200,
     className: "h-12 w-auto",
   },
+  {
+    name: "Via Nostra",
+    href: "https://vianostra.vercel.app/",
+    src: "/ViaNostra.png",
+    width: 200,
+    height: 200,
+    className: "h-12 w-auto",
+  },
 ] as const;
 
 function SectionEyebrow({ label }: { label: string }) {
@@ -111,10 +119,40 @@ export default function ContactoSection() {
                 whileTap={{ scale: 0.96 }}
                 type="button"
                 onClick={handleCopy}
-                aria-label={t.contact.copy}
-                className="rounded-full bg-[#FAF9F6] text-[#0f172a] hover:bg-white px-5 py-2.5 text-sm font-semibold shadow-md transition-all"
+                title={copied ? t.contact.copied : t.contact.copy}
+                aria-label={copied ? t.contact.copied : t.contact.copy}
+                className="p-2.5 rounded-full bg-[#FAF9F6] text-[#0f172a] hover:bg-white shadow-md transition-all flex items-center justify-center shrink-0"
               >
-                {copied ? t.contact.copied : t.contact.copy}
+                {copied ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4 text-emerald-600"
+                    aria-hidden="true"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                  </svg>
+                )}
               </motion.button>
             </div>
 
@@ -191,7 +229,7 @@ export default function ContactoSection() {
         <div className="flex flex-col items-start gap-4">
           <SectionEyebrow label={t.contact.otherProjects} />
 
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center gap-5">
             {PROJECTS.map((project) => (
               <motion.a
                 key={project.name}
