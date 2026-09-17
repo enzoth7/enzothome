@@ -88,16 +88,16 @@ const testimonials = [
     stars: 5,
     month: "Junio 2026",
     text:
-      "We are changing and improving all our organization thanks to Enzo.",
+      "We are changing and improving all our organization thanks to Enzo. I'm really happy with the work he did for us.",
     link: "https://www.pearlconnexions.com/",
-    avatar: "/testimonials/PearlConnexionss.jpg",
+    avatar: "/testimonials/PearlConnexions.png",
   },
   {
     name: "Matearte",
     country: "UY",
     stars: 5,
     month: "Julio 2026",
-    text: "Está impecable lo que empezamos! La verdad muy conforme con todo!",
+    text: "Está impecable lo que empezamos! La verdad estoy muy feliz de trabajar con Enzo ya que hemos mejorado en todo sentido la empresa con él!",
     link: "https://www.instagram.com/matearteuruguay/",
     avatar: "/testimonials/logoma.jpg",
   },
@@ -285,13 +285,19 @@ export default function TestimoniosSection() {
                   className="group flex flex-col items-center justify-center text-center w-full transition-transform duration-300 hover:scale-[1.02]"
                   aria-label={`Ver reseña de ${testimonial.name}`}
                 >
-                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-full mx-auto shrink-0 shadow-md overflow-hidden bg-transparent mt-1">
+                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-full mx-auto shrink-0 shadow-md overflow-hidden bg-white mt-1">
                     <Image
                       src={testimonial.avatar}
                       alt={`Avatar de ${testimonial.name}`}
                       fill
                       sizes="80px"
-                      className={`object-cover ${testimonial.avatar.includes("Fiverr") ? "scale-[1.22]" : ""}`}
+                      className={`object-cover ${
+                        testimonial.avatar.includes("Fiverr")
+                          ? "scale-[1.22]"
+                          : testimonial.avatar.includes("PearlConnexions")
+                          ? "scale-[1.35]"
+                          : ""
+                      }`}
                     />
                   </div>
 
