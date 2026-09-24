@@ -68,7 +68,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/about-me"
-              className="hidden whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:block sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
+              className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
             >
               {t.nav.about}
             </Link>
