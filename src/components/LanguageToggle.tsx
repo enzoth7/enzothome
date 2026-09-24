@@ -11,17 +11,17 @@ export default function LanguageToggle({ inline = false, dark = false }: Languag
   const { language, toggleLanguage } = useLanguage();
   const wrapperClass = inline
     ? dark
-      ? "flex items-center rounded-full border border-white/15 bg-[#13223a] p-0.5 sm:p-1"
-      : "flex items-center rounded-full border border-neutral-200 bg-slate-50/95 p-0.5 shadow-sm sm:p-1"
+      ? "flex items-center rounded-xl border border-white/15 bg-[#13223a] p-0.5 sm:p-1"
+      : "flex items-center rounded-xl border border-neutral-200 bg-slate-50/95 p-0.5 shadow-sm sm:p-1"
     : dark
-      ? "fixed right-6 top-6 z-50 flex items-center rounded-full border border-white/15 bg-[#13223a] p-1"
-      : "fixed right-6 top-6 z-50 flex items-center rounded-full border border-neutral-200 bg-slate-50/95 p-1 shadow-sm";
+      ? "fixed right-6 top-6 z-50 flex items-center rounded-xl border border-white/15 bg-[#13223a] p-1"
+      : "fixed right-6 top-6 z-50 flex items-center rounded-xl border border-neutral-200 bg-slate-50/95 p-1 shadow-sm";
 
   return (
     <div className={wrapperClass}>
       <button
         onClick={() => language !== "es" && toggleLanguage()}
-        className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold tracking-[0.08em] transition-all sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs ${language === "es"
+        className={`flex items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-semibold tracking-[0.08em] transition-all sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs ${language === "es"
             ? dark
               ? "bg-white text-[#0f172a] shadow-sm"
               : "bg-neutral-950 text-[#f8fafc] shadow-sm"
@@ -40,7 +40,7 @@ export default function LanguageToggle({ inline = false, dark = false }: Languag
       </button>
       <button
         onClick={() => language !== "en" && toggleLanguage()}
-        className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold tracking-[0.08em] transition-all sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs ${language === "en"
+        className={`flex items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-semibold tracking-[0.08em] transition-all sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs ${language === "en"
             ? dark
               ? "bg-white text-[#0f172a] shadow-sm"
               : "bg-neutral-950 text-[#f8fafc] shadow-sm"

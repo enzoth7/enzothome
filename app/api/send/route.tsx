@@ -6,150 +6,74 @@ import { EmailTemplate } from "@/src/components/EmailTemplate";
 const FROM_EMAIL = "onboarding@resend.dev";
 const TO_EMAIL = "enzothome1@gmail.com";
 
-type AnswerItem = {
-  question: string;
-  answer: string;
-};
-
 type SendRequestBody = {
-  email?: string;
-  userEmail?: string;
-  category?: string;
-  answers?: AnswerItem[];
+  name?: unknown;
+  company?: unknown;
+  email?: unknown;
+  challenge?: unknown;
+  website?: unknown;
 };
 
-function getErrorDetails(error: unknown) {
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  if (typeof error === "object" && error !== null) {
-    return error;
-  }
-
-  return String(error);
-}
-
-function isValidAnswers(value: unknown): value is AnswerItem[] {
-  return (
-    Array.isArray(value) &&
-    value.every(
-      (item) =>
-        typeof item === "object" &&
-        item !== null &&
-        typeof item.question === "string" &&
-        typeof item.answer === "string"
-    )
-  );
-}
+const normalize = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
 export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY;
-
-  console.log("--- API DEBUG: Verificando Key... ---");
-  console.log(
-    "API KEY CARGADA:",
-    apiKey ? `SI (Inicia con: ${apiKey.substring(0, 7)})` : "NO"
-  );
-
   if (!apiKey) {
     console.error("RESEND_API_KEY is missing in /api/send");
-    return NextResponse.json(
-      {
-        error: true,
-        message: "Email service is not configured.",
-        details: "Missing RESEND_API_KEY",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: true, message: "Email service is not configured." }, { status: 500 });
   }
 
-  const resend = new Resend(apiKey);
   let body: SendRequestBody;
-
   try {
     body = await request.json();
-    console.log("Receiving onboarding request for:", body.email || body.userEmail);
-  } catch (error) {
-    console.error("Invalid /api/send request body", error);
+  } catch {
+    return NextResponse.json({ error: true, message: "Invalid request body." }, { status: 400 });
+  }
+
+  const name = normalize(body.name);
+  const company = normalize(body.company);
+  const email = normalize(body.email);
+  const challenge = normalize(body.challenge);
+  const website = normalize(body.website);
+
+  if (website) return NextResponse.json({ ok: true }, { status: 200 });
+
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (
+    !name ||
+    name.length > 120 ||
+    company.length > 160 ||
+    !isValidEmail ||
+    challenge.length < 20 ||
+    challenge.length > 2000
+  ) {
     return NextResponse.json(
-      {
-        error: true,
-        message: "Invalid request body",
-        details: getErrorDetails(error),
-      },
+      { error: true, message: "Expected valid name, email and challenge." },
       { status: 400 }
     );
   }
 
-  const email =
-    typeof body.email === "string"
-      ? body.email.trim()
-      : typeof body.userEmail === "string"
-        ? body.userEmail.trim()
-        : "";
-
-  const category = typeof body.category === "string" ? body.category.trim() : "";
-  const answers = body.answers;
-
-  if (!email || !category || !isValidAnswers(answers)) {
-    console.error("Invalid /api/send payload", { email, category, answers });
-    return NextResponse.json(
-      {
-        error: true,
-        message: "Expected body: { email, category, answers }",
-        details: { email, category, answers },
-      },
-      { status: 400 }
-    );
-  }
-
-  const emailTemplate = (
-    <EmailTemplate userEmail={email} category={category} answers={answers} />
-  );
+  const template = <EmailTemplate name={name} company={company} email={email} challenge={challenge} />;
 
   try {
-    const emailHtml = await render(emailTemplate);
-
-    console.log(
-      "INTENTANDO ENVIAR A RESEND CON:",
-      JSON.stringify({
-        from: FROM_EMAIL,
-        to: TO_EMAIL,
-        subject: `Lead onboarding | ${category} | ${email}`,
-      })
-    );
-
+    const html = await render(template);
+    const resend = new Resend(apiKey);
     const { data, error } = await resend.emails.send({
-      from: `Diagn\u00f3stico <${FROM_EMAIL}>`,
+      from: `Consulta web <${FROM_EMAIL}>`,
       to: [TO_EMAIL],
-      subject: `Lead onboarding | ${category} | ${email}`,
-      html: emailHtml,
+      replyTo: email,
+      subject: company ? `Consulta web | ${company} | ${name}` : `Consulta web | ${name}`,
+      html,
     });
 
     if (error) {
       console.error("Resend rejected /api/send", error);
-      return NextResponse.json(
-        {
-          error: true,
-          message: error.message || "Resend rejected the email request.",
-          details: getErrorDetails(error),
-        },
-        { status: 502 }
-      );
+      return NextResponse.json({ error: true, message: "Email provider rejected the request." }, { status: 502 });
     }
 
-    console.log("Email sent successfully to:", TO_EMAIL);
     return NextResponse.json({ ok: true, data }, { status: 200 });
   } catch (error) {
     console.error("Unhandled /api/send error", error);
-    return NextResponse.json(
-      {
-        error: true,
-        message: error instanceof Error ? error.message : "Unknown email error.",
-        details: getErrorDetails(error),
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: true, message: "Unable to send the enquiry." }, { status: 500 });
   }
 }

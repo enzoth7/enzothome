@@ -2,24 +2,20 @@ import type { Metadata } from "next";
 import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Servicios — Automatización, IA y Datos",
+  title: { absolute: "Enzo Thome | Servicios, sistemas internos, datos y desarrollo web" },
   description:
-    "Automatización de procesos con n8n, dashboards de datos, integraciones de IA y sistemas escalables para empresas en Uruguay y España. Eliminá tareas manuales y operá con datos.",
+    "Sistemas internos, paneles de gestión y sitios web conectados para centralizar datos y mejorar las operaciones de empresas en Uruguay y el exterior.",
   keywords: [
-    "automatización de procesos Uruguay",
-    "n8n Uruguay",
-    "automatización n8n",
-    "integraciones de IA",
-    "business intelligence Uruguay",
-    "arquitectura de datos freelance",
-    "dashboards operativos",
-    "sistemas escalables PYMES",
-    "consultor automatización Uruguay",
+    "sistemas de gestión a medida",
+    "paneles internos para empresas",
+    "centralización de datos empresariales",
+    "dashboards operativos Uruguay",
+    "desarrollo web para empresas",
   ],
   openGraph: {
-    title: "Enzo Thome | Servicios — Automatización, IA y Datos",
+    title: "Enzo Thome | Servicios para ordenar datos y operaciones",
     description:
-      "Automatización de procesos con n8n, dashboards de datos e integraciones de IA. Para empresas en Uruguay y España.",
+      "Sistemas internos, paneles de gestión y sitios web conectados para empresas.",
     url: `${SITE_URL}/services`,
     siteName: "Enzo Thome",
     locale: "es_UY",
@@ -29,7 +25,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Enzo Thome | Servicios",
-    images: ["/LogoET.png"],
+    description:
+      "Sistemas internos, paneles de gestión y sitios web conectados para empresas.",
+    images: [{ url: "/LogoET.png", alt: "Servicios de Enzo Thome" }],
   },
   alternates: {
     canonical: `${SITE_URL}/services`,

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import LanguageToggle from "@/src/components/LanguageToggle";
 import { useLanguage } from "@/src/context/LanguageContext";
+import { trackEvent } from "@/src/lib/analytics";
 
 export default function Navbar() {
   const { t } = useLanguage();
@@ -32,7 +33,7 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label="Enzo Thome"
-          className="flex items-center w-[120px] sm:w-[180px] md:w-[280px] -translate-y-[3px] -ml-1 sm:translate-y-0 sm:ml-0"
+          className="flex w-[96px] items-center -ml-1 -translate-y-[3px] sm:ml-0 sm:w-[180px] sm:translate-y-0 md:w-[280px]"
         >
           <Image
             src="/LogoTransp.png"
@@ -67,18 +68,17 @@ export default function Navbar() {
             </Link>
             <Link
               href="/about-me"
-              className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
+              className="hidden whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.16em] text-white/90 transition hover:text-white sm:block sm:text-[11px] sm:tracking-[0.2em] md:text-sm md:tracking-wider"
             >
               {t.nav.about}
             </Link>
-            <a
-              href="https://calendly.com/enzothome1/consulting"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden items-center whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-[#0f172a] transition hover:bg-slate-100 md:inline-flex"
+            <Link
+              href="/#contacto"
+              onClick={() => trackEvent("contact_cta_click", { location: "navbar" })}
+              className="hidden items-center whitespace-nowrap rounded-xl bg-white px-3 py-1.5 text-sm font-semibold text-[#0f172a] transition hover:bg-slate-100 md:inline-flex"
             >
               {t.nav.cta}
-            </a>
+            </Link>
           </div>
         </nav>
 

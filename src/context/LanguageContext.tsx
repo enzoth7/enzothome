@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useSyncExternalStore, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useSyncExternalStore, ReactNode } from "react";
 import { translations } from "@/src/data/translations";
 
 type Language = "es" | "en";
@@ -60,6 +60,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLang);
         window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
     };
+
+    useEffect(() => {
+        document.documentElement.lang = language;
+    }, [language]);
 
     const t = translations[language];
 

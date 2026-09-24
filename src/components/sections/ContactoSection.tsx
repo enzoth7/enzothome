@@ -1,262 +1,191 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { FormEvent, useEffect, useState } from "react";
 import { useLanguage } from "@/src/context/LanguageContext";
+import { trackEvent } from "@/src/lib/analytics";
+import SiteFooter from "@/src/components/sections/SiteFooter";
 
-const EMAIL = "enzothome1@gmail.com";
-const PROJECTS = [
-  {
-    name: "Polarist",
-    href: "https://polarist.app",
-    src: "/Polarist.png",
-    width: 200,
-    height: 200,
-    className: "h-12 w-auto",
-  },
-    {
-    name: "Mi Admi",
-    href: "https://miadmi.com",
-    src: "/Mi Admi.png",
-    width: 200,
-    height: 200,
-    className: "h-12 w-auto",
-  },
-    {
-    name: "Techs Uruguay",
-    href: "https://techsuruguay.vercel.app/",
-    src: "/TechsUruguay.png",
-    width: 200,
-    height: 200,
-    className: "h-12 w-auto",
-  },
-  {
-    name: "Via Nostra",
-    href: "https://vianostra.vercel.app/",
-    src: "/ViaNostra.png",
-    width: 200,
-    height: 200,
-    className: "h-12 w-auto",
-  },
-] as const;
+type FormState = "idle" | "sending" | "success" | "error";
+type FieldName = "name" | "company" | "email" | "challenge";
 
-function SectionEyebrow({ label }: { label: string }) {
-  return (
-    <div className="flex items-center gap-4">
-      <span className="h-px w-10 bg-slate-700" />
-      <span className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">
-        {label}
-      </span>
-    </div>
-  );
-}
+const INITIAL_VALUES = {
+  name: "",
+  company: "",
+  email: "",
+  challenge: "",
+  website: "",
+};
 
 export default function ContactoSection() {
-  const { t } = useLanguage();
-  const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
+  const { t, language } = useLanguage();
+  const [values, setValues] = useState(INITIAL_VALUES);
+  const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
+  const [status, setStatus] = useState<FormState>("idle");
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+    setErrors({});
+    setStatus("idle");
+  }, [language]);
 
-  const handleCopy = async () => {
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(EMAIL);
-      } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = EMAIL;
-        textarea.setAttribute("readonly", "true");
-        textarea.style.position = "absolute";
-        textarea.style.left = "-9999px";
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-      }
+  const validateField = (name: FieldName, value: string) => {
+    const trimmed = value.trim();
+    if (name === "company") return "";
+    if (!trimmed) return t.contact.required;
+    if (name === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      return t.contact.invalidEmail;
+    }
+    if (name === "challenge" && trimmed.length < 20) return t.contact.challengeTooShort;
+    return "";
+  };
 
-      setCopied(true);
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-      }
-      timeoutRef.current = window.setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    } catch {
-      setCopied(false);
+  const updateValue = (name: keyof typeof values, value: string) => {
+    setValues((current) => ({ ...current, [name]: value }));
+    if (!hasStarted && name !== "website") {
+      setHasStarted(true);
+      trackEvent("contact_form_start", { location: "contact_section" });
     }
   };
 
+  const handleBlur = (name: FieldName) => {
+    setErrors((current) => ({ ...current, [name]: validateField(name, values[name]) }));
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const fieldNames: FieldName[] = ["name", "email", "challenge"];
+    const nextErrors = fieldNames.reduce<Partial<Record<FieldName, string>>>((result, name) => {
+      const message = validateField(name, values[name]);
+      if (message) result[name] = message;
+      return result;
+    }, {});
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      const firstInvalid = fieldNames.find((name) => nextErrors[name]);
+      if (firstInvalid) document.getElementById(`contact-${firstInvalid}`)?.focus();
+      return;
+    }
+
+    setStatus("sending");
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) throw new Error("Request failed");
+      setStatus("success");
+      setValues(INITIAL_VALUES);
+      setHasStarted(false);
+      trackEvent("contact_form_submit", { location: "contact_section" });
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const fields: Array<{ name: FieldName; type: string; label: string; autoComplete: string }> = [
+    { name: "name", type: "text", label: t.contact.nameLabel, autoComplete: "name" },
+    { name: "company", type: "text", label: t.contact.companyLabel, autoComplete: "organization" },
+    { name: "email", type: "email", label: t.contact.emailLabel, autoComplete: "email" },
+  ];
+
   return (
-    <section
-      id="contacto"
-      className="py-12 pb-16 sm:py-14 sm:pb-18"
-    >
-      <div className="grid max-w-5xl gap-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-16">
-        <div className="flex flex-col gap-6">
-          <SectionEyebrow label={t.contact.subtitle} />
-
-          <div className="flex flex-col gap-6">
-            <p className="max-w-2xl text-lg leading-relaxed text-slate-300">
-              {t.contact.description}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-4">
-              <a
-                href={`mailto:${EMAIL}`}
-                className="text-xl sm:text-2xl font-bold text-[#ffffff] underline decoration-slate-500 underline-offset-8 transition hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                {EMAIL}
-              </a>
-              <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                type="button"
-                onClick={handleCopy}
-                title={copied ? t.contact.copied : t.contact.copy}
-                aria-label={copied ? t.contact.copied : t.contact.copy}
-                className="p-2.5 rounded-full bg-[#FAF9F6] text-[#0f172a] hover:bg-white shadow-md transition-all flex items-center justify-center shrink-0"
-              >
-                {copied ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4 text-emerald-600"
-                    aria-hidden="true"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                  >
-                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                  </svg>
-                )}
-              </motion.button>
-            </div>
-
-            <div className="mt-2 flex lg:hidden items-center gap-4">
-              <motion.a
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                href="https://www.instagram.com/enzo.th/"
-                target="_blank"
-                rel="noreferrer me"
-                aria-label="Instagram"
-                title="Instagram"
-                className="rounded-full border border-slate-700 bg-slate-800/80 p-2.5 text-slate-300 shadow-sm transition hover:border-slate-500 hover:bg-slate-700 hover:text-white"
-              >
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-              </motion.a>
-
-              <motion.a
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                href="https://es.fiverr.com/enzoth98"
-                target="_blank"
-                rel="noreferrer me"
-                aria-label="Fiverr"
-                title="Fiverr"
-                className="rounded-full border border-slate-700 bg-slate-800/80 p-2.5 text-slate-300 shadow-sm transition hover:border-slate-500 hover:bg-slate-700 hover:text-white"
-              >
-                <svg
-                  viewBox="-2.5 -2 24 24"
-                  className="h-5 w-5"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M16.25 16.25v-10h-10v-.625c0-1.034.841-1.875 1.875-1.875H10V0H8.125A5.632 5.632 0 0 0 2.5 5.625v.625H0V10h2.5v6.25H0V20h8.75v-3.75h-2.5V10h6.285v6.25H10V20h8.75v-3.75h-2.5z" />
-                  <circle cx="14.375" cy="1.875" r="1.875" />
-                </svg>
-              </motion.a>
-
-              <motion.a
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                href="https://github.com/enzoth7"
-                target="_blank"
-                rel="noreferrer me"
-                aria-label="GitHub"
-                title="GitHub"
-                className="rounded-full border border-slate-700 bg-slate-800/80 p-2.5 text-slate-300 shadow-sm transition hover:border-slate-500 hover:bg-slate-700 hover:text-white"
-              >
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
-                  <path d="M12 .5C5.73.5.75 5.63.75 12c0 5.1 3.29 9.43 7.86 10.96.58.11.79-.26.79-.57v-2.1c-3.2.71-3.87-1.57-3.87-1.57-.52-1.35-1.28-1.71-1.28-1.71-1.05-.74.08-.73.08-.73 1.16.08 1.77 1.22 1.77 1.22 1.03 1.79 2.7 1.27 3.36.97.1-.76.4-1.27.73-1.56-2.56-.3-5.26-1.3-5.26-5.8 0-1.28.45-2.33 1.2-3.15-.12-.3-.52-1.52.11-3.16 0 0 .98-.32 3.2 1.2.93-.26 1.92-.4 2.9-.4.99 0 1.98.14 2.9.4 2.22-1.52 3.2-1.2 3.2-1.2.63 1.64.23 2.86.11 3.16.75.82 1.2 1.87 1.2 3.15 0 4.51-2.71 5.5-5.29 5.79.41.36.78 1.07.78 2.16v3.2c0 .31.21.68.8.57A11.27 11.27 0 0 0 23.25 12C23.25 5.63 18.27.5 12 .5z" />
-                </svg>
-              </motion.a>
-
-              <motion.a
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                href="https://www.linkedin.com/in/enzothome/"
-                target="_blank"
-                rel="noreferrer me"
-                aria-label="LinkedIn"
-                title="LinkedIn"
-                className="rounded-full border border-slate-700 bg-slate-800/80 p-2.5 text-slate-300 shadow-sm transition hover:border-slate-500 hover:bg-slate-700 hover:text-white"
-              >
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
-                  <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.62-1.85 3.34-1.85 3.57 0 4.23 2.35 4.23 5.41v6.33zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.11 20.45H3.56V9h3.55v11.45z" />
-                </svg>
-              </motion.a>
-            </div>
-          </div>
+    <section id="contacto" className="scroll-mt-28 py-16 sm:py-24">
+      <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div>
+          <h2 className="max-w-xl font-sans text-4xl font-semibold tracking-tighter text-[#FAF9F6] sm:text-5xl">
+            {t.contact.title}
+          </h2>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
+            {t.contact.description}
+          </p>
         </div>
 
-        <div className="flex flex-col items-start gap-4">
-          <SectionEyebrow label={t.contact.otherProjects} />
-
-          <div className="flex flex-wrap items-center gap-5">
-            {PROJECTS.map((project) => (
-              <motion.a
-                key={project.name}
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                href={project.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex w-fit items-center justify-start focus:outline-none transition-all"
-                aria-label={project.name}
-              >
-                <Image
-                  src={project.src}
-                  alt={project.name}
-                  width={project.width}
-                  height={project.height}
-                  priority
-                  sizes="48px"
-                  quality={100}
-                  className={`${project.className} grayscale opacity-40 transition duration-300 group-hover:grayscale-0 group-hover:opacity-100`}
+        <form onSubmit={handleSubmit} noValidate className="border border-white/15 bg-[#0F172A]/70 p-6 sm:p-9">
+          <div className="grid gap-6 sm:grid-cols-2">
+            {fields.map((field) => (
+              <div key={field.name} className={field.name === "email" ? "sm:col-span-2" : ""}>
+                <label htmlFor={`contact-${field.name}`} className="mb-2 block text-sm font-semibold text-[#FAF9F6]">
+                  {field.label}
+                </label>
+                <input
+                  id={`contact-${field.name}`}
+                  name={field.name}
+                  type={field.type}
+                  required={field.name !== "company"}
+                  autoComplete={field.autoComplete}
+                  value={values[field.name]}
+                  onChange={(event) => updateValue(field.name, event.target.value)}
+                  onBlur={() => handleBlur(field.name)}
+                  aria-invalid={Boolean(errors[field.name])}
+                  aria-describedby={errors[field.name] ? `contact-${field.name}-error` : undefined}
+                  className="min-h-12 w-full border border-white/25 bg-transparent px-4 py-3 text-[#FAF9F6] outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-1 focus:ring-white"
                 />
-              </motion.a>
+                {errors[field.name] ? (
+                  <p id={`contact-${field.name}-error`} role="alert" className="mt-2 text-sm text-[#FAF9F6]">
+                    {errors[field.name]}
+                  </p>
+                ) : null}
+              </div>
             ))}
+
+            <div className="sm:col-span-2">
+              <label htmlFor="contact-challenge" className="mb-2 block text-sm font-semibold text-[#FAF9F6]">
+                {t.contact.challengeLabel}
+              </label>
+              <textarea
+                id="contact-challenge"
+                name="challenge"
+                rows={5}
+                required
+                maxLength={2000}
+                value={values.challenge}
+                onChange={(event) => updateValue("challenge", event.target.value)}
+                onBlur={() => handleBlur("challenge")}
+                aria-invalid={Boolean(errors.challenge)}
+                aria-describedby={errors.challenge ? "contact-challenge-error" : undefined}
+                className="w-full resize-y border border-white/25 bg-transparent px-4 py-3 text-[#FAF9F6] outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-1 focus:ring-white"
+              />
+              {errors.challenge ? (
+                <p id="contact-challenge-error" role="alert" className="mt-2 text-sm text-[#FAF9F6]">
+                  {errors.challenge}
+                </p>
+              ) : null}
+            </div>
           </div>
-        </div>
+
+          <div className="absolute -left-[9999px]" aria-hidden="true">
+            <label htmlFor="contact-website">Website</label>
+            <input
+              id="contact-website"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={values.website}
+              onChange={(event) => updateValue("website", event.target.value)}
+            />
+          </div>
+
+          <div className="mt-7 flex items-center">
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="min-h-12 cursor-pointer bg-[#FAF9F6] px-7 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-[#0F172A] transition hover:bg-white disabled:cursor-wait disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            >
+              {status === "sending" ? t.contact.sending : t.contact.submit}
+            </button>
+          </div>
+
+          <div className="mt-5 min-h-6" aria-live="polite">
+            {status === "success" ? <p className="text-sm font-semibold text-[#FAF9F6]">{t.contact.success}</p> : null}
+            {status === "error" ? <p role="alert" className="text-sm font-semibold text-[#FAF9F6]">{t.contact.error}</p> : null}
+          </div>
+        </form>
       </div>
+
+      <SiteFooter className="mt-16 sm:mt-20" />
     </section>
   );
 }
-

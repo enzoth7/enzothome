@@ -27,10 +27,11 @@ export default function Home() {
 
         <MobileLanguageToggle />
 
-        {/* Section 1: Hero */}
-        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
-          <HeroSection />
-        </section>
+        <main id="main-content">
+          {/* Section 1: Hero */}
+          <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+            <HeroSection />
+          </section>
 
         {/* Section 2: Metricas */}
         <section className="w-full bg-[#FAF9F6]/45 backdrop-blur-md text-[#0f172a] relative z-20">
@@ -54,13 +55,13 @@ export default function Home() {
         </section>
 
         {/* Section 5: Contacto */}
-        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
-          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
-            <ContactoSection />
-          </div>
-        </section>
+          <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+            <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
+              <ContactoSection />
+            </div>
+          </section>
+        </main>
       </div>
     </LanguageProvider>
   );
 }
-

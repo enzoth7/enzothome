@@ -5,7 +5,7 @@ import MobileLanguageToggle from "@/components/MobileLanguageToggle";
 import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
 import Background from "@/src/components/sections/Background";
-import ContactoSection from "@/src/components/sections/ContactoSection";
+import SiteFooter from "@/src/components/sections/SiteFooter";
 import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
 
 function AboutContent() {
@@ -39,22 +39,15 @@ function AboutContent() {
       <MobileLanguageToggle />
 
       <div className="relative z-20 px-3 py-24 sm:px-5 sm:py-28 lg:px-8">
-        <main className="relative z-30 mx-auto max-w-[1400px] overflow-hidden rounded-none bg-[#FAF9F6] shadow-[0_0_80px_rgba(0,0,0,0.4)]">
+        <main id="main-content" className="relative z-30 mx-auto max-w-[1400px] overflow-hidden rounded-none bg-[#FAF9F6] shadow-[0_0_80px_rgba(0,0,0,0.4)]">
           <section id="sobre-mi" className="relative">
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] lg:items-stretch xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center px-6 py-16 sm:px-10 lg:px-12 lg:py-24">
                 <div className="max-w-4xl space-y-8">
-                  <div className="flex items-center gap-4">
-                    <span className="h-px w-10 bg-[#064e3b]/28" />
-                    <span className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-                      {t.whoAmI.subtitle}
-                    </span>
-                  </div>
-
                   <div className="space-y-12">
                     {pillars.map((pillar, index) => (
                       <div key={index} className="space-y-4">
-                        <h3 className="font-sans text-4xl font-black tracking-tighter text-neutral-900 sm:text-5xl lg:text-6xl">
+                        <h3 className="font-sans text-4xl font-semibold tracking-tighter text-neutral-900 sm:text-5xl lg:text-6xl">
                           {pillar.title}
                         </h3>
                         <p className="text-lg font-light leading-relaxed tracking-[0.04em] text-neutral-600 sm:text-xl">
@@ -86,11 +79,9 @@ function AboutContent() {
           </section>
         </main>
 
-        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
-          <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
-            <ContactoSection />
-          </div>
-        </section>
+        <div className="mx-auto mt-16 max-w-[1400px] px-6 sm:mt-20 sm:px-10 lg:px-12">
+          <SiteFooter className="border-t border-[#FAF9F6]/15" />
+        </div>
       </div>
     </div>
   );

@@ -2,24 +2,20 @@ import type { Metadata } from "next";
 import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Proyectos — Automatización, Datos y Desarrollo Web",
+  title: { absolute: "Enzo Thome | Proyectos realizados" },
   description:
-    "Proyectos de automatización, datos, inteligencia artificial y desarrollo web, desde landing pages hasta e-commerce conectados a la operación del negocio.",
+    "Una selección de proyectos en los que trabajé: qué problema existía, qué se construyó y cómo quedó funcionando.",
   keywords: [
-    "proyectos automatización Uruguay",
-    "casos de estudio n8n",
-    "ejemplos automatización PYMES",
-    "dashboards datos Uruguay",
-    "portfolio freelance automatización",
-    "proyectos IA Uruguay",
+    "proyectos sistemas de gestión",
+    "dashboards internos Uruguay",
+    "centralización de datos empresas",
+    "paneles de control operativo",
     "desarrollo web Uruguay",
-    "landing pages Uruguay",
-    "e-commerce Uruguay",
   ],
   openGraph: {
-    title: "Enzo Thome | Proyectos",
+    title: "Enzo Thome | Proyectos realizados",
     description:
-      "Automatización, datos, IA y desarrollo web aplicados a soluciones de negocio a medida.",
+      "Proyectos construidos alrededor de problemas de información, gestión y operación.",
     url: `${SITE_URL}/projects`,
     siteName: "Enzo Thome",
     locale: "es_UY",
@@ -29,7 +25,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Enzo Thome | Proyectos",
-    images: ["/LogoET.png"],
+    description:
+      "Proyectos construidos alrededor de problemas de información, gestión y operación.",
+    images: [{ url: "/LogoET.png", alt: "Proyectos de Enzo Thome" }],
   },
   alternates: {
     canonical: `${SITE_URL}/projects`,

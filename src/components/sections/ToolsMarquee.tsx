@@ -13,7 +13,6 @@ const tools: Tool[] = [
   { name: "PDF Editor", src: "/logos/pdf.png" },
   { name: "PowerBI", src: "/logos/powerbi.png" },
   { name: "Tableau", src: "/logos/tableau.png" },
-  { name: "n8n", src: "/logos/n8n.png" },
   { name: "ChatGPT", src: "/logos/openai.png" },
   { name: "Gemini", src: "/logos/gemini.svg" },
   { name: "Claude", src: "/logos/claude.svg" },

@@ -1,64 +1,49 @@
-import * as React from 'react';
+import * as React from "react";
 
-interface EmailTemplateProps {
-  userName?: string;
-  userEmail: string;
-  category: string;
-  answers: Array<{
-    question: string;
-    answer: string;
-  }>;
-}
+type EmailTemplateProps = {
+  name: string;
+  company: string;
+  email: string;
+  challenge: string;
+};
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
-  userEmail,
-  category,
-  answers,
+  name,
+  company,
+  email,
+  challenge,
 }) => (
-  <div style={{
-    fontFamily: 'sans-serif',
-    color: '#333',
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-    border: '1px solid #eee',
-    borderRadius: '8px'
-  }}>
-    <h1 style={{ color: '#0055ff', fontSize: '24px', marginBottom: '20px' }}>
-      Nuevo Diagnóstico de Operación Completado
+  <div
+    style={{
+      backgroundColor: "#FAF9F6",
+      color: "#111111",
+      fontFamily: "Arial, sans-serif",
+      margin: "0 auto",
+      maxWidth: "640px",
+      padding: "32px",
+    }}
+  >
+    <p style={{ color: "#0F172A", fontSize: "12px", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+      Nueva consulta desde enzothome.com
+    </p>
+    <h1 style={{ color: "#0F172A", fontSize: "28px", lineHeight: 1.2, margin: "16px 0 28px" }}>
+      {company || name}
     </h1>
-    
-    <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
-      Se ha completado un diagnóstico en la landing page. Aquí están los resultados:
-    </p>
-
-    <div style={{
-      backgroundColor: '#f9f9f9',
-      padding: '15px',
-      borderRadius: '6px',
-      margin: '20px 0'
-    }}>
-      <p style={{ margin: '0 0 10px 0' }}><strong>Email del Usuario:</strong> {userEmail}</p>
-      <p style={{ margin: '0' }}><strong>Resultado Sugerido:</strong> {category}</p>
-    </div>
-
-    <h2 style={{ fontSize: '18px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-      Respuestas Detalladas
+    <table style={{ borderCollapse: "collapse", fontSize: "16px", width: "100%" }}>
+      <tbody>
+        <tr>
+          <td style={{ borderTop: "1px solid #0F172A", fontWeight: 700, padding: "14px 0", width: "120px" }}>Nombre</td>
+          <td style={{ borderTop: "1px solid #0F172A", padding: "14px 0" }}>{name}</td>
+        </tr>
+        <tr>
+          <td style={{ borderTop: "1px solid #0F172A", fontWeight: 700, padding: "14px 0" }}>Email</td>
+          <td style={{ borderTop: "1px solid #0F172A", padding: "14px 0" }}>{email}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2 style={{ color: "#0F172A", fontSize: "18px", margin: "32px 0 12px" }}>
+      Situación que quiere ordenar
     </h2>
-    
-    <ul style={{ listStyle: 'none', padding: '0' }}>
-      {answers.map((item, index) => (
-        <li key={index} style={{ marginBottom: '15px' }}>
-          <p style={{ margin: '0', fontWeight: 'bold', color: '#666' }}>{item.question}</p>
-          <p style={{ margin: '5px 0 0 0' }}>{item.answer}</p>
-        </li>
-      ))}
-    </ul>
-
-    <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '30px 0' }} />
-    
-    <p style={{ fontSize: '12px', color: '#999', textAlign: 'center' }}>
-      Enviado automáticamente desde enzothome.com
-    </p>
+    <p style={{ fontSize: "16px", lineHeight: 1.65, margin: 0, whiteSpace: "pre-wrap" }}>{challenge}</p>
   </div>
 );

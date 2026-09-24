@@ -20,45 +20,53 @@ const newsreader = Newsreader({
 });
 
 const SEO_DESCRIPTION =
-  "Automatización de procesos con n8n, integraciones de IA y arquitectura de datos para empresas en Uruguay y España. Eliminá tareas repetitivas y tomá decisiones con datos reales.";
+  "Centralizo datos y operaciones dispersas en sistemas internos, paneles y sitios web conectados. Trabajo con empresas uruguayas y de distintos países.";
 
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Enzo Thome | Data & Automation",
+    default: "Enzo Thome | Sistemas internos, datos y desarrollo web",
     template: "Enzo Thome | %s",
   },
   description: SEO_DESCRIPTION,
+  applicationName: "Enzo Thome",
+  authors: [{ name: "Enzo Thome", url: SITE_URL }],
+  creator: "Enzo Thome",
+  publisher: "Enzo Thome",
+  category: "Technology consulting",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   keywords: [
     "Enzo Thome",
-    "automatización de procesos",
-    "arquitectura de datos",
-    "sistemas eficientes",
-    "sistemas escalables",
-    "n8n",
-    "optimización de PYMES",
+    "sistemas de gestión a medida",
+    "paneles internos para empresas",
+    "centralización de datos empresariales",
+    "dashboards operativos",
+    "desarrollo web para empresas",
     "Uruguay",
-    "España",
     "Enzo Thome Uruguay",
-    "automatización de procesos Uruguay",
-    "arquitectura de datos Uruguay",
-    "n8n Uruguay",
-    "Data & Automation Uruguay",
+    "sistemas internos Uruguay",
+    "dashboards Uruguay",
   ],
   openGraph: {
-    title: "Enzo Thome | Data & Automation",
+    title: "Enzo Thome | Sistemas internos, datos y desarrollo web",
     description: SEO_DESCRIPTION,
     url: SITE_URL,
     siteName: "Enzo Thome",
     locale: "es_UY",
     type: "website",
-    images: ["/LogoET.png"],
+    images: [{ url: "/LogoET.png", alt: "Enzo Thome" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Enzo Thome | Data & Automation",
-    images: ["/LogoET.png"],
+    title: "Enzo Thome | Sistemas internos, datos y desarrollo web",
+    description: SEO_DESCRIPTION,
+    images: [{ url: "/LogoET.png", alt: "Enzo Thome" }],
   },
   alternates: {
     canonical: SITE_URL,
@@ -66,6 +74,14 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -93,51 +109,121 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${plexSans.variable} ${newsreader.variable} antialiased`}>
+        <a
+          href="#main-content"
+          className="fixed left-4 top-4 z-[200] -translate-y-24 bg-[#FAF9F6] px-4 py-3 font-semibold text-[#0F172A] transition focus:translate-y-0 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#0F172A]"
+        >
+          Ir al contenido
+        </a>
         {children}
         <Analytics />
         <WhatsAppButton />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "Person",
-                "name": "Enzo Thome",
-                "jobTitle": "Especialista en Automatización, Datos e IA",
-                "url": SITE_URL,
-                "image": `${SITE_URL}/LogoET.png`,
-                "description": "Automatización de procesos con n8n, integraciones de IA y arquitectura de datos para empresas en Uruguay y España.",
-                "address": {
-                  "@type": "PostalAddress",
-                  "addressCountry": "UY",
-                  "addressLocality": "Montevideo"
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Person",
+                  "@id": `${SITE_URL}/#person`,
+                  name: "Enzo Thome",
+                  jobTitle: "Consultor y desarrollador de sistemas",
+                  url: SITE_URL,
+                  image: `${SITE_URL}/1_ext.webp`,
+                  email: "mailto:enzothome1@gmail.com",
+                  description: SEO_DESCRIPTION,
+                  address: {
+                    "@type": "PostalAddress",
+                    addressCountry: "UY",
+                    addressLocality: "Montevideo",
+                  },
+                  knowsLanguage: ["es", "en"],
+                  knowsAbout: [
+                    "Sistemas internos",
+                    "Paneles de gestión",
+                    "Centralización de datos",
+                    "Análisis de datos",
+                    "Desarrollo web",
+                    "Integración de sistemas",
+                  ],
+                  sameAs: [
+                    INSTAGRAM_URL,
+                    "https://www.linkedin.com/in/enzothome/",
+                    "https://github.com/enzoth7",
+                    "https://es.fiverr.com/enzoth98",
+                  ],
                 },
-                "knowsAbout": [
-                  "Automatización de procesos",
-                  "n8n",
-                  "Inteligencia Artificial",
-                  "Arquitectura de datos",
-                  "Business Intelligence",
-                  "Integraciones de sistemas"
-                ],
-                "sameAs": [
-                  INSTAGRAM_URL,
-                  "https://www.linkedin.com/in/enzothome",
-                  "https://github.com/enzoth7",
-                  "https://es.fiverr.com/enzoth98"
-                ]
-              },
-              {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Enzo Thome",
-                "url": SITE_URL,
-                "description": "Automatización de procesos, IA y datos para empresas en Uruguay y España.",
-                "inLanguage": ["es", "en"],
-                "sameAs": [INSTAGRAM_URL]
-              }
-            ])
+                {
+                  "@type": "ProfessionalService",
+                  "@id": `${SITE_URL}/#business`,
+                  name: "Enzo Thome",
+                  url: SITE_URL,
+                  logo: `${SITE_URL}/LogoET.png`,
+                  image: `${SITE_URL}/LogoET.png`,
+                  founder: { "@id": `${SITE_URL}/#person` },
+                  areaServed: [
+                    { "@type": "Country", name: "Uruguay" },
+                    { "@type": "Place", name: "International" },
+                  ],
+                  contactPoint: {
+                    "@type": "ContactPoint",
+                    email: "enzothome1@gmail.com",
+                    contactType: "sales",
+                    availableLanguage: ["Spanish", "English"],
+                  },
+                  hasOfferCatalog: {
+                    "@type": "OfferCatalog",
+                    name: "Servicios de sistemas, datos y desarrollo web",
+                    itemListElement: [
+                      {
+                        "@type": "Offer",
+                        itemOffered: {
+                          "@type": "Service",
+                          name: "Sistemas internos y control operativo",
+                          url: `${SITE_URL}/services/sistemas-internos`,
+                        },
+                      },
+                      {
+                        "@type": "Offer",
+                        itemOffered: {
+                          "@type": "Service",
+                          name: "Datos y tableros de gestión",
+                          url: `${SITE_URL}/services/datos-y-tableros-de-gestion`,
+                        },
+                      },
+                      {
+                        "@type": "Offer",
+                        itemOffered: {
+                          "@type": "Service",
+                          name: "Sitios web y portales conectados",
+                          url: `${SITE_URL}/services/sitios-web-para-empresas`,
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}/#website`,
+                  name: "Enzo Thome",
+                  url: SITE_URL,
+                  description: SEO_DESCRIPTION,
+                  inLanguage: ["es", "en"],
+                  publisher: { "@id": `${SITE_URL}/#business` },
+                },
+                {
+                  "@type": "WebPage",
+                  "@id": `${SITE_URL}/#webpage`,
+                  url: SITE_URL,
+                  name: "Enzo Thome | Sistemas internos, datos y desarrollo web",
+                  isPartOf: { "@id": `${SITE_URL}/#website` },
+                  about: { "@id": `${SITE_URL}/#person` },
+                  mainEntity: { "@id": `${SITE_URL}/#business` },
+                  inLanguage: "es",
+                },
+              ],
+            })
           }}
         />
       </body>

@@ -2,22 +2,20 @@ import type { Metadata } from "next";
 import { SITE_URL } from "@/src/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Sobre Mí — Especialista en Automatización y Datos",
+  title: { absolute: "Enzo Thome | Sobre mí, sistemas, datos y criterio operativo" },
   description:
-    "Conocé a Enzo Thome: especialista en automatización de procesos con n8n, inteligencia artificial y arquitectura de datos. Basado en Uruguay, trabajo con empresas en LATAM y España.",
+    "Mi nombre es Enzo Thome: analista de datos y desarrollador de sistemas internos para empresas. Basado en Uruguay, trabajo con organizaciones locales y de distintos países.",
   keywords: [
     "Enzo Thome",
-    "especialista automatización Uruguay",
-    "freelance n8n Uruguay",
-    "consultor IA Uruguay",
+    "consultor sistemas internos Uruguay",
     "analista de datos Uruguay",
-    "automatización PYMES",
-    "freelance datos LATAM",
+    "desarrollo de dashboards Uruguay",
+    "centralización de datos empresas",
   ],
   openGraph: {
     title: "Enzo Thome | Sobre Mí",
     description:
-      "Especialista en automatización de procesos, n8n e IA. Basado en Uruguay, ayudo a empresas a operar con datos y sin tareas manuales.",
+      "Diseño sistemas internos y estructuras de datos que dan claridad y control a las empresas.",
     url: `${SITE_URL}/about-me`,
     siteName: "Enzo Thome",
     locale: "es_UY",
@@ -27,7 +25,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Enzo Thome | Sobre Mí",
-    images: ["/LogoET.png"],
+    description:
+      "Diseño sistemas internos y estructuras de datos que dan claridad y control a las empresas.",
+    images: [{ url: "/LogoET.png", alt: "Enzo Thome" }],
   },
   alternates: {
     canonical: `${SITE_URL}/about-me`,

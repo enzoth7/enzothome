@@ -1,316 +1,175 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import MobileLanguageToggle from "@/components/MobileLanguageToggle";
 import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
-import { SERVICE_ORDER, SERVICES_DATA } from "@/src/constants/services";
 import Background from "@/src/components/sections/Background";
-import ContactoSection from "@/src/components/sections/ContactoSection";
-import ToolsMarquee from "@/src/components/sections/ToolsMarquee";
+import SiteFooter from "@/src/components/sections/SiteFooter";
 import { useLanguage } from "@/src/context/LanguageContext";
-
-type Language = "es" | "en";
-
-type ServiceItem = {
-  id: string;
-  images: string[];
-  title: Record<Language, string>;
-  description: Record<Language, string>;
-};
+import { trackEvent } from "@/src/lib/analytics";
 
 const PAGE_COPY = {
   es: {
-    eyebrow: "Servicios",
-    title: "Soluciones",
-    lead: "Resuelvo problemas operativos mediante datos, automatización e inteligencia artificial. Diseño e implemento sistemas escalables para eliminar tareas repetitivas, centralizar información y dar soporte a decisiones estratégicas en cada negocio.",
-    close: "Cerrar",
-    previous: "Anterior",
-    next: "Siguiente",
-    contact: "Contactarme",
+    title: "La forma depende del problema.",
+    lead: "Primero entiendo cómo funciona la empresa, dónde se fragmenta la información y qué necesita ver cada persona. Después definimos qué conviene construir.",
+    principle: "Un sistema, un tablero o un sitio web tienen sentido cuando hacen que la operación sea más clara y fácil de manejar.",
+    items: [
+      {
+        title: "Sistemas internos y control operativo",
+        description: "Construyo herramientas de uso diario para centralizar la operación, dar seguimiento al trabajo y hacer visible qué está pasando en cada área.",
+        href: "/services/sistemas-internos",
+        cta: "Conocer esta solución",
+        image: "/señales/a.jpg",
+        alt: "Persona utilizando un sistema interno desde una tablet",
+      },
+      {
+        title: "Datos y tableros de gestión",
+        description: "Reúno planillas y fuentes separadas en una vista clara, con indicadores y reportes que sirven para entender la empresa y decidir a tiempo.",
+        href: "/services/datos-y-tableros-de-gestion",
+        cta: "Ver datos y tableros",
+        image: "/señales/b.png",
+        alt: "Tablero de gestión con indicadores operativos",
+      },
+      {
+        title: "Sitios web y portales conectados",
+        description: "Desarrollo sitios, portales y tiendas que reciben consultas, organizan información y se integran con lo que la empresa necesita para operar.",
+        href: "/services/sitios-web-para-empresas",
+        cta: "Ver sitios y portales",
+        image: "/señales/c.png",
+        alt: "Estación de desarrollo de sitios y portales web",
+      },
+    ],
+    closingTitle: "No hace falta que sepas qué herramienta necesitás.",
+    closingBody: "Alcanza con identificar qué información está dispersa, qué parte del trabajo cuesta seguir o qué debería verse con mayor claridad.",
+    closingCta: "Contame tu situación",
   },
   en: {
-    eyebrow: "Services",
-    title: "Solutions",
-    lead: "I solve operational problems through data, automation, and artificial intelligence. I design and implement scalable systems to eliminate repetitive tasks, centralize data, and support strategic decision-making in each business.",
-    close: "Close",
-    previous: "Previous",
-    next: "Next",
-    contact: "Contact me",
+    eyebrow: "Solutions",
+    title: "The shape depends on the problem.",
+    lead: "I first understand how the company works, where information becomes fragmented, and what each person needs to see. Then we define what should be built.",
+    principle: "A system, dashboard, or website is useful when it makes the operation clearer and easier to manage.",
+    items: [
+      {
+        title: "Internal systems and operational control",
+        description: "I build everyday tools that centralize operations, organize work tracking, and make activity across the company visible.",
+        href: "/services/sistemas-internos",
+        cta: "Explore this solution",
+        image: "/señales/a.jpg",
+        alt: "Person using an internal system on a tablet",
+      },
+      {
+        title: "Data and management dashboards",
+        description: "I bring separate spreadsheets and sources into one clear view, with indicators and reports that help teams understand the company and decide on time.",
+        href: "/services/datos-y-tableros-de-gestion",
+        cta: "Explore data and dashboards",
+        image: "/señales/b.png",
+        alt: "Management dashboard with operational indicators",
+      },
+      {
+        title: "Connected websites and portals",
+        description: "I build websites, portals, and stores that receive enquiries, organize information, and connect with the systems a company uses to operate.",
+        href: "/services/sitios-web-para-empresas",
+        cta: "Explore websites and portals",
+        image: "/señales/c.png",
+        alt: "Website and portal development workstation",
+      },
+    ],
+    closingTitle: "You do not need to know which tool you need.",
+    closingBody: "It is enough to identify which information is scattered, which part of the work is difficult to track, or what should be seen more clearly.",
+    closingCta: "Tell me your situation",
   },
 } as const;
-
-const SERVICES: ServiceItem[] = SERVICE_ORDER.map((id) => {
-  const service = SERVICES_DATA[id];
-  return {
-    id,
-    images: service.images,
-    title: { es: service.title_es, en: service.title_en },
-    description: { es: service.description_es, en: service.description_en },
-  };
-});
-
-function SectionEyebrow({ label }: { label: string }) {
-  return (
-    <div className="flex items-center gap-4">
-      <span className="h-px w-10 bg-[#064e3b]/28" />
-      <span className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function LightboxButton({
-  direction,
-  label,
-  onClick,
-}: {
-  direction: "left" | "right";
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className={[
-        "absolute top-1/2 z-20 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-none border border-white/15 bg-black/35 text-white/90 backdrop-blur-md transition hover:bg-black/55",
-        direction === "left" ? "left-4 sm:left-6" : "right-4 sm:right-6",
-      ].join(" ")}
-    >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        className="h-6 w-6"
-      >
-        {direction === "left" ? (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 5l-7 7 7 7" />
-        ) : (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        )}
-      </svg>
-    </button>
-  );
-}
-
-function ServiceCard({
-  service,
-  language,
-  onOpen,
-  priority = false,
-}: {
-  service: ServiceItem;
-  language: Language;
-  onOpen: () => void;
-  priority?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="group flex h-full w-full flex-col gap-4 text-left outline-none sm:gap-6"
-    >
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-none bg-white shadow-[0_24px_48px_rgba(15,23,42,0.16)] transition-shadow duration-500 ease-out group-hover:shadow-[0_32px_72px_rgba(15,23,42,0.22)] lg:aspect-auto lg:h-[420px]">
-        {service.images[0].endsWith(".mp4") ? (
-          <video
-            src={service.images[0]}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 lg:object-cover"
-          />
-        ) : (
-          <Image
-            src={service.images[0]}
-            alt={service.title[language]}
-            fill
-            priority={priority}
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-contain transition-transform duration-500 ease-out group-hover:scale-105 lg:object-cover"
-            quality={92}
-          />
-        )}
-      </div>
-
-      <div className="flex flex-1 flex-col gap-2">
-        <h2 className="font-sans text-xl font-black uppercase tracking-tighter text-neutral-900 sm:text-2xl">
-          {service.title[language]}
-        </h2>
-        <p className="text-[15px] font-light leading-relaxed tracking-[0.04em] text-neutral-600 sm:text-base">
-          {service.description[language]}
-        </p>
-      </div>
-    </button>
-  );
-}
 
 export default function ServicesClient() {
   const { language } = useLanguage();
   const copy = PAGE_COPY[language];
-  const [lightboxServiceIndex, setLightboxServiceIndex] = useState<number | null>(null);
-  const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
-
-  const activeService =
-    lightboxServiceIndex === null ? null : SERVICES[lightboxServiceIndex];
-
-  const openLightbox = (serviceIndex: number) => {
-    setLightboxServiceIndex(serviceIndex);
-    setLightboxImageIndex(0);
-  };
-
-  const closeLightbox = useCallback(() => {
-    setLightboxServiceIndex(null);
-    setLightboxImageIndex(0);
-  }, []);
-
-  const showPrevious = useCallback(() => {
-    if (!activeService) return;
-    setLightboxImageIndex((current) =>
-      current === 0 ? activeService.images.length - 1 : current - 1
-    );
-  }, [activeService]);
-
-  const showNext = useCallback(() => {
-    if (!activeService) return;
-    setLightboxImageIndex((current) =>
-      current === activeService.images.length - 1 ? 0 : current + 1
-    );
-  }, [activeService]);
-
-  useEffect(() => {
-    if (lightboxServiceIndex === null) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeLightbox();
-      if (event.key === "ArrowLeft") showPrevious();
-      if (event.key === "ArrowRight") showNext();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxServiceIndex, closeLightbox, showPrevious, showNext]);
+  const reduceMotion = useReducedMotion();
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#0f172a] text-[#171717]">
-      <div className="absolute inset-0 z-0">
-        <Background variant="wallpaper" />
-      </div>
-
-      <div className="relative z-40">
-        <SocialRail />
-      </div>
-
-      <div className="relative z-50">
-        <Navbar />
-      </div>
-
+    <div className="relative min-h-screen overflow-x-hidden text-[#FAF9F6]">
+      <div className="fixed inset-0 z-0"><Background variant="wallpaper" /></div>
+      <div className="relative z-40"><SocialRail /></div>
+      <div className="relative z-50"><Navbar /></div>
       <MobileLanguageToggle />
 
-      <div className="relative z-20 px-3 py-24 sm:px-5 sm:py-28 lg:px-8">
-        <main className="relative z-30 mx-auto max-w-[1400px] overflow-hidden rounded-none bg-[#FAF9F6] shadow-[0_0_80px_rgba(0,0,0,0.4)]">
-          <div className="px-6 sm:px-10 lg:px-12">
-            <section className="py-16 sm:py-20 lg:py-24">
-              <div className="max-w-none space-y-8">
-                <SectionEyebrow label={copy.eyebrow} />
-                <h1 className="font-sans text-4xl font-black tracking-tighter text-neutral-900 sm:text-5xl lg:text-6xl">
-                  {copy.title}
-                </h1>
-                <p className="max-w-none text-lg font-light leading-relaxed tracking-[0.04em] text-neutral-600 sm:text-xl">
-                  {copy.lead}
-                </p>
-              </div>
-            </section>
-
-            <section className="py-8 sm:py-12">
-              <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-                {SERVICES.map((service, index) => (
-                  <div key={service.id} className="h-full">
-                    <ServiceCard
-                      service={service}
-                      language={language}
-                      priority={index < 2}
-                      onOpen={() => openLightbox(index)}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-16 mb-12">
-                <ToolsMarquee />
-              </div>
-            </section>
+      <main id="main-content" className="relative z-20">
+        <header className="mx-auto max-w-[1400px] px-6 pb-20 pt-36 sm:px-10 sm:pb-24 sm:pt-40 lg:px-12 lg:pb-28 lg:pt-48">
+          <h1 className="max-w-5xl font-sans text-5xl font-semibold tracking-[-0.055em] text-[#FAF9F6] sm:text-6xl lg:text-8xl">
+            {copy.title}
+          </h1>
+          <div className="mt-9 grid gap-8 border-t border-[#FAF9F6]/20 pt-8 lg:grid-cols-2 lg:gap-16">
+            <p className="max-w-3xl text-lg leading-relaxed text-[#FAF9F6]/78 sm:text-xl">{copy.lead}</p>
+            <p className="max-w-2xl text-lg font-semibold leading-relaxed text-[#FAF9F6] sm:text-xl">{copy.principle}</p>
           </div>
-        </main>
+        </header>
 
-        <section className="w-full bg-transparent text-[#FAF9F6] relative z-20">
+        <section className="border-y border-[#FAF9F6]/35 bg-[#FAF9F6]/45 text-[#0F172A] backdrop-blur-md">
           <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-12">
-            <ContactoSection />
+            {copy.items.map((item, index) => (
+              <motion.article
+                key={item.title}
+                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-12%" }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                className="grid gap-9 border-b border-[#0F172A]/12 py-14 last:border-b-0 sm:py-20 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-24"
+              >
+                <div className={index % 2 === 1 ? "lg:order-2" : ""}>
+                  <h2 className="max-w-2xl font-sans text-4xl font-semibold leading-[0.95] tracking-[-0.045em] text-[#0F172A] sm:text-5xl lg:text-6xl">
+                    {item.title}
+                  </h2>
+                  <p className="mt-7 max-w-2xl text-lg leading-relaxed text-[#0F172A]/72">{item.description}</p>
+                  <Link
+                    href={item.href}
+                    className="mt-8 inline-flex min-h-12 items-center rounded-xl border border-[#0F172A]/35 px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#0F172A] transition duration-200 hover:-translate-y-0.5 hover:bg-[#0F172A] hover:text-[#FAF9F6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0F172A]"
+                  >
+                    {item.cta}
+                  </Link>
+                </div>
+
+                <div className={`group relative aspect-[5/4] overflow-hidden bg-[#111111] ${index % 2 === 1 ? "lg:order-1" : ""}`}>
+                  <Image
+                    src={item.image}
+                    alt={item.alt}
+                    fill
+                    priority={index === 0}
+                    sizes="(min-width: 1024px) 55vw, 100vw"
+                    quality={92}
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                  />
+                  <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/55 via-transparent to-transparent" />
+                </div>
+              </motion.article>
+            ))}
           </div>
         </section>
-      </div>
 
-      <AnimatePresence>
-        {activeService ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[120] bg-black/95 backdrop-blur-md"
-          >
-            <button
-              type="button"
-              onClick={closeLightbox}
-              className="absolute right-4 top-4 z-20 rounded-none border border-white/15 bg-black/35 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/90 backdrop-blur-md transition hover:bg-black/55 sm:right-6 sm:top-6"
-            >
-              {copy.close}
-            </button>
-
-            {activeService.images.length > 1 ? (
-              <>
-                <LightboxButton direction="left" label={copy.previous} onClick={showPrevious} />
-                <LightboxButton direction="right" label={copy.next} onClick={showNext} />
-              </>
-            ) : null}
-
-            <div className="relative flex h-full w-full items-center justify-center px-16 py-16 sm:px-24">
-              <motion.div
-                key={activeService.images[lightboxImageIndex]}
-                initial={{ opacity: 0, scale: 0.985 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.985 }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                className="relative flex h-full w-full max-w-7xl items-center justify-center"
+        <section className="mx-auto max-w-[1400px] px-6 py-20 sm:px-10 sm:py-24 lg:px-12 lg:py-28">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+            <h2 className="max-w-4xl font-sans text-4xl font-semibold tracking-[-0.045em] text-[#FAF9F6] sm:text-5xl lg:text-6xl">{copy.closingTitle}</h2>
+            <div>
+              <p className="text-lg leading-relaxed text-[#FAF9F6]/72">{copy.closingBody}</p>
+              <Link
+                href="/#contacto"
+                onClick={() => trackEvent("contact_cta_click", { location: "services_page" })}
+                className="mt-7 inline-flex min-h-12 items-center rounded-xl bg-[#FAF9F6] px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#0F172A] transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FAF9F6]"
               >
-                {activeService.images[lightboxImageIndex].endsWith(".mp4") ? (
-                  <video
-                    src={activeService.images[lightboxImageIndex]}
-                    controls
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : (
-                  <Image
-                    src={activeService.images[lightboxImageIndex]}
-                    alt={activeService.title[language]}
-                    fill
-                    sizes="100vw"
-                    quality={100}
-                    className="object-contain"
-                  />
-                )}
-              </motion.div>
+                {copy.closingCta}
+              </Link>
             </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+          </div>
+
+        </section>
+
+        <div className="px-6 sm:px-10 lg:px-12">
+          <div className="mx-auto max-w-[1400px]">
+            <SiteFooter className="border-t border-[#FAF9F6]/15" />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
