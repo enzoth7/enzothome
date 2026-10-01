@@ -172,7 +172,7 @@ html {
 }
 
 .testimonials-marquee-track {
-  animation: testimonials-marquee-scroll 88s linear infinite;
+  animation: testimonials-marquee-scroll 60s linear infinite;
   will-change: transform;
 }
 

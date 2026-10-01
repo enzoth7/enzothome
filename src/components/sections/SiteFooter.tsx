@@ -9,6 +9,7 @@ const EMAIL = "enzothome1@gmail.com";
 
 const OTHER_PROJECTS = [
   { name: "Polarist", href: "https://polarist.app", src: "/Polarist.png" },
+  { name: "Rumbo Fijo", href: "https://rumbolisto.vercel.app", src: "/RumboListo.png" },
   { name: "Mi Admi", href: "https://miadmi.com", src: "/Mi Admi.png" },
   { name: "Techs Uruguay", href: "https://techsuruguay.vercel.app/", src: "/TechsUruguay.png" },
   { name: "Via Nostra", href: "https://vianostra.vercel.app/", src: "/ViaNostra.png" },

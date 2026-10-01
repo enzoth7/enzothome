@@ -24,12 +24,25 @@ type ProjectCase = {
   cover?: ProjectMedia;
   gallery?: ProjectMedia[];
 };
+type OtherProject = {
+  id: string;
+  name: string;
+  developedAt: string;
+  description: string;
+  href: string;
+  cover: ProjectMedia;
+  logo: string;
+};
 type PageCopy = {
   title: string;
   lead: string;
   open: string;
   close: string;
   projects: ProjectCase[];
+  otherProjects: {
+    title: string;
+    projects: OtherProject[];
+  };
 };
 
 const PROJECT_IDS = new Set(["pearl-connexions", "operacion-centralizada", "matearte"]);
@@ -115,6 +128,56 @@ const CASE_COPY: Record<Language, PageCopy> = {
         ],
       },
     ],
+    otherProjects: {
+      title: "Otros proyectos",
+      projects: [
+        {
+          id: "polarist",
+          name: "Polarist",
+          developedAt: "Febrero 2026",
+          description: "Asesorías y formaciones para que profesionales, empresas y equipos incorporen inteligencia artificial con claridad.",
+          href: "https://polarist.app",
+          cover: { src: "/projects/Polarist.png", alt: "Vista del sitio web de Polarist" },
+          logo: "/Polarist2.png",
+        },
+        {
+          id: "rumbo-fijo",
+          name: "Rumbo Fijo",
+          developedAt: "Septiembre 2026",
+          description: "Una guía para organizar experiencias Working Holiday o Work and Study, desde la idea inicial hasta el plan de viaje.",
+          href: "https://rumbolisto.vercel.app",
+          cover: { src: "/projects/RumboListo.png", alt: "Vista del sitio web de Rumbo Fijo" },
+          logo: "/RumboListo.png",
+        },
+        {
+          id: "via-nostra",
+          name: "Via Nostra",
+          developedAt: "Septiembre 2026",
+          description: "Archivo y guía práctica para investigar genealogía italiana en Uruguay y reunir documentación consular.",
+          href: "https://vianostra.vercel.app",
+          cover: { src: "/projects/ViaNostra.png", alt: "Vista del sitio web de Via Nostra" },
+          logo: "/ViaNostra.png",
+        },
+        {
+          id: "mi-admi",
+          name: "Mi Admi",
+          developedAt: "Octubre 2025",
+          description: "Herramientas financieras para resolver consultas sobre sueldo, aguinaldo, despido, gastos y ahorro en Uruguay.",
+          href: "https://miadmi.com",
+          cover: { src: "/projects/MiAdmi.png", alt: "Vista del sitio web de Mi Admi" },
+          logo: "/Mi Admi.png",
+        },
+        {
+          id: "techs-uruguay",
+          name: "Techs Uruguay",
+          developedAt: "Abril 2026",
+          description: "Un directorio para descubrir startups, empresas tecnológicas y organizaciones de apoyo al emprendimiento en Uruguay.",
+          href: "https://techsuruguay.vercel.app",
+          cover: { src: "/projects/TechsUruguay.png", alt: "Vista del sitio web de Techs Uruguay" },
+          logo: "/TechsUruguay.png",
+        },
+      ],
+    },
   },
   en: {
     title: "Projects built around real problems.",
@@ -196,6 +259,56 @@ const CASE_COPY: Record<Language, PageCopy> = {
         ],
       },
     ],
+    otherProjects: {
+      title: "Other projects",
+      projects: [
+        {
+          id: "polarist",
+          name: "Polarist",
+          developedAt: "February 2026",
+          description: "Consulting and training that help professionals, companies, and teams adopt artificial intelligence with clarity.",
+          href: "https://polarist.app",
+          cover: { src: "/projects/Polarist.png", alt: "Polarist website preview" },
+          logo: "/Polarist2.png",
+        },
+        {
+          id: "rumbo-fijo",
+          name: "Rumbo Fijo",
+          developedAt: "September 2026",
+          description: "A guide for planning a Working Holiday or Work and Study experience, from the first idea to the trip plan.",
+          href: "https://rumbolisto.vercel.app",
+          cover: { src: "/projects/RumboListo.png", alt: "Rumbo Fijo website preview" },
+          logo: "/RumboListo.png",
+        },
+        {
+          id: "via-nostra",
+          name: "Via Nostra",
+          developedAt: "September 2026",
+          description: "An archive and practical guide for researching Italian genealogy in Uruguay and gathering consular documentation.",
+          href: "https://vianostra.vercel.app",
+          cover: { src: "/projects/ViaNostra.png", alt: "Via Nostra website preview" },
+          logo: "/ViaNostra.png",
+        },
+        {
+          id: "mi-admi",
+          name: "Mi Admi",
+          developedAt: "October 2025",
+          description: "Financial tools for questions about salary, bonuses, severance, expenses, and savings in Uruguay.",
+          href: "https://miadmi.com",
+          cover: { src: "/projects/MiAdmi.png", alt: "Mi Admi website preview" },
+          logo: "/Mi Admi.png",
+        },
+        {
+          id: "techs-uruguay",
+          name: "Techs Uruguay",
+          developedAt: "April 2026",
+          description: "A directory for discovering startups, technology companies, and organizations that support entrepreneurship in Uruguay.",
+          href: "https://techsuruguay.vercel.app",
+          cover: { src: "/projects/TechsUruguay.png", alt: "Techs Uruguay website preview" },
+          logo: "/TechsUruguay.png",
+        },
+      ],
+    },
   },
 };
 
@@ -225,6 +338,39 @@ function ProjectVisual({ cover, onOpen }: { cover?: ProjectMedia; onOpen: (media
     <button type="button" onClick={() => onOpen(cover)} aria-label={`Ampliar: ${cover.alt}`} className="absolute inset-0 cursor-zoom-in focus-visible:outline-none focus-visible:opacity-90">
       <Image src={cover.src} alt={cover.alt} fill sizes="(min-width: 1024px) 54vw, 100vw" quality={92} className="object-cover transition-transform duration-300 hover:scale-[1.015]" />
     </button>
+  );
+}
+
+function OtherProjectsGrid({ copy, language }: { copy: PageCopy["otherProjects"]; language: Language }) {
+  return (
+    <section className="border-t border-[#0F172A]/18 py-14 sm:py-20 lg:py-24" aria-labelledby="other-projects-heading">
+      <div className="max-w-3xl">
+        <h2 id="other-projects-heading" className="font-sans text-4xl font-semibold tracking-[-0.045em] text-[#111111] sm:text-5xl">{copy.title}</h2>
+      </div>
+
+      <div className="mt-10 grid gap-7 lg:mt-12 lg:grid-cols-2 lg:gap-8">
+        {copy.projects.map((project) => {
+          const content = (
+            <>
+              <div className="relative aspect-[1.88] overflow-hidden border-b border-[#0F172A]/18 bg-[#FAF9F6]">
+                <Image src={project.cover.src} alt={project.cover.alt} fill sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover" />
+              </div>
+              <div className="p-6 sm:p-7">
+                <div className="flex items-center gap-4">
+                  <Image src={project.logo} alt="" width={48} height={48} sizes="48px" className="h-12 w-12 shrink-0 object-contain" />
+                  <h3 className="font-sans text-2xl font-semibold tracking-[-0.035em] text-[#111111] sm:text-3xl">{project.name}</h3>
+                </div>
+                <p className="mt-5 text-sm font-semibold uppercase tracking-[0.08em] text-[#0F172A]/62">{project.developedAt}</p>
+                <p className="mt-4 text-base leading-relaxed text-[#0F172A]/72">{project.description}</p>
+              </div>
+            </>
+          );
+
+          const className = "group overflow-hidden rounded-xl border border-[#0F172A]/20 bg-[#FAF9F6] transition-[border-color,box-shadow] duration-200 hover:border-[#0F172A]/45 hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)] motion-reduce:transition-none";
+          return <a key={project.id} href={project.href} target="_blank" rel="noreferrer" aria-label={language === "es" ? `Abrir sitio de ${project.name}` : `Open ${project.name} website`} className={`${className} cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0F172A]`}>{content}</a>;
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -362,6 +508,8 @@ function CasesContent() {
                 </article>
               );
             })}
+
+            <OtherProjectsGrid copy={copy.otherProjects} language={language as Language} />
           </div>
         </section>
 
