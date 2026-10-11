@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/src/context/LanguageContext";
 import { ConnoisseurStackInteractor } from "@/src/components/ui/connoisseur-stack-interactor";
+import MaskedHeading from "@/src/components/ui/masked-heading";
 
 export default function QueHagoSection() {
   const { t } = useLanguage();
@@ -16,15 +17,16 @@ export default function QueHagoSection() {
     <section id="soluciones" className="scroll-mt-24 py-16 sm:py-24">
       <div className="space-y-12 sm:space-y-16">
         <div className="max-w-5xl">
-          <h2 className="font-sans text-4xl font-semibold tracking-tighter text-[#FAF9F6] sm:text-5xl lg:text-6xl">
-            {t.whatIDo.title}
-          </h2>
+          <MaskedHeading
+            text={t.whatIDo.title}
+            className="font-sans text-4xl font-semibold tracking-tighter text-[#FAF9F6] sm:text-5xl lg:text-6xl"
+          />
           <p className="mt-6 max-w-4xl text-lg leading-relaxed text-slate-300 sm:text-xl">
             {t.whatIDo.description}
           </p>
         </div>
 
-        <ConnoisseurStackInteractor items={services} linkLabel={t.whatIDo.learnMore} listLabel={t.whatIDo.subtitle} />
+        <ConnoisseurStackInteractor id="soluciones-interactor" items={services} linkLabel={t.whatIDo.learnMore} listLabel={t.whatIDo.subtitle} />
       </div>
     </section>
   );

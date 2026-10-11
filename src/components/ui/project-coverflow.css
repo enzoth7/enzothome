@@ -1,0 +1,25 @@
+.project-coverflow .swiper { padding: 16px 0 28px; touch-action: pan-y; }
+.project-coverflow .swiper-wrapper { align-items: stretch; }
+.project-coverflow .swiper-slide { width: 88%; height: auto; }
+@media (min-width: 640px) {
+  .project-coverflow .swiper-slide { width: min(78%, 640px); }
+}
+@media (min-width: 1024px) {
+  .project-coverflow .swiper-slide { width: min(66%, 640px); }
+}
+.project-coverflow .swiper-slide > a { display: block; height: 100%; }
+.project-coverflow .swiper-slide-active > a { border-color: #0F172A; }
+.project-coverflow-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid #0F172A;
+  border-radius: 50%;
+  color: #0F172A;
+  cursor: pointer;
+}
+.project-coverflow-arrow:hover { background: #0F172A; color: #FAF9F6; }
+.project-coverflow-arrow:focus-visible { outline: 2px solid #0F172A; outline-offset: 4px; }

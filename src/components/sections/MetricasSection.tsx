@@ -2,6 +2,7 @@
 
 import ExpandableGallery, { GalleryItem } from "@/src/components/ui/gallery-animation";
 import { useLanguage } from "@/src/context/LanguageContext";
+import MaskedHeading from "@/src/components/ui/masked-heading";
 
 const PHOTOS = [
   {
@@ -45,12 +46,11 @@ export default function MetricasSection() {
     <section aria-labelledby="friction-title" className="py-14 sm:py-20">
       <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-start lg:gap-16 xl:gap-20">
         <div className="lg:sticky lg:top-28">
-          <h2
+          <MaskedHeading
             id="friction-title"
+            text={t.precisionMetrics.title}
             className="max-w-xl font-sans text-4xl font-semibold tracking-tighter text-[#0F172A] sm:text-5xl lg:text-6xl"
-          >
-            {t.precisionMetrics.title}
-          </h2>
+          />
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-700">
             {t.precisionMetrics.description}
           </p>

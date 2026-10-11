@@ -30,12 +30,12 @@ export default function LanguageToggle({ inline = false, dark = false }: Languag
               : "text-slate-500 hover:text-neutral-900"
           }`}
       >
-        <span className="relative block h-2.5 w-3.5 overflow-hidden rounded-[1px] sm:h-3 sm:w-4">
+        <div className="relative block h-2.5 w-3.5 overflow-hidden rounded-[1px] sm:h-3 sm:w-4">
           <svg viewBox="0 0 640 480" className="h-full w-full object-cover">
             <path fill="#c60b1e" d="M0 0h640v480H0z" />
             <path fill="#ffc400" d="M0 120h640v240H0z" />
           </svg>
-        </span>
+        </div>
         ES
       </button>
       <button
@@ -49,36 +49,15 @@ export default function LanguageToggle({ inline = false, dark = false }: Languag
               : "text-slate-500 hover:text-neutral-900"
           }`}
       >
-        <span className="relative block h-2.5 w-3.5 overflow-hidden rounded-[1px] sm:h-3 sm:w-4">
-          <svg viewBox="0 0 640 480" className="h-full w-full object-cover">
-            <path fill="#bf0a30" d="M0 0h640v480H0z" />
-            <path fill="#fff" d="M0 0h640v480H0z" />
-            {/* Stripes */}
-            <g fill="#bf0a30">
-              <rect width="640" height="37" y="0" />
-              <rect width="640" height="37" y="74" />
-              <rect width="640" height="37" y="148" />
-              <rect width="640" height="37" y="222" />
-              <rect width="640" height="37" y="296" />
-              <rect width="640" height="37" y="370" />
-              <rect width="640" height="37" y="444" />
-            </g>
-            <rect fill="#002868" width="296" height="259" />
-            {/* Simple stars dots */}
-            <g fill="#fff">
-              <circle cx="25" cy="25" r="8" />
-              <circle cx="150" cy="25" r="8" />
-              <circle cx="270" cy="25" r="8" />
-
-              <circle cx="85" cy="130" r="8" />
-              <circle cx="205" cy="130" r="8" />
-
-              <circle cx="25" cy="230" r="8" />
-              <circle cx="150" cy="230" r="8" />
-              <circle cx="270" cy="230" r="8" />
-            </g>
+        <div className="relative block h-2.5 w-3.5 overflow-hidden rounded-[1px] sm:h-3 sm:w-4">
+          <svg viewBox="0 0 60 30" className="h-full w-full object-cover" aria-hidden="true">
+            <path fill="#012169" d="M0 0h60v30H0z" />
+            <path stroke="#fff" strokeWidth="6" d="M0 0l60 30M60 0L0 30" />
+            <path stroke="#C8102E" strokeWidth="2" d="M0 0l60 30M60 0L0 30" />
+            <path stroke="#fff" strokeWidth="10" d="M30 0v30M0 15h60" />
+            <path stroke="#C8102E" strokeWidth="6" d="M30 0v30M0 15h60" />
           </svg>
-        </span>
+        </div>
         EN
       </button>
     </div>

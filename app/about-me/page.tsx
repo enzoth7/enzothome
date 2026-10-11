@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
 import Background from "@/src/components/sections/Background";
 import SiteFooter from "@/src/components/sections/SiteFooter";
-import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
+import { useLanguage } from "@/src/context/LanguageContext";
 
 function AboutContent() {
   const { t } = useLanguage();
@@ -88,9 +88,5 @@ function AboutContent() {
 }
 
 export default function AboutMePage() {
-  return (
-    <LanguageProvider>
-      <AboutContent />
-    </LanguageProvider>
-  );
+  return <AboutContent />;
 }

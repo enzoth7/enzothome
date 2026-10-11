@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
-import WhatsAppButton from "@/components/WhatsAppButton";
+import { cookies, headers } from "next/headers";
+import ScrollReveal from "@/components/ScrollReveal";
+import { LanguageProvider } from "@/src/context/LanguageContext";
+import { languageForRequest, type SiteLanguage } from "@/src/lib/site-language";
 import { INSTAGRAM_URL, SITE_URL } from "@/src/constants/seo";
 import "./globals.css";
 
@@ -85,13 +88,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [requestHeaders, requestCookies] = await Promise.all([headers(), cookies()]);
+  const savedLanguage = requestCookies.get("language")?.value;
+  const initialLanguage: SiteLanguage = savedLanguage === "es" || savedLanguage === "en"
+    ? savedLanguage
+    : languageForRequest(requestHeaders.get("x-vercel-ip-country"), requestHeaders.get("accept-language"));
+
   return (
-    <html lang="es">
+    <html lang={initialLanguage}>
       <head>
         {/* Google Analytics (gtag.js) */}
         <Script
@@ -115,9 +124,9 @@ export default function RootLayout({
         >
           Ir al contenido
         </a>
-        {children}
+        <LanguageProvider initialLanguage={initialLanguage}>{children}</LanguageProvider>
+        <ScrollReveal />
         <Analytics />
-        <WhatsAppButton />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

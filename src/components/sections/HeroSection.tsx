@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { trackEvent } from "@/src/lib/analytics";
 
@@ -119,6 +119,12 @@ function HeroVideoBackground() {
 export default function HeroSection() {
   const { t } = useLanguage();
   const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -24]);
 
   const titleLines = [
     t.hero.titleLine1,
@@ -127,23 +133,31 @@ export default function HeroSection() {
   ];
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-transparent text-[#FAF9F6]">
+    <section ref={sectionRef} className="relative min-h-screen w-full overflow-hidden bg-transparent text-[#FAF9F6]">
       <HeroVideoBackground />
 
-      <div className="relative z-10 mx-auto grid min-h-screen w-full max-w-[1800px] grid-cols-1 gap-10 px-6 pb-16 pt-28 sm:px-10 sm:pb-20 sm:pt-32 lg:grid-cols-[38%_62%] lg:gap-0 lg:pb-14 lg:pl-14 lg:pr-28 lg:pt-24 xl:pl-20 xl:pr-32">
+      <motion.div
+        className="relative z-10 mx-auto grid min-h-screen w-full max-w-[1800px] grid-cols-1 gap-10 px-6 pb-16 pt-28 sm:px-10 sm:pb-20 sm:pt-32 lg:grid-cols-[38%_62%] lg:gap-0 lg:pb-14 lg:pl-14 lg:pr-28 lg:pt-24 xl:pl-20 xl:pr-32"
+        style={reduceMotion ? undefined : { y: contentY }}
+      >
         <div className="order-1 flex min-w-0 items-start justify-center lg:order-2 lg:items-center lg:justify-end">
           <div className="flex min-w-0 w-full max-w-[52rem] flex-col items-end lg:-translate-y-[2vh]">
             <h1 className="w-full min-w-0 break-words font-sans text-[clamp(2.25rem,10vw,3.75rem)] font-semibold uppercase leading-[1.14] tracking-[-0.055em] text-[#FAF9F6] sm:text-7xl lg:text-[clamp(4.6rem,6.1vw,7.6rem)]">
               {titleLines.map((line, index) => (
-                <motion.span
-                  key={index}
-                  initial={reduceMotion ? false : { opacity: 0, y: 15 }}
-                  animate={{ opacity: 0.9, y: 0 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.35, delay: reduceMotion ? 0 : index * 0.08, ease: "easeOut" }}
-                  className="block text-right"
-                >
-                  {line}
-                </motion.span>
+                <span key={index} className="block overflow-hidden text-right">
+                  <motion.span
+                    initial={reduceMotion ? false : { opacity: 0, y: "110%" }}
+                    animate={{ opacity: 0.92, y: 0 }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.65,
+                      delay: reduceMotion ? 0 : 0.12 + index * 0.09,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="block"
+                  >
+                    {line}
+                  </motion.span>
+                </span>
               ))}
             </h1>
           </div>
@@ -172,7 +186,7 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

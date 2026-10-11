@@ -2,8 +2,9 @@
 
 import React, { createContext, useContext, useEffect, useSyncExternalStore, ReactNode } from "react";
 import { translations } from "@/src/data/translations";
+import type { SiteLanguage } from "@/src/lib/site-language";
 
-type Language = "es" | "en";
+type Language = SiteLanguage;
 
 interface LanguageContextProps {
     language: Language;
@@ -15,13 +16,25 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 const LANGUAGE_STORAGE_KEY = "language";
 const LANGUAGE_CHANGE_EVENT = "language-change";
 
-function getStoredLanguage(): Language {
+function getCookieLanguage(): Language | null {
+    const match = document.cookie.match(/(?:^|;\s*)language=(es|en)(?:;|$)/);
+    return match?.[1] as Language | undefined ?? null;
+}
+
+function getStoredLanguage(initialLanguage: Language): Language {
     if (typeof window === "undefined") {
-        return "es";
+        return initialLanguage;
     }
 
-    const saved = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return saved === "es" || saved === "en" ? saved : "es";
+    const cookieLanguage = getCookieLanguage();
+    if (cookieLanguage) return cookieLanguage;
+    try {
+        const saved = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+        if (saved === "es" || saved === "en") return saved;
+    } catch {
+        // Private browsing may disable storage; the server choice still works.
+    }
+    return initialLanguage;
 }
 
 function subscribe(onStoreChange: () => void) {
@@ -48,22 +61,39 @@ function subscribe(onStoreChange: () => void) {
     };
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({ children, initialLanguage }: { children: ReactNode; initialLanguage: Language }) {
     const language = useSyncExternalStore<Language>(
         subscribe,
-        getStoredLanguage,
-        () => "es"
+        () => getStoredLanguage(initialLanguage),
+        () => initialLanguage
     );
 
     const toggleLanguage = () => {
         const nextLang = language === "es" ? "en" : "es";
-        window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLang);
+        document.cookie = `language=${nextLang}; Path=/; Max-Age=31536000; SameSite=Lax`;
+        try {
+            window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLang);
+        } catch {
+            // The cookie is enough to persist the manual selection.
+        }
         window.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
     };
 
     useEffect(() => {
         document.documentElement.lang = language;
     }, [language]);
+
+    useEffect(() => {
+        if (getCookieLanguage()) return;
+        try {
+            const saved = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+            if (saved === "es" || saved === "en") {
+                document.cookie = `language=${saved}; Path=/; Max-Age=31536000; SameSite=Lax`;
+            }
+        } catch {
+            // No migration is needed if storage is unavailable.
+        }
+    }, []);
 
     const t = translations[language];
 

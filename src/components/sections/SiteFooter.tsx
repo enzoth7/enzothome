@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/src/context/LanguageContext";
 
@@ -19,6 +19,7 @@ export default function SiteFooter({ className = "" }: { className?: string }) {
   const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<number | null>(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => () => {
     if (copyTimeoutRef.current) window.clearTimeout(copyTimeoutRef.current);
@@ -36,7 +37,17 @@ export default function SiteFooter({ className = "" }: { className?: string }) {
   };
 
   return (
-    <footer className={`py-12 sm:py-14 ${className}`}>
+    <motion.footer
+      initial={
+        reduceMotion
+          ? false
+          : { clipPath: "inset(14% 0 0 0)", opacity: 0.45, y: 42 }
+      }
+      whileInView={{ clipPath: "inset(0% 0 0 0)", opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: reduceMotion ? 0 : 0.72, ease: [0.22, 1, 0.36, 1] }}
+      className={`overflow-hidden py-12 sm:py-14 ${className}`}
+    >
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-16">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-4">
@@ -114,6 +125,6 @@ export default function SiteFooter({ className = "" }: { className?: string }) {
           </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

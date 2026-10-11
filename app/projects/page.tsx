@@ -6,9 +6,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import MobileLanguageToggle from "@/components/MobileLanguageToggle";
 import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
+import ProjectCoverflow from "@/src/components/ui/project-coverflow";
 import Background from "@/src/components/sections/Background";
 import SiteFooter from "@/src/components/sections/SiteFooter";
-import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
+import { useLanguage } from "@/src/context/LanguageContext";
 import { trackEvent } from "@/src/lib/analytics";
 
 type Language = "es" | "en";
@@ -348,7 +349,7 @@ function OtherProjectsGrid({ copy, language }: { copy: PageCopy["otherProjects"]
         <h2 id="other-projects-heading" className="font-sans text-4xl font-semibold tracking-[-0.045em] text-[#111111] sm:text-5xl">{copy.title}</h2>
       </div>
 
-      <div className="mt-10 grid gap-7 lg:mt-12 lg:grid-cols-2 lg:gap-8">
+      <ProjectCoverflow language={language}>
         {copy.projects.map((project) => {
           const content = (
             <>
@@ -369,7 +370,7 @@ function OtherProjectsGrid({ copy, language }: { copy: PageCopy["otherProjects"]
           const className = "group overflow-hidden rounded-xl border border-[#0F172A]/20 bg-[#FAF9F6] transition-[border-color,box-shadow] duration-200 hover:border-[#0F172A]/45 hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)] motion-reduce:transition-none";
           return <a key={project.id} href={project.href} target="_blank" rel="noreferrer" aria-label={language === "es" ? `Abrir sitio de ${project.name}` : `Open ${project.name} website`} className={`${className} cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0F172A]`}>{content}</a>;
         })}
-      </div>
+      </ProjectCoverflow>
     </section>
   );
 }
@@ -547,5 +548,5 @@ function CasesContent() {
 }
 
 export default function ProjectsPage() {
-  return <LanguageProvider><CasesContent /></LanguageProvider>;
+  return <CasesContent />;
 }

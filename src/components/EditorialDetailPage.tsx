@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import SocialRail from "@/components/SocialRail";
 import Background from "@/src/components/sections/Background";
 import TabletMockup3D from "@/src/components/ui/tablet-mockup-3d";
-import { LanguageProvider, useLanguage } from "@/src/context/LanguageContext";
+import { useLanguage } from "@/src/context/LanguageContext";
 import { trackEvent } from "@/src/lib/analytics";
 
 export type DetailPageCopy = {
@@ -93,5 +93,5 @@ function DetailContent({ es, en, caseName, minimalChrome = false, heroImage, her
 }
 
 export default function EditorialDetailPage(props: { es: DetailPageCopy; en: DetailPageCopy; caseName?: string; minimalChrome?: boolean; heroImage?: string; heroAlt?: { es: string; en: string } }) {
-  return <LanguageProvider><DetailContent {...props} /></LanguageProvider>;
+  return <DetailContent {...props} />;
 }

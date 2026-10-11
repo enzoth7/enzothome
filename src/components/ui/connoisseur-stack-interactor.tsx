@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 export type ServiceInteractorItem = {
   number: string;
@@ -14,16 +15,65 @@ export type ServiceInteractorItem = {
 };
 
 type ServiceInteractorProps = {
+  id: string;
   items: ServiceInteractorItem[];
   linkLabel: string;
   listLabel: string;
 };
 
-export function ConnoisseurStackInteractor({ items, linkLabel, listLabel }: ServiceInteractorProps) {
+export function ConnoisseurStackInteractor({ id, items, linkLabel, listLabel }: ServiceInteractorProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const instanceId = useId().replace(/:/g, "");
+  const instanceId = id;
   const activeItem = items[activeIndex];
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    let animationFrame = 0;
+
+    const updateFromScroll = () => {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = window.requestAnimationFrame(() => {
+        if (!desktopQuery.matches) return;
+
+        const containerRect = container.getBoundingClientRect();
+        if (containerRect.top >= window.innerHeight || containerRect.bottom <= 0) return;
+
+        const tabs = container.querySelectorAll<HTMLButtonElement>("[data-service-tab]");
+        const readingLine = window.innerHeight * 0.45;
+        let closestIndex = 0;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        tabs.forEach((tab, index) => {
+          const rect = tab.getBoundingClientRect();
+          const distance = Math.abs(rect.top + rect.height / 2 - readingLine);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+
+        setActiveIndex((current) => (current === closestIndex ? current : closestIndex));
+      });
+    };
+
+    updateFromScroll();
+    window.addEventListener("scroll", updateFromScroll, { passive: true });
+    window.addEventListener("resize", updateFromScroll);
+    desktopQuery.addEventListener("change", updateFromScroll);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("scroll", updateFromScroll);
+      window.removeEventListener("resize", updateFromScroll);
+      desktopQuery.removeEventListener("change", updateFromScroll);
+    };
+  }, [items.length]);
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -95,12 +145,9 @@ export function ConnoisseurStackInteractor({ items, linkLabel, listLabel }: Serv
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="grid items-center gap-14 overflow-hidden py-4 lg:min-h-[660px] lg:grid-cols-[minmax(0,1fr)_minmax(380px,1fr)] lg:gap-16"
-    >
-      <div role="tablist" aria-label={listLabel} aria-orientation="vertical">
-        <div className="flex flex-col gap-9 sm:gap-11 lg:gap-14">
+    <div ref={containerRef} className="grid items-start gap-14 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(380px,1fr)] lg:gap-16">
+        <div role="tablist" aria-label={listLabel} aria-orientation="vertical">
+          <div className="flex flex-col gap-9 sm:gap-11 lg:gap-0">
         {items.map((item, index) => {
           const isActive = index === activeIndex;
 
@@ -118,7 +165,7 @@ export function ConnoisseurStackInteractor({ items, linkLabel, listLabel }: Serv
               onFocus={() => selectItem(index)}
               onClick={() => selectItem(index)}
               onKeyDown={(event) => handleKeyDown(event, index)}
-              className="group flex min-h-20 w-full cursor-pointer items-start gap-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-[#FAF9F6] sm:min-h-24 sm:gap-6"
+              className="group flex min-h-20 w-full cursor-pointer items-start gap-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-[#FAF9F6] sm:min-h-24 sm:gap-6 lg:min-h-[42vh] lg:items-center"
             >
               <span
                 className={`mt-1 w-9 shrink-0 font-mono text-xl font-bold tracking-[-0.05em] transition-all duration-300 sm:mt-2 sm:w-12 sm:text-2xl ${
@@ -139,16 +186,27 @@ export function ConnoisseurStackInteractor({ items, linkLabel, listLabel }: Serv
             </button>
           );
         })}
-        </div>
-      </div>
+          </div>
 
-      <div
-        id={`${instanceId}-service-panel`}
-        role="tabpanel"
-        aria-labelledby={`${instanceId}-service-${activeIndex}`}
-        className="min-w-0 lg:pt-2"
-      >
-        <div className="relative mx-auto aspect-square w-full max-w-[540px]">
+          <div aria-hidden="true" className="mt-10 hidden items-center gap-2 lg:flex">
+            {items.map((item, index) => (
+              <span
+                key={item.number}
+                className={`h-px transition-all duration-500 ${
+                  index === activeIndex ? "w-14 bg-[#FAF9F6]" : "w-6 bg-[#FAF9F6]/25"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div
+          id={`${instanceId}-service-panel`}
+          role="tabpanel"
+          aria-labelledby={`${instanceId}-service-${activeIndex}`}
+          className="min-w-0 lg:sticky lg:top-24 lg:self-start lg:pt-2"
+        >
+          <div className="relative mx-auto aspect-square w-full max-w-[540px]">
           <div aria-hidden="true" className="absolute inset-[8%] rounded-full bg-[#FAF9F6]/[0.07] blur-[90px]" />
           <svg
             viewBox="0 0 500 500"
@@ -201,18 +259,28 @@ export function ConnoisseurStackInteractor({ items, linkLabel, listLabel }: Serv
               />
             </g>
           </svg>
-        </div>
+          </div>
 
-        <div className="mx-auto mt-2 max-w-[540px] border-t border-[#FAF9F6]/20 pt-5" aria-live="polite">
-          <p className="text-base leading-relaxed text-[#FAF9F6]/75">{activeItem.description}</p>
-          <Link
-            href={activeItem.href}
-            className="mt-5 inline-flex min-h-11 items-center border-b border-[#FAF9F6]/60 text-sm font-semibold text-[#FAF9F6] transition-colors hover:border-[#FAF9F6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FAF9F6]"
-          >
-            {linkLabel}
-          </Link>
+          <div className="mx-auto mt-2 max-w-[540px] border-t border-[#FAF9F6]/20 pt-5" aria-live="polite">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeItem.number}
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: reduceMotion ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <p className="text-base leading-relaxed text-[#FAF9F6]/75">{activeItem.description}</p>
+                <Link
+                  href={activeItem.href}
+                  className="mt-5 inline-flex min-h-11 items-center border-b border-[#FAF9F6]/60 text-sm font-semibold text-[#FAF9F6] transition-colors hover:border-[#FAF9F6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FAF9F6]"
+                >
+                  {linkLabel}
+                </Link>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
     </div>
   );
 }
