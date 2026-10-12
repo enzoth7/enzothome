@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import { cookies, headers } from "next/headers";
@@ -14,12 +14,6 @@ const plexSans = IBM_Plex_Sans({
   variable: "--font-plex-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-});
-
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const SEO_DESCRIPTION =
@@ -117,7 +111,7 @@ export default async function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${plexSans.variable} ${newsreader.variable} antialiased`}>
+      <body className={`${plexSans.variable} antialiased`}>
         <a
           href="#main-content"
           className="fixed left-4 top-4 z-[200] -translate-y-24 bg-[#FAF9F6] px-4 py-3 font-semibold text-[#0F172A] transition focus:translate-y-0 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#0F172A]"

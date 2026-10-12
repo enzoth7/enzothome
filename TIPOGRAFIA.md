@@ -54,9 +54,9 @@ La recomendación prioriza una “O” geométrica y redonda en los títulos, ma
 
 ## Tipografías actuales de la web
 
-- Principal y cuerpo: **IBM Plex Sans**.
-- Display/editorial disponible: **Newsreader**.
-- El hero y el botón principal utilizan actualmente IBM Plex Sans.
+- Única familia tipográfica: **IBM Plex Sans**.
+- Pesos disponibles: Regular 400, Medium 500 y Semibold 600.
+- Se utiliza en títulos, cuerpo, navegación, botones, formularios y textos funcionales.
 
 ## Alternativa de réplica literal
 

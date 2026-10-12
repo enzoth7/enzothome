@@ -11,6 +11,8 @@
   "dependencies": {
     "@react-email/components": "^1.0.10",
     "@react-email/render": "^2.0.4",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.117.3",
     "@vercel/analytics": "^1.6.1",
     "country-flag-icons": "^1.6.20",
     "framer-motion": "^12.26.1",

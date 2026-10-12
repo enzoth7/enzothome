@@ -9,7 +9,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-plex-sans);
-  --font-display: var(--font-newsreader);
+  --font-display: var(--font-plex-sans);
 }
 
 body {

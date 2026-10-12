@@ -1,0 +1,56 @@
+{
+  "runId": "et-instagram-2026-10-01",
+  "scope": "social-kit",
+  "step": "complete",
+  "fileKey": "stcQmEora8pTnB3bywRNMG",
+  "pageId": "0:1",
+  "entities": {
+    "collections": {
+      "primitives": "VariableCollectionId:5:2",
+      "semantic": "VariableCollectionId:5:6",
+      "layout": "VariableCollectionId:5:12"
+    },
+    "variables": {
+      "navy": "VariableID:5:3",
+      "warm": "VariableID:5:4",
+      "black": "VariableID:5:5",
+      "bg": "VariableID:5:7",
+      "surface": "VariableID:5:8",
+      "textPrimary": "VariableID:5:9",
+      "textInverse": "VariableID:5:10",
+      "border": "VariableID:5:11"
+    }
+  },
+  "deliverables": {
+    "board": "6:18",
+    "componentsBoard": "6:14",
+    "posts": ["6:21", "6:41", "6:66", "6:85", "6:111", "6:130"],
+    "reels": ["6:150", "6:171", "6:190"],
+    "overlay": "6:210",
+    "ad": "6:220",
+    "guide": "6:240",
+    "instagramProfileProposal": "13:52",
+    "marketingPositioning": "13:116",
+    "ownerFriendlyVideoHooks": "13:131",
+    "dashboardToAiCarousel": "24:28",
+    "starterSingles": "26:51",
+    "starterSingleComponents": ["26:26", "26:33", "26:40"],
+    "starterSinglePosts": ["26:52", "26:59", "26:66", "26:73", "26:80", "26:87", "26:94", "26:101", "26:108", "26:115", "26:122", "26:129", "26:136", "26:143", "26:150", "26:157", "26:164", "26:171", "26:178", "26:185", "26:192", "26:199", "26:206", "26:213", "26:220", "26:227", "26:234", "26:241", "26:248", "26:255", "26:262", "26:269", "26:276", "26:283"]
+  },
+  "typography": {
+    "family": "IBM Plex Sans",
+    "display": "Bold 700",
+    "supporting": ["SemiBold 600", "Medium 500", "Regular 400"],
+    "displayTrackingPercent": -4.5
+  },
+  "simplification": {
+    "decorativeCirclesRemoved": 72,
+    "repeatedFootersRemoved": 12,
+    "serviceNumbersRemoved": 3,
+    "stockPhotoSlots": ["15:50", "15:52", "15:54", "15:56", "15:58", "15:60", "15:62", "15:64"],
+    "websiteMentionsRemaining": 1,
+    "nameMentionsRemaining": 2
+  },
+  "pendingValidations": [],
+  "completedSteps": ["discovery", "foundations/verified", "components/verified", "kit/structural-audit", "kit/visual-review", "portrait/verified", "typography/ibm-plex-audit", "instagram-profile/verified", "marketing-messaging/verified", "visual-simplification/verified", "stock-imagery/verified", "dashboard-to-ai-carousel/verified", "starter-singles-34/verified"]
+}

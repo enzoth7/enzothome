@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { trackEvent } from "@/src/lib/analytics";
 
 const WHATSAPP_NUMBER = "59898633186";
@@ -10,6 +11,8 @@ const WHATSAPP_MESSAGE = encodeURIComponent(
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+  if (/^\/(portal|ops)(\/|$)/.test(pathname)) return null;
   return (
     <a
       href={WHATSAPP_URL}
