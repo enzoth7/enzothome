@@ -1,6 +1,6 @@
 export type Client = { id: string; company: string; name: string; email: string; language: string; notes: string; logoFileId?: string; logoFileName?: string; portalToken?: string };
 export type Intake = { contact: string; goal: string; success: string; context: string; date: string };
-export type Project = { id: string; clientId: string; title: string; description: string; status: string; start: string; due: string; intake?: Intake };
+export type Project = { id: string; clientId: string; title: string; description: string; status: string; start: string; due: string; intake?: Intake; internalChecklist?: string[] };
 export type Task = { id: string; projectId: string; title: string; status: string; due: string; owner: string; kind: string };
 export type Document = { id: string; projectId: string; title: string; kind: string; status: string; date: string; content: string; fileId: string; fileName: string };
 export type InvoiceLine = { id: string; description: string; amount: number };
@@ -16,6 +16,34 @@ export type WorkspaceData = { version: 1; bankAccounts?: BankAccount[] } & { [K 
 export const projectStatuses = ["Por comenzar", "En curso", "En revisión", "En pausa", "Finalizado"];
 export const taskStatuses = ["Pendiente", "En curso", "En revisión", "Completada"];
 export const documentKinds = ["Contrato de servicios", "Alcance del Proyecto", "Propuesta Comercial", "Otro"];
+export const internalChecklistItems = [
+  { id: "custom-404", label: "Página 404 personalizada" },
+  { id: "cta-above-fold", label: "CTA visible antes de hacer scroll" },
+  { id: "meta-title", label: "Título meta por página" },
+  { id: "meta-description", label: "Descripción meta por página" },
+  { id: "open-graph", label: "Imagen Open Graph" },
+  { id: "favicon", label: "Set de favicon" },
+  { id: "robots", label: "robots.txt" },
+  { id: "sitemap", label: "sitemap.xml" },
+  { id: "alt-text", label: "Texto alternativo en cada imagen" },
+  { id: "mobile-breakpoints", label: "Breakpoints móviles" },
+  { id: "sticky-mobile-cta", label: "CTA fijo en mobile" },
+  { id: "loading-states", label: "Estados de carga" },
+  { id: "form-errors", label: "Estados de error en formularios" },
+  { id: "thank-you", label: "Página de agradecimiento" },
+  { id: "privacy", label: "Página de política de privacidad" },
+  { id: "terms", label: "Página de términos y condiciones" },
+  { id: "cookies", label: "Banner de cookies" },
+  { id: "analytics", label: "Analítica instalada" },
+  { id: "contact-address", label: "Dirección de contacto real" },
+  { id: "domain-https-redirects", label: "Dominio, HTTPS y redirecciones" },
+  { id: "canonical-urls", label: "URLs canónicas" },
+  { id: "search-console", label: "Google Search Console" },
+  { id: "structured-data-geo", label: "Datos estructurados y GEO básico" },
+  { id: "llms-txt", label: "llms.txt" },
+  { id: "performance-accessibility", label: "Rendimiento y accesibilidad" },
+  { id: "forms-integrations", label: "Formularios e integraciones probadas" },
+] as const;
 export const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "America/Montevideo" });
 export const uid = () => crypto.randomUUID();
 export function dateLabel(value: string, locale = "es-UY") {
@@ -100,6 +128,8 @@ export function isWorkspaceData(value: unknown): value is WorkspaceData {
   })) return false;
   if (data.bankAccounts !== undefined && (!Array.isArray(data.bankAccounts) || data.bankAccounts.some(account => !account || typeof account.id !== "string" || typeof account.bankName !== "string" || !account.bankName.trim() || typeof account.accountHolder !== "string" || !account.accountHolder.trim() || typeof account.accountNumber !== "string" || (!account.accountNumber.trim() && !account.paymentUrl?.trim()) || (account.paymentUrl !== undefined && (typeof account.paymentUrl !== "string" || (!!account.paymentUrl && !safeUrl(account.paymentUrl)))) || typeof account.currency !== "string" || !["USD", "UYU", "EUR", "GBP"].includes(account.currency) || typeof account.instructions !== "string" || !Array.isArray(account.clientIds) || account.clientIds.some(id => typeof id !== "string" || !data.clients.some(client => client.id === id)) || (account.iconFileId !== undefined && typeof account.iconFileId !== "string") || (account.iconFileName !== undefined && typeof account.iconFileName !== "string")))) return false;
   if (data.projects.some(p => !data.clients.some(c => c.id === p.clientId))) return false;
+  const checklistIds = new Set(internalChecklistItems.map(item => item.id));
+  if (data.projects.some(project => project.internalChecklist !== undefined && (!Array.isArray(project.internalChecklist) || new Set(project.internalChecklist).size !== project.internalChecklist.length || project.internalChecklist.some(item => typeof item !== "string" || !checklistIds.has(item as (typeof internalChecklistItems)[number]["id"]))))) return false;
   for (const key of ["tasks", "documents", "invoices", "approvals", "resources"] as const) {
     if (data[key].some(e => !data.projects.some(p => p.id === e.projectId))) return false;
   }

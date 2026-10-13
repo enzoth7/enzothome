@@ -14,6 +14,7 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
     resources: <><path d="m10 14 4-4M8 16l-2 2a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0M16 8l2-2a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(2 -1) scale(.85)"/></>,
     messages: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></>,
     tasks: <><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><path d="M18 4h3v7h-3"/></>,
+    checklist: <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 8 1.5 1.5L12 7M14 8h3m-9 5 1.5 1.5L12 12m2 1h3m-9 5 1.5 1.5L12 17m2 1h3"/></>,
     arrow: <><path d="M4 12h16m-6-6 6 6-6 6"/></>,
     external: <><path d="M14 3h7v7M21 3l-10 10M10 3H3v18h18v-7"/></>,
     plus: <path d="M12 5v14M5 12h14"/>,

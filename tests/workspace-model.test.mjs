@@ -74,3 +74,11 @@ test("completed intake is accepted but malformed intake and dates are rejected",
   data.invoices[0].date = "invalid";
   assert.equal(isWorkspaceData(data), false);
 });
+
+test("the private web checklist is validated per project", () => {
+  const data = createFixture();
+  data.projects[0].internalChecklist = ["custom-404", "analytics", "search-console", "llms-txt"];
+  assert.equal(isWorkspaceData(JSON.parse(JSON.stringify(data))), true);
+  data.projects[0].internalChecklist.push("unknown-check");
+  assert.equal(isWorkspaceData(data), false);
+});

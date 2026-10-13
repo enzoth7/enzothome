@@ -33,6 +33,7 @@ function fromRow(collection: Collection, row: Row): Collections[Collection] {
       id: text(row.id), clientId: text(row.client_id), title: text(row.title), description: text(row.description), status: text(row.status),
       start: text(row.start_date), due: text(row.due_date),
       ...(row.intake && typeof row.intake === "object" ? { intake: row.intake as Collections["projects"]["intake"] } : {}),
+      internalChecklist: Array.isArray(row.internal_checklist) ? row.internal_checklist.filter(item => typeof item === "string") as string[] : [],
     };
     case "tasks": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), status: text(row.status), due: text(row.due_date), owner: text(row.owner), kind: text(row.kind) };
     case "documents": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), kind: text(row.kind), status: text(row.status), date: text(row.document_date), content: text(row.content), fileId: text(row.storage_path), fileName: text(row.file_name) };
@@ -56,7 +57,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
     }
     case "projects": {
       const value = item as Collections["projects"];
-      return { ...base, client_id: value.clientId, title: value.title, description: value.description, status: value.status, start_date: value.start, due_date: value.due, intake: value.intake || null };
+      return { ...base, client_id: value.clientId, title: value.title, description: value.description, status: value.status, start_date: value.start, due_date: value.due, intake: value.intake || null, internal_checklist: value.internalChecklist || [] };
     }
     case "tasks": {
       const value = item as Collections["tasks"];

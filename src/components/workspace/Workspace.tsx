@@ -6,17 +6,17 @@ import { Fragment, useEffect, useRef, useState, type FormEvent } from "react";
 import Editor, { type Entity } from "./Editor";
 import { portalText } from "./copy";
 import { Badge, Icon, Modal } from "./ui";
-import { createWorkspaceSeed, dateLabel, documentKinds, invoiceStatus, isWorkspaceData, money, safeUrl, today, uid, type Approval, type BankAccount, type Client, type Collection, type Document, type Invoice, type Message, type MessageAttachment, type Project, type WorkspaceData } from "./model";
+import { createWorkspaceSeed, dateLabel, documentKinds, internalChecklistItems, invoiceStatus, isWorkspaceData, money, safeUrl, today, uid, type Approval, type BankAccount, type Client, type Collection, type Document, type Invoice, type Message, type MessageAttachment, type Project, type WorkspaceData } from "./model";
 import { download, exportBackup, getFile, importBackup, saveFile, STORAGE_KEY } from "./storage";
 import { deleteBankAccount, deleteWorkspaceEntity, deleteWorkspaceProject, downloadAdminDocument, downloadPortalDocument, downloadPortalInvoice, getCurrentUser, hasSupabaseConfig, importWorkspaceData, loadAdminWorkspace, loadPortalWorkspace, publicLogoUrl, saveBankAccount, savePortalEntity, saveWorkspaceEntity, sendAdminMagicLink, sendWorkspaceEmail, signOutAdmin, uploadWorkspaceFile, type WorkspaceFileKind } from "./backend";
 import "./workspace.css";
 
-type View = "home" | Collection | "banking" | "settings";
+type View = "home" | Collection | "banking" | "checklist" | "settings";
 type Dialog = { kind: "editor"; collection: Collection; item?: Entity } | { kind: "document"; item: Document } | { kind: "invoice"; item: Invoice } | { kind: "approval"; item: Approval } | { kind: "delete"; collection: Collection; item: Entity } | { kind: "message"; clientId?: string; item?: Message } | { kind: "bank-account"; item?: BankAccount } | { kind: "delete-bank-account"; item: BankAccount } | { kind: "payment"; item: Invoice } | { kind: "intake"; item: Project } | null;
-const navLabels: Partial<Record<View, string>> = { home: "Vista general", clients: "Clientes", projects: "Proyectos", documents: "Documentos", invoices: "Facturas y pagos", banking: "Cuentas bancarias", approvals: "Revisiones", resources: "Enlaces útiles", messages: "Comunicaciones", settings: "Respaldo y datos" };
+const navLabels: Partial<Record<View, string>> = { home: "Vista general", clients: "Clientes", projects: "Proyectos", checklist: "Checklist web", documents: "Documentos", invoices: "Facturas y pagos", banking: "Cuentas bancarias", approvals: "Revisiones", resources: "Enlaces útiles", messages: "Comunicaciones", settings: "Respaldo y datos" };
 const portalNavLabels: Partial<Record<View, string>> = { home: "Overview", projects: "Projects", documents: "Documents", invoices: "Invoices & payments", approvals: "Reviews", resources: "Useful links" };
 const descriptions: Partial<Record<View, string>> = {
-  clients: "Cada relación, con su contexto y su espacio de trabajo.", projects: "Alcance, etapa actual y fechas clave de cada trabajo.", documents: "Contratos, alcances y propuestas, siempre a mano.", invoices: "Líneas, importes, vencimientos y estado de cada factura.", banking: "Tus cuentas y qué clientes pueden ver cada una.", approvals: "Lo que el cliente tiene que revisar, confirmar o dejar acordado.", resources: "Accesos directos a las herramientas y archivos del proyecto.", messages: "Prepará cada comunicación con el contexto del cliente.", settings: "Los datos de este espacio se guardan en este navegador.",
+  clients: "Cada relación, con su contexto y su espacio de trabajo.", projects: "Alcance, etapa actual y fechas clave de cada trabajo.", checklist: "Control interno de salida para cada proyecto web. Esta información nunca aparece en el portal del cliente.", documents: "Contratos, alcances y propuestas, siempre a mano.", invoices: "Líneas, importes, vencimientos y estado de cada factura.", banking: "Tus cuentas y qué clientes pueden ver cada una.", approvals: "Lo que el cliente tiene que revisar, confirmar o dejar acordado.", resources: "Accesos directos a las herramientas y archivos del proyecto.", messages: "Prepará cada comunicación con el contexto del cliente.", settings: "Los datos de este espacio se guardan en este navegador.",
 };
 const portalDescriptions: Partial<Record<View, string>> = {
   projects: "Agreed scope, current stage and key dates.",
@@ -47,7 +47,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
   const backupInput = useRef<HTMLInputElement>(null);
   const backend = hasSupabaseConfig();
 
-  const nav: View[] = ops ? ["home", "clients", "projects", "documents", "invoices", "banking", "approvals", "resources", "messages"] : ["home", "projects", "documents", "invoices", "approvals", "resources"];
+  const nav: View[] = ops ? ["home", "clients", "projects", "checklist", "documents", "invoices", "banking", "approvals", "resources", "messages"] : ["home", "projects", "documents", "invoices", "approvals", "resources"];
   useEffect(() => {
     let active = true;
     let poll: ReturnType<typeof setInterval> | undefined;
@@ -74,7 +74,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
         if (current && requestedClient && (current.clients.some(c => c.id === requestedClient) || (ops && requestedClient === "all"))) setClientId(requestedClient);
         else if (!ops && current) setClientId(current.clients[0]?.id || "");
         const requestedView = params.get("view") as View;
-        const allowed = ops ? ["home", "clients", "projects", "documents", "invoices", "banking", "approvals", "resources", "messages", "settings"] : ["home", "projects", "documents", "invoices", "approvals", "resources"];
+        const allowed = ops ? ["home", "clients", "projects", "checklist", "documents", "invoices", "banking", "approvals", "resources", "messages", "settings"] : ["home", "projects", "documents", "invoices", "approvals", "resources"];
         setView(allowed.includes(requestedView) ? requestedView : "home");
         setProjectId("all"); setSearch(""); setFilter("Todos");
     };
@@ -229,7 +229,10 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
   const t = (es: string, en?: string) => en ? (english ? en : es) : portalText(es, english);
   const clientProjects = data.projects.filter(p => clientId === "all" || p.clientId === clientId);
   const projects = clientProjects.filter(p => projectId === "all" || p.id === projectId);
+  const checklistProject = clientProjects.find(project => project.id === projectId) || clientProjects[0];
   const ids = new Set(projects.map(p => p.id));
+  const phases = data.tasks.filter(task => ids.has(task.projectId) && task.kind === "Hito");
+  const completedPhases = phases.filter(task => task.status === "Completada").length;
   const matches = (entry: object) => JSON.stringify(entry).toLocaleLowerCase().includes(search.toLocaleLowerCase());
   const scoped = <T extends { projectId: string }>(entries: T[]) => entries.filter(e => ids.has(e.projectId));
   const documents = scoped(data.documents).filter(d => ops || d.status !== "Borrador");
@@ -305,15 +308,38 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
     <div className="ew-main-wrap">
       <header className="ew-topbar"><div>{ops ? "Operaciones" : client?.company || t("Tu espacio", "Your space")}<b>/</b>{t(navLabels[view] || "", portalNavLabels[view] || "")}</div><Link className="ew-site-link" href="/">enzothome.com <Icon name="external" size={14} /></Link></header>
       <main id="main-content" className="ew-main">
-        <header className="ew-page-heading"><div><h1>{view === "home" ? ops ? "Todo, en su lugar." : t(`Hola, ${client?.name || "bienvenido"}.`, `Hello, ${client?.name || "there"}.`) : t(navLabels[view] || "", portalNavLabels[view] || "")}</h1><div className="ew-intro">{view === "home" ? ops ? "Una vista clara de tus clientes, tus proyectos y lo que necesita atención." : t("Este es tu espacio. Lo que estamos construyendo y todo lo que necesitás, a mano.", "Your projects, reviews and documents are all here.") : t(descriptions[view] || "", portalDescriptions[view] || "")}</div></div><div className="ew-heading-action">{view === "home" ? ops ? addButton("projects", "Nuevo proyecto") : <button className="ew-button" onClick={() => navigate("approvals")}>{t("Ver pendientes", "View pending reviews")}<Icon name="arrow" size={17} /></button> : view === "banking" && ops ? <button className="ew-button" onClick={() => setDialog({ kind: "bank-account" })}><Icon name="plus" size={17} />Nueva cuenta</button> : ops && !["settings", "messages"].includes(view) ? addButton(view as Collection, ({ clients: "Nuevo cliente", projects: "Nuevo proyecto", tasks: "Nueva tarea", documents: "Nuevo documento", invoices: "Nueva factura", approvals: "Pedir revisión", resources: "Agregar enlace" } as Record<string, string>)[view]) : view === "messages" ? <button className="ew-button" onClick={() => setDialog({ kind: "message" })}><Icon name="plus" size={17} />Preparar email</button> : null}</div></header>
+        <header className="ew-page-heading"><div><h1>{view === "home" ? ops ? "Todo, en su lugar." : t(`Hola, ${client?.name || "bienvenido"}.`, `Hello, ${client?.name || "there"}.`) : t(navLabels[view] || "", portalNavLabels[view] || "")}</h1><div className="ew-intro">{view === "home" ? ops ? "Una vista clara de tus clientes, tus proyectos y lo que necesita atención." : t("Este es tu espacio. Lo que estamos construyendo y todo lo que necesitás, a mano.", "Your projects, reviews and documents are all here.") : t(descriptions[view] || "", portalDescriptions[view] || "")}</div></div><div className="ew-heading-action">{view === "home" ? ops ? addButton("projects", "Nuevo proyecto") : <button className="ew-button" onClick={() => navigate("approvals")}>{t("Ver pendientes", "View pending reviews")}<Icon name="arrow" size={17} /></button> : view === "banking" && ops ? <button className="ew-button" onClick={() => setDialog({ kind: "bank-account" })}><Icon name="plus" size={17} />Nueva cuenta</button> : ops && !["settings", "messages", "checklist"].includes(view) ? addButton(view as Collection, ({ clients: "Nuevo cliente", projects: "Nuevo proyecto", tasks: "Nueva tarea", documents: "Nuevo documento", invoices: "Nueva factura", approvals: "Pedir revisión", resources: "Agregar enlace" } as Record<string, string>)[view]) : view === "messages" ? <button className="ew-button" onClick={() => setDialog({ kind: "message" })}><Icon name="plus" size={17} />Preparar email</button> : null}</div></header>
 
         {view === "home" && <>
-          <div className="ew-stats"><Stat label={t("Proyectos activos")} value={String(projects.filter(p => p.status !== "Finalizado").length).padStart(2, "0")} detail={t(`${projects.filter(p => p.status === "Finalizado").length} finalizados`, `${projects.filter(p => p.status === "Finalizado").length} completed`)} icon="projects" onClick={() => navigate("projects")} /><Stat label={t("Por revisar")} value={String(pendingApprovals.length).padStart(2, "0")} detail={ops ? "Esperando al cliente" : t("Tu opinión nos ayuda a avanzar")} icon="approvals" onClick={() => navigate("approvals")} /><Stat label={t("Facturas pendientes")} value={String(outstanding.length).padStart(2, "0")} detail={t(outstanding.length ? "Ver importes y vencimientos" : "Todo al día")} icon="invoices" onClick={() => navigate("invoices")} /><Stat label={t("Documentos disponibles")} value={String(documents.length).padStart(2, "0")} detail={t("Contratos, alcances y propuestas")} icon="documents" onClick={() => navigate("documents")} /></div>
+          <div className="ew-stats"><Stat label={t("Por revisar")} value={String(pendingApprovals.length).padStart(2, "0")} detail={ops ? "Esperando al cliente" : t("Tu opinión nos ayuda a avanzar")} icon="approvals" onClick={() => navigate("approvals")} /><Stat label={t("Facturas pendientes")} value={String(outstanding.length).padStart(2, "0")} detail={t(outstanding.length ? "Ver importes y vencimientos" : "Todo al día")} icon="invoices" onClick={() => navigate("invoices")} /><Stat label={t("Documentos disponibles")} value={String(documents.length).padStart(2, "0")} detail={t("Contratos, alcances y propuestas")} icon="documents" onClick={() => navigate("documents")} /><PhaseProgress completed={completedPhases} total={phases.length} label={t("Fases completadas", "Completed phases")} onClick={() => navigate(ops ? "tasks" : "projects")} /></div>
           <section className="ew-section"><div className="ew-section-heading"><h2>{ops ? "Proyectos en marcha" : t("En qué estamos trabajando")}</h2><button className="ew-text-button" onClick={() => navigate("projects")}>{t("Ver todos")}<Icon name="arrow" size={15} /></button></div><div className="ew-table-wrap ew-project-table-wrap"><table className="ew-table ew-data-table ew-project-table"><thead><tr>{ops && <th>{t("Cliente")}</th>}<th>{t("Proyecto")}</th><th>{t("Alcance acordado")}</th><th>{t("Etapa actual")}</th><th>{t("Fin de etapa")}</th><th>{t("Inicio del proyecto", "Project start")}</th><th>{t("Fin del proyecto")}</th><th>{t("Acciones")}</th></tr></thead><tbody>{projects.filter(p => p.status !== "Finalizado").slice(0, 4).map(projectRow)}{!projects.some(p => p.status !== "Finalizado") && emptyRow(projectColumns, t("Todo listo para empezar"), ops ? "Creá un proyecto para organizar el trabajo." : t("Los nuevos proyectos van a aparecer aquí."))}</tbody></table></div></section>
           <section className="ew-section"><div className="ew-section-heading"><h2>{ops ? "Necesita atención" : t("Revisiones pendientes", "Pending reviews")}</h2></div><div className="ew-table-wrap"><table className="ew-table ew-data-table"><thead><tr><th>{t("Tipo")}</th><th>{t("Pendiente")}</th><th>{t("Fecha")}</th><th>{t("Acción")}</th></tr></thead><tbody>{pendingApprovals.slice(0, 5).map(a => <tr key={a.id}><td>{t("Revisión")}</td><td><strong>{a.title}</strong><small>{companyFor(a.projectId)}</small></td><td>{dateLabel(a.due, english ? "en-GB" : "es-UY")}</td><td><button className="ew-icon-button ew-action-button" aria-label={t("Revisar y responder")} title={t("Revisar y responder")} onClick={() => setDialog({ kind: "approval", item: a })}><Icon name={ops ? "eye" : "reply"} size={18} /></button></td></tr>)}{!pendingApprovals.length && emptyRow(4, t("Todo al día."), t("No hay revisiones pendientes por ahora.", "There are no pending reviews right now."))}</tbody></table></div></section>
         </>}
 
-        {!["home", "settings", "messages"].includes(view) && <div className="ew-toolbar"><label className="ew-search"><Icon name="search" size={19} /><input type="search" aria-label={t(`Buscar en ${navLabels[view]}`, `Search ${portalNavLabels[view]}`)} placeholder={t("Buscar en esta sección…")} value={search} onChange={e => setSearch(e.target.value)} /></label>{!["clients", "projects", "banking"].includes(view) && <select aria-label={t("Filtrar por proyecto")} value={projectId} onChange={e => setProjectId(e.target.value)}><option value="all">{t("Todos los proyectos")}</option>{clientProjects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select>}{view === "documents" && <select aria-label={t("Tipo de documento")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", ...documentKinds].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}{view === "invoices" && <select aria-label={t("Estado de factura")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", "Pendiente", "Pago parcial", "Pagada", "Vencida"].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}</div>}
+        {view === "checklist" && ops && (checklistProject ? <section className="ew-checklist-shell" aria-labelledby="internal-checklist-title">
+          <div className="ew-checklist-toolbar">
+            <label htmlFor="checklist-project">Proyecto</label>
+            <select id="checklist-project" value={checklistProject.id} onChange={event => setProjectId(event.target.value)}>{clientProjects.map(project => <option key={project.id} value={project.id}>{companyFor(project.id)} · {project.title}</option>)}</select>
+          </div>
+          <div className="ew-checklist-summary">
+            <div><div className="ew-checklist-eyebrow">Checklist privada</div><h2 id="internal-checklist-title">{checklistProject.title}</h2><div className="ew-muted">{companyFor(checklistProject.id)}</div></div>
+            <div className="ew-checklist-progress" aria-live="polite"><strong>{checklistProject.internalChecklist?.length || 0}<span>/{internalChecklistItems.length}</span></strong><div>puntos listos</div></div>
+          </div>
+          <progress className="ew-checklist-progressbar" value={checklistProject.internalChecklist?.length || 0} max={internalChecklistItems.length} aria-label={`${checklistProject.internalChecklist?.length || 0} de ${internalChecklistItems.length} puntos completados`} />
+          <div className="ew-checklist-grid">
+            {internalChecklistItems.map((item, index) => {
+              const checked = checklistProject.internalChecklist?.includes(item.id) || false;
+              return <label className={`ew-checklist-item ${checked ? "is-checked" : ""}`} key={item.id}>
+                <input type="checkbox" checked={checked} onChange={() => action(() => save("projects", { ...checklistProject, internalChecklist: checked ? (checklistProject.internalChecklist || []).filter(id => id !== item.id) : [...(checklistProject.internalChecklist || []), item.id] }))} />
+                <span className="ew-checklist-index">{String(index + 1).padStart(2, "0")}</span>
+                <span className="ew-checklist-label">{item.label}</span>
+                <span className="ew-checklist-mark" aria-hidden="true"><Icon name="check" size={16} /></span>
+              </label>;
+            })}
+          </div>
+        </section> : <div className="ew-empty"><Icon name="checklist" size={30} /><h3>No hay proyectos para revisar</h3><div>Creá un proyecto y su checklist aparecerá acá.</div></div>)}
+
+        {!["home", "settings", "messages", "checklist"].includes(view) && <div className="ew-toolbar"><label className="ew-search"><Icon name="search" size={19} /><input type="search" aria-label={t(`Buscar en ${navLabels[view]}`, `Search ${portalNavLabels[view]}`)} placeholder={t("Buscar en esta sección…")} value={search} onChange={e => setSearch(e.target.value)} /></label>{!["clients", "projects", "banking"].includes(view) && <select aria-label={t("Filtrar por proyecto")} value={projectId} onChange={e => setProjectId(e.target.value)}><option value="all">{t("Todos los proyectos")}</option>{clientProjects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select>}{view === "documents" && <select aria-label={t("Tipo de documento")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", ...documentKinds].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}{view === "invoices" && <select aria-label={t("Estado de factura")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", "Pendiente", "Pago parcial", "Pagada", "Vencida"].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}</div>}
 
         {view === "projects" && <div className="ew-table-wrap ew-project-table-wrap"><table className="ew-table ew-data-table ew-project-table"><thead><tr>{ops && <th>{t("Cliente")}</th>}<th>{t("Proyecto")}</th><th>{t("Alcance acordado")}</th><th>{t("Etapa actual")}</th><th>{t("Fin de etapa")}</th><th>{t("Inicio del proyecto", "Project start")}</th><th>{t("Fin del proyecto")}</th><th>{t("Acciones")}</th></tr></thead><tbody>{projects.filter(matches).map(projectRow)}{!projects.filter(matches).length && emptyRow(projectColumns, t("No hay proyectos para mostrar"), t("Probá otra búsqueda o creá un nuevo proyecto."))}</tbody></table></div>}
 
@@ -385,6 +411,23 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
 
 function Stat({ label, value, onClick }: { label: string; value: string; detail: string; icon: string; onClick: () => void }) {
   return <button className="ew-stat" onClick={onClick} aria-label={`${label}: ${value}`}><strong>{value}</strong><div className="ew-stat-label">{label}</div></button>;
+}
+
+function PhaseProgress({ completed, total, label, onClick }: { completed: number; total: number; label: string; onClick: () => void }) {
+  const percentage = total ? Math.round((completed / total) * 100) : 0;
+  const radius = 36;
+  const circumference = 2 * Math.PI * radius;
+  const progress = total ? (completed / total) * circumference : 0;
+  return <button className="ew-phase-progress" onClick={onClick} aria-label={`${label}: ${percentage}%`}>
+    <span className="ew-phase-donut" aria-hidden="true">
+      <svg viewBox="0 0 88 88">
+        <circle className="ew-phase-donut-track" cx="44" cy="44" r={radius} />
+        <circle className="ew-phase-donut-value" cx="44" cy="44" r={radius} strokeDasharray={`${progress} ${circumference}`} />
+      </svg>
+      <strong>{percentage}%</strong>
+    </span>
+    <span className="ew-phase-progress-copy"><span className="ew-stat-label">{label}</span></span>
+  </button>;
 }
 
 function ClientLogo({ client, className }: { client?: Client; className: string }) {
