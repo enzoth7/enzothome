@@ -3,7 +3,7 @@ import { isWorkspaceData, type BankAccount, type Collection, type Collections, t
 import { getSupabaseBrowserClient, hasSupabaseConfig } from "@/src/lib/supabase/client";
 
 type Row = Record<string, unknown>;
-export type WorkspaceFileKind = "logo" | "bank-icon" | "document" | "invoice" | "email";
+export type WorkspaceFileKind = "logo" | "bank-icon" | "document" | "invoice" | "receipt" | "email";
 
 const collections: Collection[] = ["clients", "projects", "tasks", "documents", "invoices", "approvals", "resources", "messages"];
 
@@ -31,13 +31,13 @@ function fromRow(collection: Collection, row: Row): Collections[Collection] {
     };
     case "projects": return {
       id: text(row.id), clientId: text(row.client_id), title: text(row.title), description: text(row.description), status: text(row.status),
-      start: text(row.start_date), due: text(row.due_date),
+      start: text(row.start_date), due: text(row.due_date), value: number(row.project_value), currency: text(row.project_currency) || "USD",
       ...(row.intake && typeof row.intake === "object" ? { intake: row.intake as Collections["projects"]["intake"] } : {}),
       internalChecklist: Array.isArray(row.internal_checklist) ? row.internal_checklist.filter(item => typeof item === "string") as string[] : [],
     };
     case "tasks": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), status: text(row.status), due: text(row.due_date), owner: text(row.owner), kind: text(row.kind) };
     case "documents": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), kind: text(row.kind), status: text(row.status), date: text(row.document_date), content: text(row.content), fileId: text(row.storage_path), fileName: text(row.file_name) };
-    case "invoices": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), number: text(row.number), amount: number(row.amount), currency: text(row.currency), due: text(row.due_date), paid: number(row.paid), paidAt: text(row.paid_at), paymentInfo: text(row.payment_info), date: text(row.invoice_date), lines: invoiceLines(row.line_items), fileId: text(row.storage_path), fileName: text(row.file_name) };
+    case "invoices": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), number: text(row.number), amount: number(row.amount), currency: text(row.currency), due: text(row.due_date), paid: number(row.paid), paidAt: text(row.paid_at), paymentInfo: text(row.payment_info), date: text(row.invoice_date), lines: invoiceLines(row.line_items), fileId: text(row.storage_path), fileName: text(row.file_name), receiptFileId: text(row.receipt_storage_path), receiptFileName: text(row.receipt_file_name) };
     case "approvals": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), description: text(row.description), status: text(row.status), due: text(row.due_date), response: text(row.response), respondedAt: text(row.responded_at) };
     case "resources": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), url: text(row.url), kind: text(row.kind), description: text(row.description) };
     case "messages": return {
@@ -57,7 +57,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
     }
     case "projects": {
       const value = item as Collections["projects"];
-      return { ...base, client_id: value.clientId, title: value.title, description: value.description, status: value.status, start_date: value.start, due_date: value.due, intake: value.intake || null, internal_checklist: value.internalChecklist || [] };
+      return { ...base, client_id: value.clientId, title: value.title, description: value.description, status: value.status, start_date: value.start, due_date: value.due, project_value: value.value || 0, project_currency: value.currency || "USD", intake: value.intake || null, internal_checklist: value.internalChecklist || [] };
     }
     case "tasks": {
       const value = item as Collections["tasks"];
@@ -69,7 +69,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
     }
     case "invoices": {
       const value = item as Collections["invoices"];
-      return { ...base, project_id: value.projectId, title: value.title || `Factura ${value.number}`, number: value.number, amount: value.amount, currency: value.currency, due_date: value.due, paid: value.paid, paid_at: value.paidAt || null, payment_info: "", invoice_date: value.date, line_items: value.lines || [], storage_path: value.fileId || null, file_name: value.fileName || null };
+      return { ...base, project_id: value.projectId, title: value.title || `Factura ${value.number}`, number: value.number, amount: value.amount, currency: value.currency, due_date: value.due, paid: value.paid, paid_at: value.paidAt || null, payment_info: "", invoice_date: value.date, line_items: value.lines || [], storage_path: value.fileId || null, file_name: value.fileName || null, receipt_storage_path: value.receiptFileId || null, receipt_file_name: value.receiptFileName || null };
     }
     case "approvals": {
       const value = item as Collections["approvals"];
@@ -251,18 +251,20 @@ export async function downloadAdminDocument(path: string) {
   return data;
 }
 
+export async function getPortalFileUrl(accessToken: string, documentId: string, kind: "document" | "invoice" | "receipt", mode: "view" | "download") {
+  const { data, error } = await client().functions.invoke("portal-document", { body: { accessToken, documentId, kind, mode } });
+  if (error || typeof data?.signedUrl !== "string" || !data.signedUrl) throw new Error(errorMessage(error, "No se pudo autorizar el archivo"));
+  return data.signedUrl as string;
+}
+
 export async function downloadPortalDocument(accessToken: string, documentId: string) {
-  const { data, error } = await client().functions.invoke("portal-document", { body: { accessToken, documentId, kind: "document" } });
-  if (error || !data?.signedUrl) throw new Error(errorMessage(error, "No se pudo autorizar la descarga"));
-  const response = await fetch(data.signedUrl);
+  const response = await fetch(await getPortalFileUrl(accessToken, documentId, "document", "download"));
   if (!response.ok) throw new Error("No se pudo descargar el archivo.");
   return response.blob();
 }
 
 export async function downloadPortalInvoice(accessToken: string, invoiceId: string) {
-  const { data, error } = await client().functions.invoke("portal-document", { body: { accessToken, documentId: invoiceId, kind: "invoice" } });
-  if (error || !data?.signedUrl) throw new Error(errorMessage(error, "No se pudo autorizar la descarga"));
-  const response = await fetch(data.signedUrl);
+  const response = await fetch(await getPortalFileUrl(accessToken, invoiceId, "invoice", "download"));
   if (!response.ok) throw new Error("No se pudo descargar el PDF.");
   return response.blob();
 }

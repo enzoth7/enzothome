@@ -28,6 +28,7 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
     close: <path d="m6 6 12 12M6 18 18 6"/>,
     clock: <><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></>,
     settings: <><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></>,
+    more: <><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></>,
   };
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] || paths.projects}</svg>;
 }

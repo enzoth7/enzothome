@@ -1,10 +1,12 @@
 export type Client = { id: string; company: string; name: string; email: string; language: string; notes: string; logoFileId?: string; logoFileName?: string; portalToken?: string };
 export type Intake = { contact: string; goal: string; success: string; context: string; date: string };
-export type Project = { id: string; clientId: string; title: string; description: string; status: string; start: string; due: string; intake?: Intake; internalChecklist?: string[] };
+export type Project = { id: string; clientId: string; title: string; description: string; status: string; start: string; due: string; value?: number; currency?: string; intake?: Intake; internalChecklist?: string[] };
 export type Task = { id: string; projectId: string; title: string; status: string; due: string; owner: string; kind: string };
 export type Document = { id: string; projectId: string; title: string; kind: string; status: string; date: string; content: string; fileId: string; fileName: string };
 export type InvoiceLine = { id: string; description: string; amount: number };
-export type Invoice = { id: string; projectId: string; title: string; number: string; amount: number; currency: string; due: string; paid: number; paidAt?: string; paymentInfo: string; date: string; lines?: InvoiceLine[]; fileId?: string; fileName?: string };
+export type Invoice = { id: string; projectId: string; title: string; number: string; amount: number; currency: string; due: string; paid: number; paidAt?: string; paymentInfo: string; date: string; lines?: InvoiceLine[]; fileId?: string; fileName?: string; receiptFileId?: string; receiptFileName?: string };
+export type ProjectPaymentAmount = { currency: string; total: number; paid: number; remaining: number };
+export type ProjectPaymentSummary = { projectId: string; title: string; start: string; amounts: ProjectPaymentAmount[]; lastPaidAt: string };
 export type Approval = { id: string; projectId: string; title: string; description: string; status: string; due: string; response: string; respondedAt: string };
 export type Resource = { id: string; projectId: string; title: string; url: string; kind: string; description: string };
 export type MessageAttachment = { path: string; name: string; size: number };
@@ -52,6 +54,35 @@ export function dateLabel(value: string, locale = "es-UY") {
 }
 export const money = (amount: number, currency = "USD") => new Intl.NumberFormat("es-UY", { style: "currency", currency, maximumFractionDigits: 2 }).format(amount);
 export const invoiceStatus = (invoice: Invoice) => invoice.paid >= invoice.amount ? "Pagada" : invoice.due < today() ? "Vencida" : invoice.paid > 0 ? "Pago parcial" : "Pendiente";
+export function invoiceOutstandingByCurrency(invoices: Invoice[]): [string, number][] {
+  const totals = new Map<string, number>();
+  for (const invoice of invoices) {
+    const currency = invoice.currency || "USD";
+    totals.set(currency, (totals.get(currency) || 0) + Math.max(0, invoice.amount - invoice.paid));
+  }
+  return [...totals.entries()].filter(([, amount]) => amount > 0).sort(([a], [b]) => a.localeCompare(b));
+}
+export function projectPaymentSummary(project: Project, invoices: Invoice[]): ProjectPaymentSummary {
+  const projectInvoices = invoices.filter(invoice => invoice.projectId === project.id);
+  const currencyTotals = new Map<string, { invoiced: number; paid: number }>();
+  for (const invoice of projectInvoices) {
+    const current = currencyTotals.get(invoice.currency) || { invoiced: 0, paid: 0 };
+    current.invoiced += invoice.amount;
+    current.paid += invoice.paid;
+    currencyTotals.set(invoice.currency, current);
+  }
+  const projectCurrency = project.currency || projectInvoices[0]?.currency || "USD";
+  if ((project.value || 0) > 0) {
+    const current = currencyTotals.get(projectCurrency) || { invoiced: 0, paid: 0 };
+    currencyTotals.set(projectCurrency, current);
+  }
+  const amounts = [...currencyTotals.entries()].map(([currency, values]) => {
+    const configuredTotal = projectCurrency === currency && (project.value || 0) > 0 ? project.value || 0 : values.invoiced;
+    return { currency, total: configuredTotal, paid: values.paid, remaining: Math.max(configuredTotal - values.paid, 0) };
+  }).sort((a, b) => a.currency.localeCompare(b.currency));
+  const lastPaidAt = projectInvoices.filter(invoice => invoice.paid > 0 && invoice.paidAt).map(invoice => invoice.paidAt || "").sort().at(-1) || "";
+  return { projectId: project.id, title: project.title, start: project.start, amounts, lastPaidAt };
+}
 export function safeUrl(value: string) {
   try { const url = new URL(value); return ["https:", "http:"].includes(url.protocol) ? url.href : ""; } catch { return ""; }
 }
@@ -66,8 +97,8 @@ export function createWorkspaceSeed(): WorkspaceData {
       { id: "matearte", company: "MateArte", name: "Richard", email: "", language: "Español", notes: "" },
     ],
     projects: [
-      { id: "pearl-operations", clientId: "pearl", title: "Una operación más conectada", description: "Centralizar la información del equipo y simplificar el seguimiento diario de la operación.", status: "En curso", start: offset(-21), due: offset(18) },
-      { id: "matearte-orders", clientId: "matearte", title: "Pedidos, de principio a fin", description: "Un espacio compartido para seguir los pedidos, la producción y las entregas de MateArte.", status: "En revisión", start: offset(-28), due: offset(9) },
+      { id: "pearl-operations", clientId: "pearl", title: "Una operación más conectada", description: "Centralizar la información del equipo y simplificar el seguimiento diario de la operación.", status: "En curso", start: offset(-21), due: offset(18), value: 0, currency: "USD" },
+      { id: "matearte-orders", clientId: "matearte", title: "Pedidos, de principio a fin", description: "Un espacio compartido para seguir los pedidos, la producción y las entregas de MateArte.", status: "En revisión", start: offset(-28), due: offset(9), value: 0, currency: "USD" },
     ],
     tasks: [
       { id: "t1", projectId: "pearl-operations", title: "Objetivos y alcance acordados", status: "Completada", due: offset(-21), owner: "Enzo", kind: "Hito" },
@@ -118,7 +149,8 @@ export function isWorkspaceData(value: unknown): value is WorkspaceData {
     if (new Set(entries.map(e => e.id)).size !== entries.length || entries.some(e => !e.id)) return false;
   }
   if (data.clients.some(client => (client.logoFileId !== undefined && typeof client.logoFileId !== "string") || (client.logoFileName !== undefined && typeof client.logoFileName !== "string") || (client.portalToken !== undefined && typeof client.portalToken !== "string"))) return false;
-  if (data.invoices.some(invoice => (invoice.fileId !== undefined && typeof invoice.fileId !== "string") || (invoice.fileName !== undefined && typeof invoice.fileName !== "string"))) return false;
+  if (data.projects.some(project => (project.value !== undefined && (typeof project.value !== "number" || !Number.isFinite(project.value) || project.value < 0)) || (project.currency !== undefined && !["USD", "UYU", "EUR"].includes(project.currency)))) return false;
+  if (data.invoices.some(invoice => (invoice.fileId !== undefined && typeof invoice.fileId !== "string") || (invoice.fileName !== undefined && typeof invoice.fileName !== "string") || (invoice.receiptFileId !== undefined && typeof invoice.receiptFileId !== "string") || (invoice.receiptFileName !== undefined && typeof invoice.receiptFileName !== "string"))) return false;
   if (data.invoices.some(invoice => invoice.paidAt !== undefined && typeof invoice.paidAt !== "string")) return false;
   if (data.invoices.some(invoice => invoice.lines !== undefined && (!Array.isArray(invoice.lines) || !invoice.lines.length || invoice.lines.some(line => !line || typeof line.id !== "string" || typeof line.description !== "string" || !line.description.trim() || typeof line.amount !== "number" || !Number.isFinite(line.amount) || line.amount <= 0)))) return false;
   if (data.messages.some(message => {

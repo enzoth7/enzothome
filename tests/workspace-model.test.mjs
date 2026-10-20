@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createWorkspaceSeed, isWorkspaceData, invoiceStatus, safeUrl, today } from "../src/components/workspace/model.ts";
+import { createWorkspaceSeed, isWorkspaceData, invoiceOutstandingByCurrency, invoiceStatus, projectPaymentSummary, safeUrl, today } from "../src/components/workspace/model.ts";
 
 function createFixture() {
   const data = createWorkspaceSeed();
@@ -27,6 +27,41 @@ test("invalid amounts and unsupported currencies cannot be restored", () => {
     Object.assign(data.invoices[0], bad);
     assert.equal(isWorkspaceData(data), false);
   }
+});
+
+test("client outstanding balance stays separate by currency and excludes settled invoices", () => {
+  const fixture = createFixture();
+  fixture.invoices.push({ ...fixture.invoices[0], id: "paid", paid: 500 });
+  fixture.invoices.push({ ...fixture.invoices[0], id: "partial", currency: "EUR", amount: 300, paid: 100 });
+  fixture.invoices.push({ ...fixture.invoices[0], id: "pending", currency: "EUR", amount: 400, paid: 0 });
+  assert.deepEqual(invoiceOutstandingByCurrency(fixture.invoices), [["EUR", 600], ["USD", 500]]);
+});
+
+test("project values and private receipt metadata survive validation", () => {
+  const data = createFixture();
+  data.projects[0].value = 125000;
+  data.projects[0].currency = "UYU";
+  data.invoices[0].receiptFileId = "invoice-test/receipt.pdf";
+  data.invoices[0].receiptFileName = "recibo.pdf";
+  assert.equal(isWorkspaceData(JSON.parse(JSON.stringify(data))), true);
+  data.projects[0].currency = "GBP";
+  assert.equal(isWorkspaceData(data), false);
+  data.projects[0].currency = "USD";
+  data.projects[0].value = -1;
+  assert.equal(isWorkspaceData(data), false);
+});
+
+test("project payment summary uses project value and keeps currencies separate", () => {
+  const data = createFixture();
+  const project = { ...data.projects[0], value: 1000, currency: "USD" };
+  const usdInvoice = { ...data.invoices[0], amount: 500, paid: 200, paidAt: "2026-10-02" };
+  const uyuInvoice = { ...data.invoices[0], id: "invoice-uyu", number: "TEST-UYU", amount: 10000, paid: 10000, paidAt: "2026-10-05", currency: "UYU", lines: [{ id: "line-uyu", description: "Servicio", amount: 10000 }] };
+  const summary = projectPaymentSummary(project, [usdInvoice, uyuInvoice]);
+  assert.deepEqual(summary.amounts, [
+    { currency: "USD", total: 1000, paid: 200, remaining: 800 },
+    { currency: "UYU", total: 10000, paid: 10000, remaining: 0 },
+  ]);
+  assert.equal(summary.lastPaidAt, "2026-10-05");
 });
 
 test("invoice lines must describe and equal the invoice total", () => {
