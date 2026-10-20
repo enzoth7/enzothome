@@ -7,7 +7,7 @@ const englishCopy: Record<string, string> = {
   "Sistema": "System", "Archivos": "Files", "Reunión": "Meeting", "Sitio web": "Website", "Hito": "Milestone", "Inicio": "Start", "Acceso": "Access", "Cliente": "Client",
   "Proyecto": "Project", "Sin fecha": "No date", "Todos": "All",
   "Proyectos activos": "Active projects", "Por revisar": "For review", "Facturas pendientes": "Outstanding invoices", "Documentos disponibles": "Available documents",
-  "Tu opinión nos ayuda a avanzar": "Your feedback helps us move forward", "Ver importes y vencimientos": "View amounts and due dates", "Todo al día": "All up to date", "Contratos, alcances y propuestas": "Agreements, scopes and proposals",
+  "Tu opinión nos ayuda a avanzar": "Your feedback helps us move forward", "Ver importes y pagos": "View amounts and payments", "Todo al día": "All up to date", "Contratos, alcances y propuestas": "Agreements, scopes and proposals",
   "En qué estamos trabajando": "What we’re working on", "Ver todos": "View all", "Ver todas": "View all",
   "Todo listo para empezar": "Ready to get started", "Los nuevos proyectos van a aparecer aquí.": "New projects will appear here.",
   "Revisión": "Review", "Revisar y responder": "Review and respond", "Marcar como completada": "Mark as complete",

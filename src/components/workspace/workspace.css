@@ -480,6 +480,19 @@
   .ew-mobile-balance-list > div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid color-mix(in srgb, var(--ew-white) 30%, transparent); }
   .ew-mobile-balance-list strong { font-size: 23px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   .ew-mobile-balance-list span { font-size: 11px; letter-spacing: .06em; }
+  .ew-mobile-project-payment h3 { overflow-wrap: anywhere; }
+  .ew-mobile-project-payment-start, .ew-mobile-project-payment-date { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 5px 12px; font-size: 12px; }
+  .ew-mobile-project-payment-start { margin-top: 12px; }
+  .ew-mobile-project-payment-start span, .ew-mobile-project-payment-date span { color: var(--ew-muted); }
+  .ew-mobile-project-payment-start strong, .ew-mobile-project-payment-date strong { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .ew-mobile-project-payment-amounts { margin-top: 16px; border-top: 1px solid var(--ew-line); }
+  .ew-mobile-project-payment-amount { padding: 13px 0; border-bottom: 1px solid var(--ew-line); }
+  .ew-mobile-project-payment-currency { display: block; margin-bottom: 6px; font-size: 11px; letter-spacing: .06em; }
+  .ew-mobile-project-payment-amount dl { display: grid; gap: 0; margin: 0; }
+  .ew-mobile-project-payment-amount dl > div { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 5px 12px; min-width: 0; padding: 6px 0; }
+  .ew-mobile-project-payment-amount dt { color: var(--ew-muted); font-size: 12px; }
+  .ew-mobile-project-payment-amount dd { margin: 0 0 0 auto; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; }
+  .ew-mobile-project-payment-date { padding-top: 13px; }
   .ew-mobile-invoice-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ew-mobile-invoice-facts > :nth-child(n+4) { grid-column: span 1; }
   .ew-mobile-paid { color: var(--ew-success); }
