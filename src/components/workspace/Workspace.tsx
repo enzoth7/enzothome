@@ -50,7 +50,8 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
   const nav: View[] = ops ? ["home", "clients", "projects", "checklist", "documents", "invoices", "banking", "approvals", "resources", "messages"] : ["home", "projects", "documents", "invoices", "approvals", "resources"];
   useEffect(() => {
     let active = true;
-    let poll: ReturnType<typeof setInterval> | undefined;
+    let loadingRemote = false;
+    let lastRemoteAttemptAt = 0;
     const localData = () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       const loaded: unknown = saved ? JSON.parse(saved) : createWorkspaceSeed();
@@ -83,31 +84,37 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
         try { const next = JSON.parse(event.newValue); if (isWorkspaceData(next)) { dataRef.current = next; setData(next); } } catch { setNotice("No se pudo sincronizar el cambio de otra pestaña."); }
     };
     async function loadRemote() {
-      if (ops) {
-        const user = await getCurrentUser();
-        if (!active) return;
-        if (!user) { setAuthState("signed-out"); setData(null); return; }
-        setAuthState("signed-in");
-        let remote = await loadAdminWorkspace();
-        if (!remote.clients.length) {
-          await importWorkspaceData(localData());
-          remote = await loadAdminWorkspace();
+      if (loadingRemote) return;
+      loadingRemote = true;
+      lastRemoteAttemptAt = Date.now();
+      try {
+        if (ops) {
+          const user = await getCurrentUser();
+          if (!active) return;
+          if (!user) { setAuthState("signed-out"); setData(null); return; }
+          setAuthState("signed-in");
+          let remote = await loadAdminWorkspace();
+          if (!remote.clients.length) {
+            await importWorkspaceData(localData());
+            remote = await loadAdminWorkspace();
+          }
+          setWorkspace(remote);
+        } else {
+          const token = new URLSearchParams(window.location.search).get("access") || "";
+          setPortalAccessToken(token);
+          const remote = await loadPortalWorkspace(token);
+          setWorkspace(remote);
+          setClientId(remote.clients[0]?.id || "");
         }
-        setWorkspace(remote);
-      } else {
-        const token = new URLSearchParams(window.location.search).get("access") || "";
-        setPortalAccessToken(token);
-        const remote = await loadPortalWorkspace(token);
-        setWorkspace(remote);
-        setClientId(remote.clients[0]?.id || "");
+      } finally {
+        loadingRemote = false;
       }
-      syncLocation();
     }
     async function load() {
       try {
         if (backend) {
           await loadRemote();
-          if (!ops) poll = setInterval(() => { void loadRemote().catch(() => undefined); }, 15000);
+          syncLocation();
         } else {
           setAuthState("local");
           setWorkspace(localData());
@@ -120,14 +127,19 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
     }
     void load();
     window.addEventListener("popstate", syncLocation);
-    const focus = () => { if (backend) void loadRemote().catch(() => undefined); };
+    const focus = () => {
+      if (backend && !document.hidden && Date.now() - lastRemoteAttemptAt >= 5 * 60_000) {
+        void loadRemote().catch(() => undefined);
+      }
+    };
     window.addEventListener("focus", focus);
+    document.addEventListener("visibilitychange", focus);
     return () => {
       active = false;
-      if (poll) clearInterval(poll);
       window.removeEventListener("storage", syncStorage);
       window.removeEventListener("popstate", syncLocation);
       window.removeEventListener("focus", focus);
+      document.removeEventListener("visibilitychange", focus);
     };
   }, [ops, backend]);
   useEffect(() => { if (notice) { const timeout = setTimeout(() => setNotice(""), 6000); return () => clearTimeout(timeout); } }, [notice]);
@@ -245,6 +257,8 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
   const clientProjects = data.projects.filter(p => clientId === "all" || p.clientId === clientId);
   const projects = clientProjects.filter(p => projectId === "all" || p.id === projectId);
   const checklistProject = clientProjects.find(project => project.id === projectId) || clientProjects[0];
+  const requiredChecklistItems = internalChecklistItems.filter(item => !("optional" in item && item.optional));
+  const completedChecklistItems = requiredChecklistItems.filter(item => checklistProject?.internalChecklist?.includes(item.id)).length;
   const ids = new Set(projects.map(p => p.id));
   const phases = data.tasks.filter(task => ids.has(task.projectId) && task.kind === "Hito");
   const completedPhases = phases.filter(task => task.status === "Completada").length;
@@ -389,9 +403,9 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
           </div>
           <div className="ew-checklist-summary">
             <div><div className="ew-checklist-eyebrow">Checklist privada</div><h2 id="internal-checklist-title">{checklistProject.title}</h2><div className="ew-muted">{companyFor(checklistProject.id)}</div></div>
-            <div className="ew-checklist-progress" aria-live="polite"><strong>{checklistProject.internalChecklist?.length || 0}<span>/{internalChecklistItems.length}</span></strong><div>puntos listos</div></div>
+            <div className="ew-checklist-progress" aria-live="polite"><strong>{completedChecklistItems}<span>/{requiredChecklistItems.length}</span></strong><div>puntos obligatorios listos</div></div>
           </div>
-          <progress className="ew-checklist-progressbar" value={checklistProject.internalChecklist?.length || 0} max={internalChecklistItems.length} aria-label={`${checklistProject.internalChecklist?.length || 0} de ${internalChecklistItems.length} puntos completados`} />
+          <progress className="ew-checklist-progressbar" value={completedChecklistItems} max={requiredChecklistItems.length} aria-label={`${completedChecklistItems} de ${requiredChecklistItems.length} puntos obligatorios completados`} />
           <div className="ew-checklist-grid">
             {internalChecklistItems.map((item, index) => {
               const checked = checklistProject.internalChecklist?.includes(item.id) || false;
@@ -417,12 +431,22 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
         {view === "documents" && <div className="ew-table-wrap"><table className="ew-table ew-data-table"><thead><tr><th>{t("Documento")}</th><th>{t("Tipo")}</th><th>{t("Cliente / proyecto")}</th><th>{t("Fecha")}</th><th>{t("Estado")}</th><th>{t("Archivo")}</th><th>{t("Acciones")}</th></tr></thead><tbody>{documents.filter(d => matches(d) && (filter === "Todos" || d.kind === filter)).map(d => { const accepted = d.status === "Aceptado"; return <tr key={d.id}><td><strong>{d.title}</strong><small>{d.content}</small></td><td>{t(d.kind)}</td><td>{companyFor(d.projectId)}<small>{projectName(d.projectId)}</small></td><td>{dateLabel(d.date, english ? "en-GB" : "es-UY")}</td><td><Badge>{t(d.status)}</Badge></td><td>{d.fileName || "—"}</td><td><div className="ew-table-actions">{ops ? <button className="ew-icon-button ew-action-button" aria-label={`Abrir ${d.title}`} title="Abrir documento" onClick={() => setDialog({ kind: "document", item: d })}><Icon name="eye" size={18} /></button> : <><button className="ew-icon-button ew-action-button" disabled={!d.fileId} aria-label={t("Ver documento", "View document")} title={t("Ver documento", "View document")} onClick={() => void portalFile(d.id, "document", "view", d.fileId, d.fileName || d.title)}><Icon name="eye" size={18} /></button><button className="ew-icon-button ew-action-button" disabled={!d.fileId} aria-label={t("Descargar documento", "Download document")} title={t("Descargar documento", "Download document")} onClick={() => void portalFile(d.id, "document", "download", d.fileId, d.fileName || d.title)}><Icon name="download" size={18} /></button><button className="ew-icon-button ew-action-button is-accept" disabled={accepted} aria-label={t(accepted ? "Documento aceptado" : "Aceptar documento")} title={t(accepted ? "Documento aceptado" : "Aceptar documento")} onClick={() => action(() => save("documents", { ...d, status: "Aceptado" }))}><Icon name="check" size={18} /></button></>}{editButton("documents", d)}</div></td></tr>; })}{!documents.filter(d => matches(d) && (filter === "Todos" || d.kind === filter)).length && emptyRow(7, t("No hay documentos en esta vista"), t("Los documentos compartidos van a aparecer aquí."))}</tbody></table></div>}
 
         {view === "invoices" && <>
+          <section className="ew-payment-overview" aria-labelledby="payment-overview-title">
+            <div className="ew-payment-overview-heading"><h2 id="payment-overview-title">{t("Resumen por proyecto", "Summary by project")}</h2></div>
+            <div className="ew-table-wrap"><table className="ew-table ew-payment-summary-table">
+              <thead><tr><th>{t("Proyecto", "Project")}</th><th>{t("Fecha inicio", "Start date")}</th><th>{t("Total", "Total")}</th><th>{t("Total pagado", "Total paid")}</th><th>{t("Resta", "Remaining")}</th><th>{t("Pagado", "Paid")}</th></tr></thead>
+              <tbody>{invoiceProjectSummaries.map(summary => <tr key={summary.projectId}>
+                <td><strong>{summary.title}</strong><small>{companyFor(summary.projectId)}</small></td>
+                <td className="ew-tabular">{dateLabel(summary.start, english ? "en-GB" : "es-UY")}</td>
+                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money" key={amount.currency}><strong>{money(amount.total, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td>
+                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-paid" key={amount.currency}><strong>{money(amount.paid, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td>
+                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-remaining" key={amount.currency}><strong>{money(amount.remaining, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td>
+                <td className="ew-tabular">{summary.lastPaidAt ? dateLabel(summary.lastPaidAt, english ? "en-GB" : "es-UY") : "—"}</td>
+              </tr>)}{!invoiceProjectSummaries.length && emptyRow(6, t("No hay proyectos para resumir", "No projects to summarize"), t("Los proyectos aparecerán aquí.", "Projects will appear here."))}</tbody>
+            </table></div>
+          </section>
           {!ops && <BankAccountKpis accounts={bankAccounts} english={english} />}
-          {ops && <section className="ew-payment-overview" aria-labelledby="payment-overview-title">
-            <div className="ew-payment-overview-heading"><h2 id="payment-overview-title">Resumen por proyecto</h2></div>
-            <div className="ew-table-wrap"><table className="ew-table ew-payment-summary-table"><thead><tr><th>Proyecto</th><th>Fecha inicio</th><th>Total</th><th>Total pagado</th><th>Resta</th><th>Pagado</th></tr></thead><tbody>{invoiceProjectSummaries.map(summary => <tr key={summary.projectId}><td><strong>{summary.title}</strong><small>{companyFor(summary.projectId)}</small></td><td className="ew-tabular">{dateLabel(summary.start)}</td><td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money" key={amount.currency}><strong>{money(amount.total, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td><td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-paid" key={amount.currency}><strong>{money(amount.paid, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td><td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-remaining" key={amount.currency}><strong>{money(amount.remaining, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td><td className="ew-tabular">{summary.lastPaidAt ? dateLabel(summary.lastPaidAt) : "—"}</td></tr>)}{!invoiceProjectSummaries.length && emptyRow(6, "No hay proyectos para resumir", "Creá un proyecto para ver su estado de pagos.")}</tbody></table></div>
-          </section>}
-          {ops && <div className="ew-payment-history-heading"><h2>Histórico de pagos, facturas y recibos</h2></div>}
+          <div className="ew-payment-history-heading"><h2>{t("Histórico de pagos, facturas y recibos", "Payment, invoice and receipt history")}</h2></div>
           <div className="ew-table-wrap"><table className="ew-table ew-data-table">
             <thead><tr><th>{t("Factura")}</th><th>{t("Cliente / proyecto")}</th><th>{t("Emisión")}</th>{ops && <th>{t("Vencimiento")}</th>}<th>{t("Pagada el")}</th><th>{t("Importe")}</th><th>{t("Estado")}</th><th>{t("Acciones")}</th></tr></thead>
             <tbody>{invoices.filter(i => matches(i) && (filter === "Todos" || invoiceStatus(i) === filter)).map(i => {

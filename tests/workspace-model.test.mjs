@@ -1,12 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createWorkspaceSeed, isWorkspaceData, invoiceOutstandingByCurrency, invoiceStatus, projectPaymentSummary, safeUrl, today } from "../src/components/workspace/model.ts";
+import { createWorkspaceSeed, internalChecklistItems, isWorkspaceData, invoiceOutstandingByCurrency, invoiceStatus, projectPaymentSummary, safeUrl, today } from "../src/components/workspace/model.ts";
 
 function createFixture() {
   const data = createWorkspaceSeed();
   data.invoices.push({ id: "invoice-test", projectId: data.projects[0].id, title: "Factura TEST-001", number: "TEST-001", amount: 500, currency: "USD", due: today(), paid: 0, paymentInfo: "", date: today(), lines: [{ id: "line-1", description: "Servicio profesional", amount: 500 }], fileId: "", fileName: "" });
   return data;
 }
+
+test("web checklist covers analytics, commerce and operational review", () => {
+  const byId = new Map(internalChecklistItems.map(item => [item.id, item]));
+  assert.equal(byId.get("analytics")?.label, "Google Analytics (GA4) configurado y verificado");
+  assert.equal(byId.get("search-console")?.label, "Google Search Console");
+  assert.equal(byId.get("merchant-center")?.optional, true);
+  for (const id of ["security-review", "api-usage", "cache-pagination", "supabase-usage", "vercel-usage", "usage-alerts", "backup-recovery"]) {
+    assert.ok(byId.has(id), `missing checklist item: ${id}`);
+  }
+});
 
 test("the demo survives a JSON backup round trip", () => {
   assert.equal(isWorkspaceData(JSON.parse(JSON.stringify(createFixture()))), true);

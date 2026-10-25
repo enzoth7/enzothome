@@ -435,6 +435,7 @@
 .ew-portal-mobile-only, .ew-mobile-nav { display: none; }
 @media (max-width: 950px) {
   .is-portal .ew-table-wrap, .is-portal .ew-main > .ew-section, .is-portal .ew-main > .ew-bank-kpis { display: none; }
+  .is-portal .ew-payment-overview, .is-portal .ew-payment-history-heading { display: none; }
   .is-portal .ew-portal-mobile-only { display: block; }
   .is-portal .ew-main { min-width: 0; padding-bottom: 32px; }
   .is-portal .ew-toolbar { display: grid; grid-template-columns: minmax(0, 1fr); }
