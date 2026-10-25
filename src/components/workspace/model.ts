@@ -19,6 +19,8 @@ export const projectStatuses = ["Por comenzar", "En curso", "En revisión", "En 
 export const taskStatuses = ["Pendiente", "En curso", "En revisión", "Completada"];
 export const documentKinds = ["Contrato de servicios", "Alcance del Proyecto", "Propuesta Comercial", "Otro"];
 export const internalChecklistItems = [
+  { id: "brand-book", label: "Brand book definido y aplicado: colores, tipografías y usos" },
+  { id: "figma-design", label: "Diseños finales y componentes organizados en Figma" },
   { id: "custom-404", label: "Página 404 personalizada" },
   { id: "cta-above-fold", label: "CTA visible antes de hacer scroll" },
   { id: "meta-title", label: "Título meta por página" },
@@ -28,7 +30,16 @@ export const internalChecklistItems = [
   { id: "robots", label: "robots.txt" },
   { id: "sitemap", label: "sitemap.xml" },
   { id: "alt-text", label: "Texto alternativo en cada imagen" },
+  { id: "image-formats", label: "Imágenes optimizadas en WebP/AVIF, con tamaños responsivos y carga diferida" },
   { id: "mobile-breakpoints", label: "Breakpoints móviles" },
+  { id: "motion-direction", label: "Motion definido: propósito, ritmo y coherencia con la marca" },
+  { id: "motion-scroll", label: "Scroll: entradas de secciones y anclas probadas sin saltos" },
+  { id: "motion-cards", label: "Tarjetas: aparición, hover y foco revisados (si hay tarjetas)", optional: true },
+  { id: "motion-hero", label: "Hero: entrada del título, visual y CTA revisada (si hay hero)", optional: true },
+  { id: "motion-transitions", label: "Transiciones entre estados, menús y navegación coherentes" },
+  { id: "motion-frames", label: "Secuencias por frames o efectos especiales justificadas", optional: true },
+  { id: "motion-accessibility", label: "Movimiento reducido, teclado y pantalla táctil probados" },
+  { id: "motion-performance", label: "Animaciones fluidas en celular, sin tirones al hacer scroll" },
   { id: "sticky-mobile-cta", label: "CTA fijo en mobile" },
   { id: "loading-states", label: "Estados de carga" },
   { id: "form-errors", label: "Estados de error en formularios" },

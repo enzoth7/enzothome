@@ -409,10 +409,11 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
           <div className="ew-checklist-grid">
             {internalChecklistItems.map((item, index) => {
               const checked = checklistProject.internalChecklist?.includes(item.id) || false;
+              const optional = "optional" in item && item.optional;
               return <label className={`ew-checklist-item ${checked ? "is-checked" : ""}`} key={item.id}>
                 <input type="checkbox" checked={checked} onChange={() => action(() => save("projects", { ...checklistProject, internalChecklist: checked ? (checklistProject.internalChecklist || []).filter(id => id !== item.id) : [...(checklistProject.internalChecklist || []), item.id] }))} />
                 <span className="ew-checklist-index">{String(index + 1).padStart(2, "0")}</span>
-                <span className="ew-checklist-label">{item.label}</span>
+                <span className="ew-checklist-label">{item.label}{optional && <small className="ew-checklist-optional">Opcional</small>}</span>
                 <span className="ew-checklist-mark" aria-hidden="true"><Icon name="check" size={16} /></span>
               </label>;
             })}

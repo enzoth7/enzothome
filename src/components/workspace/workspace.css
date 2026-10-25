@@ -401,10 +401,12 @@
 .ew-checklist-item:focus-within { z-index: 1; outline: 2px solid var(--ew-navy); outline-offset: -2px; }
 .ew-checklist-index { color: var(--ew-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
 .ew-checklist-label { font-size: 13px; font-weight: 500; line-height: 1.35; }
+.ew-checklist-optional { display: inline-block; margin-left: 7px; color: var(--ew-muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 .ew-checklist-mark { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--ew-line); border-radius: 50%; color: transparent; transition: background .18s ease, color .18s ease, border-color .18s ease; }
 .ew-checklist-item.is-checked { background: var(--ew-navy); color: var(--ew-white); }
 .ew-checklist-item.is-checked .ew-checklist-index { color: color-mix(in srgb, var(--ew-white) 62%, transparent); }
 .ew-checklist-item.is-checked .ew-checklist-label { text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, var(--ew-white) 55%, transparent); }
+.ew-checklist-item.is-checked .ew-checklist-optional { color: color-mix(in srgb, var(--ew-white) 62%, transparent); }
 .ew-checklist-item.is-checked .ew-checklist-mark { border-color: var(--ew-white); background: var(--ew-white); color: var(--ew-navy); }
 .ew-checklist-item.is-checked:hover { background: var(--ew-ink); }
 .ew-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 30px; text-align: center; }

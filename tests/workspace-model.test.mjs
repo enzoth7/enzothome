@@ -18,6 +18,20 @@ test("web checklist covers analytics, commerce and operational review", () => {
   }
 });
 
+test("web checklist starts with brand design and tracks each motion decision", () => {
+  assert.deepEqual(internalChecklistItems.slice(0, 2).map(item => item.id), ["brand-book", "figma-design"]);
+  const byId = new Map(internalChecklistItems.map(item => [item.id, item]));
+  for (const id of ["image-formats", "motion-direction", "motion-scroll", "motion-cards", "motion-hero", "motion-transitions", "motion-frames", "motion-accessibility", "motion-performance"]) {
+    assert.ok(byId.has(id), `missing checklist item: ${id}`);
+  }
+  for (const id of ["motion-cards", "motion-hero", "motion-frames"]) {
+    assert.equal(byId.get(id)?.optional, true);
+  }
+  const data = createFixture();
+  data.projects[0].internalChecklist = ["brand-book", "figma-design", "motion-scroll", "image-formats"];
+  assert.equal(isWorkspaceData(JSON.parse(JSON.stringify(data))), true);
+});
+
 test("the demo survives a JSON backup round trip", () => {
   assert.equal(isWorkspaceData(JSON.parse(JSON.stringify(createFixture()))), true);
 });
