@@ -58,7 +58,7 @@
 .ew-main { width: 100%; padding: 42px 42px 0; max-width: none; margin: 0; }
 .ew-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-bottom: 35px; }
 .ew-intro { color: var(--ew-muted); font-size: 14px; margin-top: 14px; max-width: 650px; }
-.ew-heading-action { flex-shrink: 0; }
+.ew-heading-action { flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .ew-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; padding: 11px 17px; border: 1px solid var(--ew-navy); background: var(--ew-navy); color: var(--ew-white) !important; border-radius: 4px; font-size: 13px !important; font-weight: 500 !important; transition: background .18s ease, box-shadow .18s ease; text-align: center; }
 .ew-button:hover { background: var(--ew-ink); box-shadow: 0 3px 10px color-mix(in srgb, var(--ew-navy) 10%, transparent); }
 .ew-button.ew-secondary { color: var(--ew-navy) !important; background: transparent; border-color: var(--ew-line); }
@@ -338,6 +338,7 @@
 .ew-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 19px 24px; border-bottom: 1px solid var(--ew-line); }
 .ew-dialog-header h2 { font-size: 28px; }
 .ew-form { display: grid; grid-template-columns: 1fr 1fr; gap: 21px 18px; padding: 26px; }
+.ew-form.ew-pdf-fields { padding: 0; }
 .ew-email-split { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 18px; min-height: 520px; }
 .ew-code-pane { display: flex; flex-direction: column; min-width: 0; }
 .ew-code-pane textarea { flex: 1; min-height: 480px; resize: none; padding: 16px; background: var(--ew-navy); color: var(--ew-white); border-color: var(--ew-navy); font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.55; tab-size: 2; }
