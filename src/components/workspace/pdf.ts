@@ -62,6 +62,12 @@ function rightParts(page: PDFPage, parts: { text: string; font: PDFFont }[], rig
   drawParts(page, parts, rightEdge - width, top, size, color);
 }
 
+function pdfLink(doc: PDFDocument, page: PDFPage, url: string, x: number, top: number, width: number, height: number) {
+  if (!/^https?:\/\//i.test(url)) return;
+  const annotation = doc.context.obj({ Type: "Annot", Subtype: "Link", Rect: [x, page.getHeight() - top - height, x + width, page.getHeight() - top], Border: [0, 0, 0], A: { S: "URI", URI: PDFString.of(url) } });
+  page.node.addAnnot(doc.context.register(annotation));
+}
+
 function rule(page: PDFPage, top: number, from = 72, to = 1168, width = 1.5) {
   page.drawLine({ start: { x: from, y: page.getHeight() - top }, end: { x: to, y: page.getHeight() - top }, thickness: width, color: navy });
 }
@@ -119,8 +125,11 @@ function recipient(page: PDFPage, details: InvoicePdfDetails, english: boolean, 
   drawParts(page, [{ text: `${english ? "Company" : "Empresa"}: `, font: bold }, { text: details.recipientCompany || "-", font: regular }], 72, 354, 16);
 }
 
-async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, details: InvoicePdfDetails, bank: BankAccount | undefined, english: boolean, fonts: PdfFonts) {
+async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, details: InvoicePdfDetails, banks: BankAccount[], english: boolean, fonts: PdfFonts) {
   const { regular, semiBold, bold } = fonts;
+  const paypal = banks.find(account => !!account.paymentUrl && /paypal/i.test(`${account.bankName} ${account.paymentUrl}`));
+  const bank = banks.find(account => account.id !== paypal?.id) || banks[0];
+  const alternative = banks.find(account => account.id !== bank?.id);
   draw(page, english ? "Payment Terms" : "Información para el pago", 72, 1296, 32, bold);
   const count = Number.isFinite(details.paymentDays) ? details.paymentDays : daysBetween(invoice.date, invoice.due);
   let y = 1340;
@@ -128,10 +137,13 @@ async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, detai
     ? [{ text: "Payment due within ", font: regular }, { text: `${count} days`, font: bold }, { text: " of the invoice date.", font: regular }]
     : [{ text: "El pago debe efectuarse en un plazo de ", font: regular }, { text: `${count} días`, font: bold }, { text: " a partir de la fecha de la factura.", font: regular }], 72, y, 16);
   y += 20;
+  let rightColumnBottom = 0;
   if (bank) {
     drawParts(page, [{ text: `${english ? "Account name" : "Titular de la cuenta"}: `, font: bold }, { text: bank.accountHolder, font: regular }], 72, y, 16); y += 20;
-    const accountLabel = english ? /^[A-Z]{2}\d{2}/.test(bank.accountNumber) ? "IBAN" : "Account / IBAN" : "Número de cuenta";
-    drawParts(page, [{ text: `${accountLabel}: `, font: bold }, { text: bank.accountNumber, font: regular }], 72, y, 16); y += 20;
+    if (bank.accountNumber) {
+      const accountLabel = english ? /^[A-Z]{2}\d{2}/.test(bank.accountNumber) ? "IBAN" : "Account / IBAN" : "Número de cuenta";
+      drawParts(page, [{ text: `${accountLabel}: `, font: bold }, { text: bank.accountNumber, font: regular }], 72, y, 16); y += 20;
+    }
     const drawInstructions = () => {
       if (!bank.instructions) return;
       for (const instruction of bank.instructions.split(/\r?\n/).filter(Boolean)) {
@@ -145,29 +157,57 @@ async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, detai
     if (english) drawInstructions();
     drawParts(page, [{ text: `${english ? "Bank" : "Banco"}: `, font: bold }, { text: bank.bankName, font: regular }], 72, y, 16); y += 20;
     if (!english) drawInstructions();
-    if (bank.paymentUrl && /paypal/i.test(bank.paymentUrl)) {
+    if (bank.paymentUrl && bank.id !== paypal?.id) {
+      const label = english ? "Open payment link" : "Abrir enlace de pago";
+      draw(page, label, 72, y, 16, semiBold);
+      const width = semiBold.widthOfTextAtSize(label, 16);
+      page.drawLine({ start: { x: 72, y: page.getHeight() - y - 20 }, end: { x: 72 + width, y: page.getHeight() - y - 20 }, thickness: 0.8, color: navy });
+      pdfLink(doc, page, bank.paymentUrl, 72, y, width, 20);
+      y += 20;
+    }
+    if (paypal?.paymentUrl) {
       const response = await fetch("/workspace-pdf/paypal.png");
       if (!response.ok) throw new Error("No se encontró el logo de PayPal del PDF.");
       const logo = await doc.embedPng(await response.arrayBuffer());
-      draw(page, english ? "or" : "o", 486, english ? 1351 : 1360, english ? 24 : 21, semiBold, muted);
+      if (alternative || bank.accountNumber) draw(page, english ? "or" : "o", 486, english ? 1351 : 1360, english ? 24 : 21, semiBold, muted);
       page.drawImage(logo, { x: 610, y: page.getHeight() - 1325 - 85, width: 90, height: 85 });
       draw(page, english ? "Click on the link below" : "Abrí el enlace para pagar", 545, english ? 1404 : 1412, english ? 16 : 14, regular, muted);
       const linkTop = english ? 1424 : 1432;
-      const linkSize = english ? 16 : 14;
-      draw(page, bank.paymentUrl, 545, linkTop, linkSize, semiBold);
+      let linkSize = english ? 16 : 14;
+      while (linkSize > 11 && semiBold.widthOfTextAtSize(paypal.paymentUrl, linkSize) > 310) linkSize -= 1;
+      const linkWidth = semiBold.widthOfTextAtSize(paypal.paymentUrl, linkSize);
+      if (linkWidth > 310) throw new Error("El enlace de PayPal es demasiado largo para el PDF.");
+      draw(page, paypal.paymentUrl, 545, linkTop, linkSize, semiBold);
       if (english) {
-        const linkWidth = semiBold.widthOfTextAtSize(bank.paymentUrl, linkSize);
-        page.drawLine({ start: { x: 545, y: page.getHeight() - 1444 }, end: { x: 545 + linkWidth, y: page.getHeight() - 1444 }, thickness: 0.8, color: navy });
-        if (/^https:\/\//i.test(bank.paymentUrl)) {
-          const annotation = doc.context.obj({ Type: "Annot", Subtype: "Link", Rect: [545, page.getHeight() - 1444, 545 + linkWidth, page.getHeight() - 1424], Border: [0, 0, 0], A: { S: "URI", URI: PDFString.of(bank.paymentUrl) } });
-          page.node.addAnnot(doc.context.register(annotation));
-        }
+        page.drawLine({ start: { x: 545, y: page.getHeight() - linkTop - linkSize - 4 }, end: { x: 545 + linkWidth, y: page.getHeight() - linkTop - linkSize - 4 }, thickness: 0.8, color: navy });
       }
-    } else if (bank.paymentUrl) y = paragraph(page, bank.paymentUrl, 72, y, 16, 20, 690, regular);
+      pdfLink(doc, page, paypal.paymentUrl, 545, linkTop, linkWidth, linkSize + 4);
+      rightColumnBottom = linkTop + linkSize + 4;
+    } else if (alternative) {
+      draw(page, english ? "or" : "o", 486, english ? 1351 : 1360, english ? 24 : 21, semiBold, muted);
+      draw(page, `${alternative.bankName} · ${alternative.currency}`, 545, 1355, 18, semiBold);
+      let secondY = 1383;
+      const detail = (label: string, value: string) => {
+        if (!value) return;
+        secondY = paragraph(page, `${label}: ${value}`, 545, secondY, 13, 15, 315, regular);
+      };
+      detail(english ? "Account name" : "Titular", alternative.accountHolder);
+      detail(english ? "Account / IBAN" : "Cuenta / IBAN", alternative.accountNumber);
+      if (alternative.instructions) for (const instruction of alternative.instructions.split(/\r?\n/).filter(Boolean)) secondY = paragraph(page, instruction, 545, secondY, 13, 15, 315, regular);
+      if (alternative.paymentUrl) {
+        const label = english ? "Open payment link" : "Abrir enlace de pago";
+        draw(page, label, 545, secondY, 13, semiBold);
+        const width = semiBold.widthOfTextAtSize(label, 13);
+        page.drawLine({ start: { x: 545, y: page.getHeight() - secondY - 16 }, end: { x: 545 + width, y: page.getHeight() - secondY - 16 }, thickness: 0.8, color: navy });
+        pdfLink(doc, page, alternative.paymentUrl, 545, secondY, width, 16);
+        secondY += 15;
+      }
+      rightColumnBottom = secondY;
+    }
   } else {
     draw(page, english ? "Ask us for the payment details." : "Consultanos los datos para pagar.", 72, y, 16, regular, muted); y += 20;
   }
-  const termsTop = Math.max(english && bank?.paymentUrl && /paypal/i.test(bank.paymentUrl) ? 1473 : 1452, y + 24);
+  const termsTop = Math.max(english && paypal ? 1473 : 1452, y + 24, rightColumnBottom + 24);
   if (termsTop > 1515) throw new Error("Los datos de pago son demasiado largos para este modelo PDF.");
   draw(page, english ? "Terms & Conditions" : "Términos & Condiciones", 72, termsTop, 32, bold);
   const terms = english
@@ -177,7 +217,7 @@ async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, detai
   if (end > 1650) throw new Error("Las condiciones no entran en la página. Acortá los datos de pago.");
 }
 
-export async function generateInvoicePdf(invoice: Invoice, details: InvoicePdfDetails, bank: BankAccount | undefined, english: boolean): Promise<File> {
+export async function generateInvoicePdf(invoice: Invoice, details: InvoicePdfDetails, banks: BankAccount[], english: boolean): Promise<File> {
   const doc = await PDFDocument.create();
   doc.setTitle(`${english ? "Invoice" : "Factura"} ${invoice.number}`);
   doc.setAuthor("Enzo Thome");
@@ -215,7 +255,7 @@ export async function generateInvoicePdf(invoice: Invoice, details: InvoicePdfDe
   rule(page, totalY + 70, 768, 1168);
   draw(page, english ? "Invoice Total" : "Total", 768, totalY + 76, 20, semiBold);
   right(page, `${amount(invoice.amount)} ${invoice.currency}`, 1168, totalY + 71, 36, bold);
-  await bankInfo(doc, page, invoice, details, bank, english, fonts);
+  await bankInfo(doc, page, invoice, details, banks, english, fonts);
   const bytes = await doc.save();
   return new File([new Uint8Array(bytes)], `${english ? "Invoice" : "Factura"}-${invoice.number.replace(/[^a-zA-Z0-9_-]/g, "-")}.pdf`, { type: "application/pdf" });
 }

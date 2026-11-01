@@ -6,6 +6,7 @@ export type InvoicePdfDetails = {
   recipientPhone: string;
   recipientCompany: string;
   bankAccountId: string;
+  secondaryBankAccountId: string;
   paymentDays: number;
 };
 
@@ -21,6 +22,7 @@ export function invoicePdfDetails(invoice: Invoice | undefined, client: Client |
     recipientPhone: saved.recipientPhone || "",
     recipientCompany: saved.recipientCompany || client?.company || "",
     bankAccountId: saved.bankAccountId || "",
+    secondaryBankAccountId: typeof saved.secondaryBankAccountId === "string" ? saved.secondaryBankAccountId : "",
     paymentDays: typeof saved.paymentDays === "number" && Number.isFinite(saved.paymentDays) ? saved.paymentDays : client?.language === "Inglés" ? 14 : 30,
   };
 }
