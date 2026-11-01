@@ -33,7 +33,7 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] || paths.projects}</svg>;
 }
 
-export function Badge({ children }: { children: ReactNode }) {
+export function Badge({ children, tone: toneOverride }: { children: ReactNode; tone?: "success" | "danger" | "warning" | "neutral" | "info" }) {
   const value = String(children);
   const tones: Record<string, "success" | "danger" | "warning" | "neutral" | "info"> = {
     Pagada: "success", Completada: "success", Aprobada: "success", Aceptado: "success", Finalizado: "success", Enviado: "success",
@@ -43,7 +43,7 @@ export function Badge({ children }: { children: ReactNode }) {
     "Por comenzar": "neutral", Pendiente: "neutral", "En pausa": "neutral", Borrador: "neutral", "Not started": "neutral", Pending: "neutral", "On hold": "neutral", Draft: "neutral",
     "En revisión": "info", Compartido: "info", "In review": "info", Shared: "info",
   };
-  const tone = tones[value];
+  const tone = toneOverride || tones[value];
   const complete = tone === "success";
   return <div className={`ew-badge ${tone ? `ew-badge-${tone}` : ""}`}>{complete && <Icon name="check" size={12} />}{children}</div>;
 }

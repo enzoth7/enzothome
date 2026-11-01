@@ -276,14 +276,18 @@
 .ew-project-path-meta { display: flex !important; align-items: center; gap: 10px; color: var(--ew-muted) !important; font-size: 11px !important; }
 .ew-project-path-meta .ew-icon-button { flex: 0 0 44px; }
 .ew-project-path { display: grid !important; grid-auto-flow: column; grid-auto-columns: minmax(280px, 1fr); overflow-x: auto; padding: 8px 0 14px; color: var(--ew-navy) !important; }
-.ew-project-stage { position: relative; min-width: 0; padding: 35px 30px 4px 0; }
+.ew-project-stage { position: relative; min-width: 0; }
 .ew-project-stage:not(:last-child)::after { content: ""; position: absolute; z-index: 0; top: 15px; left: 28px; right: 0; height: 2px; background: var(--ew-line); }
-.ew-project-stage.is-complete:not(:last-child)::after { background: var(--ew-navy); }
+.ew-project-stage.is-complete:not(:last-child)::after { background: #86CFA8; }
+.ew-project-stage-link { position: relative; z-index: 1; display: block; width: 100%; min-height: 92px; padding: 35px 30px 4px 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.ew-project-stage-link:hover > strong { text-decoration: underline; }
+.ew-project-stage-link:focus-visible { outline: 2px solid var(--ew-navy); outline-offset: 2px; }
 .ew-project-stage-marker { position: absolute; z-index: 1; top: 2px; left: 0; width: 28px; height: 28px; border: 2px solid var(--ew-line); border-radius: 50%; background: var(--ew-white); color: var(--ew-muted); display: grid !important; place-items: center; font-size: 11px; font-weight: 600; }
-.ew-project-stage.is-complete .ew-project-stage-marker { border-color: var(--ew-navy); background: var(--ew-navy); color: var(--ew-white); }
-.ew-project-stage.is-current .ew-project-stage-marker { border-color: var(--ew-navy); color: var(--ew-navy); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ew-navy) 12%, transparent); }
-.ew-project-stage > strong { display: block; padding-right: 10px; font-size: 12px; line-height: 1.4; }
-.ew-project-stage-detail { margin-top: 3px; color: var(--ew-muted); font-size: 10px; }
+.ew-project-stage.is-complete .ew-project-stage-marker { border-color: #86CFA8; background: #DCFCE7; color: #0B5D3B; }
+.ew-project-stage.is-current .ew-project-stage-marker { border-color: #9ABFE3; background: #E2EFFC; color: #174A7E; box-shadow: 0 0 0 3px color-mix(in srgb, #9ABFE3 25%, transparent); }
+.ew-project-stage.is-pending .ew-project-stage-marker { border-color: #E9C761; background: #FEF3C7; color: #6B4300; }
+.ew-project-stage-link > strong { display: block; padding-right: 10px; font-size: 12px; line-height: 1.4; }
+.ew-project-stage-detail { display: block; margin-top: 3px; color: var(--ew-muted); font-size: 10px; }
 .ew-project-stage > .ew-row-actions { margin-top: 10px; gap: 7px; }
 .ew-project-stage-actions { margin-top: 10px; gap: 7px; }
 .ew-project-path-empty { padding: 8px 0 2px; color: var(--ew-muted); font-size: 12px; }
@@ -473,8 +477,13 @@
   .ew-mobile-timeline { list-style: none; margin: 3px 0 0; padding: 0 0 0 22px; border-left: 2px solid var(--ew-line); }
   .ew-mobile-timeline li { position: relative; display: grid; gap: 4px; padding: 0 0 20px 15px; font-size: 13px; }
   .ew-mobile-timeline li::before { content: ""; position: absolute; top: 3px; left: -29px; width: 12px; height: 12px; border: 2px solid var(--ew-navy); border-radius: 50%; background: var(--ew-white); }
-  .ew-mobile-timeline li.is-complete::before { background: var(--ew-navy); }
+  .ew-mobile-timeline li.is-complete::before { border-color: #86CFA8; background: #DCFCE7; }
+  .ew-mobile-timeline li.is-current::before { border-color: #9ABFE3; background: #E2EFFC; }
+  .ew-mobile-timeline li.is-pending::before { border-color: #E9C761; background: #FEF3C7; }
   .ew-mobile-timeline li:last-child { padding-bottom: 3px; }
+  .ew-mobile-timeline li > button { display: grid; gap: 4px; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--ew-navy); text-align: left; font-size: inherit; cursor: pointer; }
+  .ew-mobile-timeline li > button:hover strong { text-decoration: underline; }
+  .ew-mobile-timeline li > button:focus-visible { outline: 2px solid var(--ew-navy); outline-offset: 2px; }
   .ew-mobile-timeline span { color: var(--ew-muted); }
   .ew-mobile-file { min-width: 0; margin-top: 14px; padding: 13px; border: 1px solid var(--ew-line); border-radius: 5px; background: var(--ew-tint); }
   .ew-mobile-file > strong { display: block; font-size: 12px; overflow-wrap: anywhere; }
