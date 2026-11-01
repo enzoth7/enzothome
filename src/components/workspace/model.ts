@@ -1,4 +1,4 @@
-export type Client = { id: string; company: string; name: string; email: string; language: string; notes: string; logoFileId?: string; logoFileName?: string; portalToken?: string };
+export type Client = { id: string; company: string; name: string; email: string; language: string; notes: string; logoFileId?: string; logoFileName?: string; portalToken?: string; portalUsername?: string };
 export type Intake = { contact: string; goal: string; success: string; context: string; date: string };
 export type Project = { id: string; clientId: string; title: string; description: string; status: string; start: string; due: string; value?: number; currency?: string; intake?: Intake; internalChecklist?: string[] };
 export type Task = { id: string; projectId: string; title: string; status: string; due: string; owner: string; kind: string };
@@ -167,7 +167,7 @@ export function isWorkspaceData(value: unknown): value is WorkspaceData {
     if (!entries.every(entry => entry && Object.entries(shapes[key]).every(([field, type]) => typeof (entry as Record<string, unknown>)[field] === type))) return false;
     if (new Set(entries.map(e => e.id)).size !== entries.length || entries.some(e => !e.id)) return false;
   }
-  if (data.clients.some(client => (client.logoFileId !== undefined && typeof client.logoFileId !== "string") || (client.logoFileName !== undefined && typeof client.logoFileName !== "string") || (client.portalToken !== undefined && typeof client.portalToken !== "string"))) return false;
+  if (data.clients.some(client => (client.logoFileId !== undefined && typeof client.logoFileId !== "string") || (client.logoFileName !== undefined && typeof client.logoFileName !== "string") || (client.portalToken !== undefined && typeof client.portalToken !== "string") || (client.portalUsername !== undefined && typeof client.portalUsername !== "string"))) return false;
   if (data.projects.some(project => (project.value !== undefined && (typeof project.value !== "number" || !Number.isFinite(project.value) || project.value < 0)) || (project.currency !== undefined && !["USD", "UYU", "EUR"].includes(project.currency)))) return false;
   if (data.invoices.some(invoice => (invoice.fileId !== undefined && typeof invoice.fileId !== "string") || (invoice.fileName !== undefined && typeof invoice.fileName !== "string") || (invoice.receiptFileId !== undefined && typeof invoice.receiptFileId !== "string") || (invoice.receiptFileName !== undefined && typeof invoice.receiptFileName !== "string"))) return false;
   if (data.invoices.some(invoice => invoice.paidAt !== undefined && typeof invoice.paidAt !== "string")) return false;

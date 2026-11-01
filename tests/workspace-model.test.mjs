@@ -75,6 +75,13 @@ test("project values and private receipt metadata survive validation", () => {
   assert.equal(isWorkspaceData(data), false);
 });
 
+test("client portal username survives backup validation without storing a password", () => {
+  const data = createFixture();
+  data.clients[0].portalUsername = "cliente.demo";
+  assert.equal(isWorkspaceData(JSON.parse(JSON.stringify(data))), true);
+  assert.equal("password" in data.clients[0], false);
+});
+
 test("project payment summary uses project value and keeps currencies separate", () => {
   const data = createFixture();
   const project = { ...data.projects[0], value: 1000, currency: "USD" };

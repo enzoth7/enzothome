@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isWorkspaceData, type BankAccount, type Collection, type Collections, type InvoiceLine, type MessageAttachment, type WorkspaceData } from "./model";
-import { getSupabaseBrowserClient, hasSupabaseConfig } from "@/src/lib/supabase/client";
+import { getSupabaseBrowserClient, getSupabasePortalClient, hasSupabaseConfig } from "@/src/lib/supabase/client";
 
 type Row = Record<string, unknown>;
 export type WorkspaceFileKind = "logo" | "bank-icon" | "document" | "invoice" | "receipt" | "email";
@@ -27,7 +27,7 @@ function fromRow(collection: Collection, row: Row): Collections[Collection] {
   switch (collection) {
     case "clients": return {
       id: text(row.id), company: text(row.company), name: text(row.name), email: text(row.email), language: text(row.language), notes: text(row.notes),
-      logoFileId: text(row.logo_path), logoFileName: text(row.logo_file_name), portalToken: text(row.portal_token),
+      logoFileId: text(row.logo_path), logoFileName: text(row.logo_file_name), portalToken: text(row.portal_token), portalUsername: text(row.portal_username),
     };
     case "projects": return {
       id: text(row.id), clientId: text(row.client_id), title: text(row.title), description: text(row.description), status: text(row.status),
@@ -108,6 +108,40 @@ export async function sendAdminMagicLink(email: string) {
 export async function signOutAdmin() {
   const { error } = await client().auth.signOut();
   if (error) throw new Error(errorMessage(error, "No se pudo cerrar la sesión"));
+}
+
+export async function signInPortal(username: string, password: string) {
+  const instance = getSupabasePortalClient();
+  if (!instance) throw new Error("Supabase todavía no está configurado.");
+  const clean = username.trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9._-]{2,39}$/.test(clean) || !password) throw new Error("Ingresá un usuario y contraseña válidos.");
+  const { error } = await instance.auth.signInWithPassword({ email: `${clean}@portal.enzothome.com`, password });
+  if (error) throw new Error("Usuario o contraseña incorrectos.");
+}
+
+export async function signOutPortal() {
+  const instance = getSupabasePortalClient();
+  if (instance) await instance.auth.signOut();
+}
+
+export async function resolvePortalAccess() {
+  const instance = getSupabasePortalClient();
+  if (!instance) return "";
+  const { data: session } = await instance.auth.getSession();
+  if (!session.session) return "";
+  const { data, error } = await instance.functions.invoke("portal-credentials", { body: { mode: "resolve" } });
+  if (error || typeof data?.accessToken !== "string") throw new Error("No se pudo verificar el acceso al portal.");
+  return data.accessToken as string;
+}
+
+export async function setPortalCredentials(clientId: string, username: string, password: string) {
+  const { data, error } = await client().functions.invoke("portal-credentials", { body: { mode: "set", clientId, username, password } });
+  if (error || typeof data?.username !== "string" || typeof data?.portalToken !== "string") {
+    const context = error && "context" in error ? (error as { context?: Response }).context : undefined;
+    const details = context ? await context.clone().json().catch(() => null) as { error?: unknown } | null : null;
+    throw new Error(typeof details?.error === "string" ? details.error : typeof data?.error === "string" ? data.error : "No se pudo configurar el acceso.");
+  }
+  return { username: data.username as string, portalToken: data.portalToken as string };
 }
 
 export async function loadAdminWorkspace(): Promise<WorkspaceData> {

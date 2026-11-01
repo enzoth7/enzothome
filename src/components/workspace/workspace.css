@@ -28,6 +28,13 @@
 .et-workspace button:disabled { opacity: .55; cursor: wait; }
 .et-workspace :focus-visible { outline: 2px solid var(--ew-navy); outline-offset: 4px; }
 .et-workspace svg { flex-shrink: 0; }
+.ew-login { align-items: center; justify-content: center; padding: 24px; }
+.ew-login-card { width: min(100%, 420px); padding: clamp(24px, 5vw, 42px); border: 1px solid var(--ew-line); background: var(--ew-white); display: grid; gap: 12px; }
+.ew-login-card h1 { font-size: clamp(32px, 6vw, 44px); }
+.ew-login-card p { margin: 0 0 12px; color: var(--ew-muted); }
+.ew-login-card label { font-weight: 600; }
+.ew-login-card input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--ew-line); border-radius: 4px; background: var(--ew-white); color: var(--ew-navy); font-size: 16px; }
+.ew-login-card .ew-button { margin-top: 8px; }
 .ew-sidebar { width: 244px; flex: 0 0 244px; height: 100dvh; position: sticky; top: 0; padding: 24px 20px 20px; border-right: 1px solid var(--ew-navy); display: flex; flex-direction: column; overflow-y: auto; background: var(--ew-navy); color: var(--ew-white); }
 .ew-wordmark { display: flex; align-items: center; justify-content: center; width: 100%; height: 74px; margin-bottom: 24px; overflow: hidden; }
 .ew-wordmark img { display: block; width: 176px; height: 176px; object-fit: contain; object-position: center; flex: 0 0 auto; }
