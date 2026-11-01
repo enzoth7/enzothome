@@ -227,23 +227,28 @@ export async function generateReceiptPdf(invoice: Invoice, details: InvoicePdfDe
   right(page, `No. ${receipt.number}`, 1168, 296, 32, bold);
   rightParts(page, [{ text: `${english ? "Date" : "Fecha"}: `, font: bold }, { text: date(receipt.paymentDate), font: regular }], 1168, 367, 16);
   rightParts(page, [{ text: `${english ? "Currency" : "Moneda"}: `, font: bold }, { text: invoice.currency, font: regular }], 1168, 386, 16);
-  const columns = english
-    ? [["DESCRIPTION", 82], ["ASSOCIATED INVOICE", 315], ["PAYMENT METHOD", 580], ["STATUS", 840]] as const
-    : [["DESCRIPCIÓN", 82], ["FACTURA ASOCIADA", 304], ["MÉTODO DE PAGO", 622], ["ESTADO", 850]] as const;
-  for (const [label, x] of columns) draw(page, label, x, 493, 18, semiBold);
-  right(page, `${english ? "AMOUNT" : "IMPORTE"} (${invoice.currency})`, 1158, 493, 18, semiBold);
+  if (english) {
+    for (const [label, x] of [["DESCRIPTION", 82], ["ASSOCIATED INVOICE", 315], ["PAYMENT METHOD", 580], ["STATUS", 840]] as const) {
+      draw(page, label, x, 493, 18, semiBold);
+    }
+    right(page, `AMOUNT (${invoice.currency})`, 1158, 493, 18, semiBold);
+  } else {
+    draw(page, "DESCRIPCIÓN", 82, 493, 20, semiBold);
+    right(page, "FACTURA ASOCIADA", 500, 493, 20, semiBold);
+    right(page, "MÉTODO DE PAGO", 792, 493, 20, semiBold);
+    right(page, "ESTADO", 930, 493, 20, semiBold);
+    right(page, `IMPORTE (${invoice.currency})`, 1158, 493, 20, semiBold);
+  }
   rule(page, 529);
-  const cells: [string, number, number][] = [
-    [receipt.description, 82, 210],
-    [`${english ? "Invoice" : "Factura"} No. ${invoice.number}`, 315, 220],
-    [receipt.paymentMethod, 622, 220],
-    [english ? "Confirmed" : "Confirmado", 850, 130],
-  ];
-  for (const [value, x, maxWidth] of cells) {
+  const cells: [string, number, number, "left" | "right"][] = english
+    ? [[receipt.description, 82, 210, "left"], [`Invoice No. ${invoice.number}`, 315, 220, "left"], [receipt.paymentMethod, 622, 220, "left"], ["Confirmed", 850, 130, "left"]]
+    : [[receipt.description, 82, 210, "left"], [`Factura No. ${invoice.number}`, 500, 220, "right"], [receipt.paymentMethod, 792, 220, "right"], ["Confirmado", 930, 130, "right"]];
+  for (const [value, edge, maxWidth, align] of cells) {
     let size = 16;
     while (size > 11 && regular.widthOfTextAtSize(value, size) > maxWidth) size -= 1;
     if (regular.widthOfTextAtSize(value, size) > maxWidth) throw new Error("Un dato del recibo es demasiado largo para el modelo PDF.");
-    draw(page, value, x, 545, size, regular);
+    if (align === "right") right(page, value, edge, 545, size, regular);
+    else draw(page, value, edge, 545, size, regular);
   }
   right(page, amount(receipt.amount), 1158, 545, 16, semiBold);
   rule(page, 584);
@@ -252,7 +257,11 @@ export async function generateReceiptPdf(invoice: Invoice, details: InvoicePdfDe
   rule(page, 686, 768, 1168);
   draw(page, "Total", 768, 690, 20, semiBold);
   right(page, `${amount(receipt.amount)} ${invoice.currency}`, 1168, 686, 36, bold);
-  paragraph(page, english ? "Payment receipt issued by Enzo Thome. Document for informational purposes only; holds no tax-related value." : "Constancia de recepción de pago emitida por Enzo Thome. Documento de carácter informativo, sin valor fiscal.", 72, 917, 15, 18, 710, regular);
+  if (english) paragraph(page, "Payment receipt issued by Enzo Thome. Document for informational purposes only; holds no tax-related value.", 72, 917, 15, 18, 710, regular);
+  else {
+    draw(page, "Constancia de recepción de pago emitida por Enzo Thome.", 72, 917, 16, regular, muted);
+    draw(page, "Documento de carácter informativo, sin valor fiscal.", 72, 934, 16, regular, muted);
+  }
   const bytes = await doc.save();
   return new File([new Uint8Array(bytes)], `${english ? "Receipt" : "Recibo"}-${receipt.number.replace(/[^a-zA-Z0-9_-]/g, "-")}.pdf`, { type: "application/pdf" });
 }
