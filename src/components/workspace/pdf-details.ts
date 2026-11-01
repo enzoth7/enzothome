@@ -4,6 +4,7 @@ export type InvoicePdfDetails = {
   recipientName: string;
   recipientEmail: string;
   recipientPhone: string;
+  recipientCountry: string;
   recipientCompany: string;
   bankAccountId: string;
   secondaryBankAccountId: string;
@@ -19,7 +20,8 @@ export function invoicePdfDetails(invoice: Invoice | undefined, client: Client |
   return {
     recipientName: saved.recipientName || client?.name || "",
     recipientEmail: saved.recipientEmail || client?.email || "",
-    recipientPhone: saved.recipientPhone || "",
+    recipientPhone: saved.recipientPhone || client?.phone || "",
+    recipientCountry: saved.recipientCountry || client?.country || "",
     recipientCompany: saved.recipientCompany || client?.company || "",
     bankAccountId: saved.bankAccountId || "",
     secondaryBankAccountId: typeof saved.secondaryBankAccountId === "string" ? saved.secondaryBankAccountId : "",
