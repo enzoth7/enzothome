@@ -228,10 +228,11 @@ export async function generateReceiptPdf(invoice: Invoice, details: InvoicePdfDe
   rightParts(page, [{ text: `${english ? "Date" : "Fecha"}: `, font: bold }, { text: date(receipt.paymentDate), font: regular }], 1168, 367, 16);
   rightParts(page, [{ text: `${english ? "Currency" : "Moneda"}: `, font: bold }, { text: invoice.currency, font: regular }], 1168, 386, 16);
   if (english) {
-    for (const [label, x] of [["DESCRIPTION", 82], ["ASSOCIATED INVOICE", 315], ["PAYMENT METHOD", 580], ["STATUS", 840]] as const) {
-      draw(page, label, x, 493, 18, semiBold);
-    }
-    right(page, `AMOUNT (${invoice.currency})`, 1158, 493, 18, semiBold);
+    draw(page, "DESCRIPTION", 82, 493, 20, semiBold);
+    right(page, "ASSOCIATED INVOICE", 532, 493, 20, semiBold);
+    right(page, "PAYMENT METHOD", 756, 493, 20, semiBold);
+    right(page, "STATUS", 912, 493, 20, semiBold);
+    right(page, `AMOUNT (${invoice.currency})`, 1158, 493, 20, semiBold);
   } else {
     draw(page, "DESCRIPCIÓN", 82, 493, 20, semiBold);
     right(page, "FACTURA ASOCIADA", 500, 493, 20, semiBold);
@@ -241,7 +242,7 @@ export async function generateReceiptPdf(invoice: Invoice, details: InvoicePdfDe
   }
   rule(page, 529);
   const cells: [string, number, number, "left" | "right"][] = english
-    ? [[receipt.description, 82, 210, "left"], [`Invoice No. ${invoice.number}`, 315, 220, "left"], [receipt.paymentMethod, 622, 220, "left"], ["Confirmed", 850, 130, "left"]]
+    ? [[receipt.description, 82, 210, "left"], [`Invoice No. ${invoice.number}`, 534, 220, "right"], [receipt.paymentMethod, 756, 220, "right"], ["Confirmed", 912, 130, "right"]]
     : [[receipt.description, 82, 210, "left"], [`Factura No. ${invoice.number}`, 500, 220, "right"], [receipt.paymentMethod, 792, 220, "right"], ["Confirmado", 930, 130, "right"]];
   for (const [value, edge, maxWidth, align] of cells) {
     let size = 16;
@@ -257,8 +258,10 @@ export async function generateReceiptPdf(invoice: Invoice, details: InvoicePdfDe
   rule(page, 686, 768, 1168);
   draw(page, "Total", 768, 690, 20, semiBold);
   right(page, `${amount(receipt.amount)} ${invoice.currency}`, 1168, 686, 36, bold);
-  if (english) paragraph(page, "Payment receipt issued by Enzo Thome. Document for informational purposes only; holds no tax-related value.", 72, 917, 15, 18, 710, regular);
-  else {
+  if (english) {
+    draw(page, "Payment receipt issued by Enzo Thome. Document for", 72, 917, 16, regular, muted);
+    draw(page, "informational purposes only; holds no tax-related value.", 72, 934, 16, regular, muted);
+  } else {
     draw(page, "Constancia de recepción de pago emitida por Enzo Thome.", 72, 917, 16, regular, muted);
     draw(page, "Documento de carácter informativo, sin valor fiscal.", 72, 934, 16, regular, muted);
   }
