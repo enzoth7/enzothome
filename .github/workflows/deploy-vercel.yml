@@ -25,6 +25,10 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN_ENZOTHOME1 }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          lfs: true
+      - name: Descargar archivos de Git LFS
+        run: git lfs pull
       - uses: actions/setup-node@v5
         with:
           node-version: 24
