@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { isWorkspaceData, type BankAccount, type Collection, type Collections, type InvoiceLine, type MessageAttachment, type WorkspaceData } from "./model";
+import { isWorkspaceData, type BankAccount, type Collection, type Collections, type InvoiceLine, type MessageAttachment, type StageAction, type WorkspaceData } from "./model";
 import { getSupabaseBrowserClient, getSupabasePortalClient, hasSupabaseConfig } from "@/src/lib/supabase/client";
 
 type Row = Record<string, unknown>;
@@ -26,7 +26,7 @@ function invoiceLines(value: unknown): InvoiceLine[] {
 function fromRow(collection: Collection, row: Row): Collections[Collection] {
   switch (collection) {
     case "clients": return {
-      id: text(row.id), company: text(row.company), name: text(row.name), email: text(row.email), language: text(row.language), notes: text(row.notes),
+      id: text(row.id), company: text(row.company), name: text(row.name), email: text(row.email), phone: text(row.phone), country: text(row.country), language: text(row.language), notes: text(row.notes),
       logoFileId: text(row.logo_path), logoFileName: text(row.logo_file_name), portalToken: text(row.portal_token), portalUsername: text(row.portal_username),
     };
     case "projects": return {
@@ -35,7 +35,7 @@ function fromRow(collection: Collection, row: Row): Collections[Collection] {
       ...(row.intake && typeof row.intake === "object" ? { intake: row.intake as Collections["projects"]["intake"] } : {}),
       internalChecklist: Array.isArray(row.internal_checklist) ? row.internal_checklist.filter(item => typeof item === "string") as string[] : [],
     };
-    case "tasks": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), status: text(row.status), due: text(row.due_date), owner: text(row.owner), kind: text(row.kind) };
+    case "tasks": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), status: text(row.status), due: text(row.due_date), owner: text(row.owner), kind: text(row.kind), actions: Array.isArray(row.actions) ? row.actions as StageAction[] : [] };
     case "documents": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), kind: text(row.kind), status: text(row.status), date: text(row.document_date), content: text(row.content), fileId: text(row.storage_path), fileName: text(row.file_name) };
     case "invoices": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), number: text(row.number), amount: number(row.amount), currency: text(row.currency), due: text(row.due_date), paid: number(row.paid), paidAt: text(row.paid_at), paymentInfo: text(row.payment_info), date: text(row.invoice_date), lines: invoiceLines(row.line_items), fileId: text(row.storage_path), fileName: text(row.file_name), receiptFileId: text(row.receipt_storage_path), receiptFileName: text(row.receipt_file_name) };
     case "approvals": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), description: text(row.description), status: text(row.status), due: text(row.due_date), response: text(row.response), respondedAt: text(row.responded_at) };
@@ -53,7 +53,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
   switch (collection) {
     case "clients": {
       const value = item as Collections["clients"];
-      return { ...base, company: value.company, name: value.name, email: value.email, language: value.language, notes: value.notes, logo_path: value.logoFileId || null, logo_file_name: value.logoFileName || null };
+      return { ...base, company: value.company, name: value.name, email: value.email, phone: value.phone || "", country: value.country || "", language: value.language, notes: value.notes, logo_path: value.logoFileId || null, logo_file_name: value.logoFileName || null };
     }
     case "projects": {
       const value = item as Collections["projects"];
@@ -61,7 +61,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
     }
     case "tasks": {
       const value = item as Collections["tasks"];
-      return { ...base, project_id: value.projectId, title: value.title, status: value.status, due_date: value.due, owner: value.owner, kind: value.kind };
+      return { ...base, project_id: value.projectId, title: value.title, status: value.status, due_date: value.due, owner: value.owner, kind: value.kind, actions: value.actions || [] };
     }
     case "documents": {
       const value = item as Collections["documents"];
@@ -234,22 +234,10 @@ export async function deleteBankAccount(id: string) {
 
 export async function savePortalEntity(accessToken: string, collection: Collection, item: Collections[Collection]) {
   const instance = client();
-  if (collection === "approvals") {
-    const approval = item as Collections["approvals"];
-    const { data, error } = await instance.rpc("portal_respond_to_approval", { p_access_token: accessToken, p_approval_id: approval.id, p_status: approval.status, p_response: approval.response });
-    if (error || !data) throw new Error(errorMessage(error, "No se pudo registrar la respuesta"));
-    return;
-  }
   if (collection === "projects") {
     const project = item as Collections["projects"];
     const { data, error } = await instance.rpc("portal_save_intake", { p_access_token: accessToken, p_project_id: project.id, p_intake: project.intake });
     if (error || !data) throw new Error(errorMessage(error, "No se pudo guardar la ficha"));
-    return;
-  }
-  if (collection === "tasks") {
-    const task = item as Collections["tasks"];
-    const { data, error } = await instance.rpc("portal_complete_task", { p_access_token: accessToken, p_task_id: task.id });
-    if (error || !data) throw new Error(errorMessage(error, "No se pudo completar la tarea"));
     return;
   }
   if (collection === "documents") {

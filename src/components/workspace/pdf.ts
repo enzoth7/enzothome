@@ -2,6 +2,7 @@ import { PDFDocument, PDFString, rgb, type PDFFont, type PDFPage } from "pdf-lib
 import fontkit from "@pdf-lib/fontkit";
 import type { BankAccount, Invoice } from "./model";
 import type { InvoicePdfDetails } from "./pdf-details";
+import { countryName } from "./countries";
 
 const WIDTH = 1240;
 const INVOICE_HEIGHT = 1754;
@@ -123,6 +124,7 @@ function recipient(page: PDFPage, details: InvoicePdfDetails, english: boolean, 
   drawParts(page, [{ text: `${english ? "Phone" : "Celular"}: `, font: bold }, { text: details.recipientPhone || "-", font: regular }], 72, 316, 16);
   drawParts(page, [{ text: "Email: ", font: bold }, { text: details.recipientEmail || "-", font: regular }], 72, 335, 16);
   drawParts(page, [{ text: `${english ? "Company" : "Empresa"}: `, font: bold }, { text: details.recipientCompany || "-", font: regular }], 72, 354, 16);
+  if (details.recipientCountry) drawParts(page, [{ text: `${english ? "Country" : "País"}: `, font: bold }, { text: countryName(details.recipientCountry, english ? "en" : "es"), font: regular }], 72, 373, 16);
 }
 
 async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, details: InvoicePdfDetails, banks: BankAccount[], english: boolean, fonts: PdfFonts) {

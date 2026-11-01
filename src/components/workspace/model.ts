@@ -1,7 +1,8 @@
-export type Client = { id: string; company: string; name: string; email: string; language: string; notes: string; logoFileId?: string; logoFileName?: string; portalToken?: string; portalUsername?: string };
+export type Client = { id: string; company: string; name: string; email: string; phone?: string; country?: string; language: string; notes: string; logoFileId?: string; logoFileName?: string; portalToken?: string; portalUsername?: string };
 export type Intake = { contact: string; goal: string; success: string; context: string; date: string };
 export type Project = { id: string; clientId: string; title: string; description: string; status: string; start: string; due: string; value?: number; currency?: string; intake?: Intake; internalChecklist?: string[] };
-export type Task = { id: string; projectId: string; title: string; status: string; due: string; owner: string; kind: string };
+export type StageAction = { id: string; title: string; status: "Pendiente" | "En curso" | "Completado" | "Aplazado" };
+export type Task = { id: string; projectId: string; title: string; status: string; due: string; owner: string; kind: string; actions?: StageAction[] };
 export type Document = { id: string; projectId: string; title: string; kind: string; status: string; date: string; content: string; fileId: string; fileName: string };
 export type InvoiceLine = { id: string; description: string; amount: number };
 export type Invoice = { id: string; projectId: string; title: string; number: string; amount: number; currency: string; due: string; paid: number; paidAt?: string; paymentInfo: string; date: string; lines?: InvoiceLine[]; fileId?: string; fileName?: string; receiptFileId?: string; receiptFileName?: string };
@@ -167,7 +168,8 @@ export function isWorkspaceData(value: unknown): value is WorkspaceData {
     if (!entries.every(entry => entry && Object.entries(shapes[key]).every(([field, type]) => typeof (entry as Record<string, unknown>)[field] === type))) return false;
     if (new Set(entries.map(e => e.id)).size !== entries.length || entries.some(e => !e.id)) return false;
   }
-  if (data.clients.some(client => (client.logoFileId !== undefined && typeof client.logoFileId !== "string") || (client.logoFileName !== undefined && typeof client.logoFileName !== "string") || (client.portalToken !== undefined && typeof client.portalToken !== "string") || (client.portalUsername !== undefined && typeof client.portalUsername !== "string"))) return false;
+  if (data.clients.some(client => (client.phone !== undefined && typeof client.phone !== "string") || (client.country !== undefined && typeof client.country !== "string") || (client.logoFileId !== undefined && typeof client.logoFileId !== "string") || (client.logoFileName !== undefined && typeof client.logoFileName !== "string") || (client.portalToken !== undefined && typeof client.portalToken !== "string") || (client.portalUsername !== undefined && typeof client.portalUsername !== "string"))) return false;
+  if (data.tasks.some(task => task.actions !== undefined && (!Array.isArray(task.actions) || new Set(task.actions.map(action => action.id)).size !== task.actions.length || task.actions.some(action => !action || typeof action.id !== "string" || !action.id || typeof action.title !== "string" || !action.title.trim() || !["Pendiente", "En curso", "Completado", "Aplazado"].includes(action.status))))) return false;
   if (data.projects.some(project => (project.value !== undefined && (typeof project.value !== "number" || !Number.isFinite(project.value) || project.value < 0)) || (project.currency !== undefined && !["USD", "UYU", "EUR"].includes(project.currency)))) return false;
   if (data.invoices.some(invoice => (invoice.fileId !== undefined && typeof invoice.fileId !== "string") || (invoice.fileName !== undefined && typeof invoice.fileName !== "string") || (invoice.receiptFileId !== undefined && typeof invoice.receiptFileId !== "string") || (invoice.receiptFileName !== undefined && typeof invoice.receiptFileName !== "string"))) return false;
   if (data.invoices.some(invoice => invoice.paidAt !== undefined && typeof invoice.paidAt !== "string")) return false;
