@@ -253,12 +253,11 @@
 .ew-payment-summary-table { min-width: 760px; table-layout: fixed; }
 .ew-payment-summary-table th:first-child { width: 29%; }
 .ew-payment-summary-table td { vertical-align: middle; font-variant-numeric: tabular-nums; }
-.ew-payment-summary-table .ew-payment-money { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--ew-navy); font-size: 12px; }
+.ew-payment-summary-table .ew-payment-money { color: var(--ew-navy); font-size: 12px; }
 .ew-payment-summary-table .ew-payment-money + .ew-payment-money { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--ew-line); }
 .ew-payment-summary-table .ew-payment-money strong { font-weight: 600; white-space: nowrap; }
 .ew-payment-summary-table .ew-payment-money-paid strong { color: var(--ew-success); }
 .ew-payment-summary-table .ew-payment-money-remaining strong { color: var(--ew-danger); }
-.ew-payment-summary-table .ew-payment-money span { color: var(--ew-muted); font-size: 10px; }
 .ew-project-table-wrap { overflow-x: hidden; }
 .ew-project-table { min-width: 0; table-layout: fixed; }
 .ew-project-table th, .ew-project-table td { min-width: 0; overflow-wrap: anywhere; }

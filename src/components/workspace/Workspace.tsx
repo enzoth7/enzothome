@@ -450,9 +450,9 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
               <tbody>{invoiceProjectSummaries.map(summary => <tr key={summary.projectId}>
                 <td><strong>{summary.title}</strong><small>{companyFor(summary.projectId)}</small></td>
                 <td className="ew-tabular">{dateLabel(summary.start, english ? "en-GB" : "es-UY")}</td>
-                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money" key={amount.currency}><strong>{money(amount.total, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td>
-                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-paid" key={amount.currency}><strong>{money(amount.paid, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td>
-                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-remaining" key={amount.currency}><strong>{money(amount.remaining, amount.currency)}</strong><span>{amount.currency}</span></div>) : "—"}</td>
+                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money" key={amount.currency}><strong>{money(amount.total, amount.currency)}</strong></div>) : "—"}</td>
+                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-paid" key={amount.currency}><strong>{money(amount.paid, amount.currency)}</strong></div>) : "—"}</td>
+                <td>{summary.amounts.length ? summary.amounts.map(amount => <div className="ew-payment-money ew-payment-money-remaining" key={amount.currency}><strong>{money(amount.remaining, amount.currency)}</strong></div>) : "—"}</td>
                 <td className="ew-tabular">{summary.lastPaidAt ? dateLabel(summary.lastPaidAt, english ? "en-GB" : "es-UY") : "—"}</td>
               </tr>)}{!invoiceProjectSummaries.length && emptyRow(6, t("No hay proyectos para resumir", "No projects to summarize"), t("Los proyectos aparecerán aquí.", "Projects will appear here."))}</tbody>
             </table></div>
