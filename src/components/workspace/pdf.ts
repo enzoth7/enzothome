@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, PDFString, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import type { BankAccount, Invoice } from "./model";
 import type { InvoicePdfDetails } from "./pdf-details";
@@ -130,9 +130,10 @@ async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, detai
   y += 20;
   if (bank) {
     drawParts(page, [{ text: `${english ? "Account name" : "Titular de la cuenta"}: `, font: bold }, { text: bank.accountHolder, font: regular }], 72, y, 16); y += 20;
-    drawParts(page, [{ text: `${english ? "Account / IBAN" : "Número de cuenta"}: `, font: bold }, { text: bank.accountNumber, font: regular }], 72, y, 16); y += 20;
-    drawParts(page, [{ text: `${english ? "Bank" : "Banco"}: `, font: bold }, { text: bank.bankName, font: regular }], 72, y, 16); y += 20;
-    if (bank.instructions) {
+    const accountLabel = english ? /^[A-Z]{2}\d{2}/.test(bank.accountNumber) ? "IBAN" : "Account / IBAN" : "Número de cuenta";
+    drawParts(page, [{ text: `${accountLabel}: `, font: bold }, { text: bank.accountNumber, font: regular }], 72, y, 16); y += 20;
+    const drawInstructions = () => {
+      if (!bank.instructions) return;
       for (const instruction of bank.instructions.split(/\r?\n/).filter(Boolean)) {
         const colon = instruction.indexOf(":");
         if (colon > 0 && colon < 30) {
@@ -140,20 +141,33 @@ async function bankInfo(doc: PDFDocument, page: PDFPage, invoice: Invoice, detai
           y += 20;
         } else y = paragraph(page, instruction, 72, y, 16, 20, 690, regular);
       }
-    }
+    };
+    if (english) drawInstructions();
+    drawParts(page, [{ text: `${english ? "Bank" : "Banco"}: `, font: bold }, { text: bank.bankName, font: regular }], 72, y, 16); y += 20;
+    if (!english) drawInstructions();
     if (bank.paymentUrl && /paypal/i.test(bank.paymentUrl)) {
       const response = await fetch("/workspace-pdf/paypal.png");
       if (!response.ok) throw new Error("No se encontró el logo de PayPal del PDF.");
       const logo = await doc.embedPng(await response.arrayBuffer());
-      draw(page, english ? "or" : "o", 486, 1360, 21, semiBold, muted);
+      draw(page, english ? "or" : "o", 486, english ? 1351 : 1360, english ? 24 : 21, semiBold, muted);
       page.drawImage(logo, { x: 610, y: page.getHeight() - 1325 - 85, width: 90, height: 85 });
-      draw(page, english ? "Click on the link below" : "Abrí el enlace para pagar", 545, 1412, 14, regular, muted);
-      draw(page, bank.paymentUrl, 545, 1432, 14, semiBold);
+      draw(page, english ? "Click on the link below" : "Abrí el enlace para pagar", 545, english ? 1404 : 1412, english ? 16 : 14, regular, muted);
+      const linkTop = english ? 1424 : 1432;
+      const linkSize = english ? 16 : 14;
+      draw(page, bank.paymentUrl, 545, linkTop, linkSize, semiBold);
+      if (english) {
+        const linkWidth = semiBold.widthOfTextAtSize(bank.paymentUrl, linkSize);
+        page.drawLine({ start: { x: 545, y: page.getHeight() - 1444 }, end: { x: 545 + linkWidth, y: page.getHeight() - 1444 }, thickness: 0.8, color: navy });
+        if (/^https:\/\//i.test(bank.paymentUrl)) {
+          const annotation = doc.context.obj({ Type: "Annot", Subtype: "Link", Rect: [545, page.getHeight() - 1444, 545 + linkWidth, page.getHeight() - 1424], Border: [0, 0, 0], A: { S: "URI", URI: PDFString.of(bank.paymentUrl) } });
+          page.node.addAnnot(doc.context.register(annotation));
+        }
+      }
     } else if (bank.paymentUrl) y = paragraph(page, bank.paymentUrl, 72, y, 16, 20, 690, regular);
   } else {
     draw(page, english ? "Ask us for the payment details." : "Consultanos los datos para pagar.", 72, y, 16, regular, muted); y += 20;
   }
-  const termsTop = Math.max(1452, y + 24);
+  const termsTop = Math.max(english && bank?.paymentUrl && /paypal/i.test(bank.paymentUrl) ? 1473 : 1452, y + 24);
   if (termsTop > 1515) throw new Error("Los datos de pago son demasiado largos para este modelo PDF.");
   draw(page, english ? "Terms & Conditions" : "Términos & Condiciones", 72, termsTop, 32, bold);
   const terms = english
