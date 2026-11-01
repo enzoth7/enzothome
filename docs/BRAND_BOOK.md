@@ -23,3 +23,10 @@ The visual identity uses one navy blue, one warm white, and black only.
 - `public/brand/background-grain-navy.png`: dark, navy-dominant background for light content.
 - `public/brand/background-grain-warm-white.png`: light, warm-white-dominant background for dark content.
 - Both backgrounds use the core navy and warm white only, with fine grain and soft organic transitions.
+
+## Visual references
+
+### Social media
+
+- [Serif Studio on Instagram](https://www.instagram.com/serifestudio/) is a visual reference specifically for posts created for the Enzo Thome Instagram account, including designs prepared in Figma.
+- Use it as occasional inspiration rather than a fixed template or mandatory direction for every post. Select and adapt only the qualities that suit each piece while preserving Enzo Thome's own identity and this brand book's core palette.
