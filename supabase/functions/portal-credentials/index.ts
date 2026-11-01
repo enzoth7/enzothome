@@ -54,23 +54,31 @@ Deno.serve(async request => {
   if (taken) return reply({ error: "Ese usuario ya está asignado." }, 409);
 
   const authEmail = `${username}@portal.enzothome.com`;
-  let authUserId = target.portal_auth_user_id as string | null;
-  let created = false;
-  if (authUserId) {
-    const { error } = await admin.auth.admin.updateUserById(authUserId, { email: authEmail, password, email_confirm: true });
-    if (error) return reply({ error: "No se pudo actualizar el acceso." }, 400);
-  } else {
-    const { data, error } = await admin.auth.admin.createUser({ email: authEmail, password, email_confirm: true });
-    if (error || !data.user) return reply({ error: "No se pudo crear el acceso. Verificá que el usuario no exista." }, 400);
-    authUserId = data.user.id;
-    created = true;
+  const previousUserId = target.portal_auth_user_id as string | null;
+  let previousEmail = "";
+  if (previousUserId) {
+    const { data: previous } = await admin.auth.admin.getUserById(previousUserId);
+    previousEmail = previous.user?.email || "";
+    if (!previousEmail) return reply({ error: "No se pudo actualizar el acceso anterior." }, 500);
+    const retiredEmail = `retired-${crypto.randomUUID()}@portal.enzothome.com`;
+    const { error: retireError } = await admin.auth.admin.updateUserById(previousUserId, { email: retiredEmail, email_confirm: true });
+    if (retireError) return reply({ error: "No se pudo actualizar el acceso anterior." }, 500);
   }
+
+  const { data: created, error: createError } = await admin.auth.admin.createUser({ email: authEmail, password, email_confirm: true });
+  if (createError || !created.user) {
+    if (previousUserId) await admin.auth.admin.updateUserById(previousUserId, { email: previousEmail, email_confirm: true });
+    return reply({ error: "No se pudo crear el acceso. Verificá que el usuario no exista." }, 400);
+  }
+  const authUserId = created.user.id;
 
   const portalToken = crypto.randomUUID();
   const { error: saveError } = await admin.from("clients").update({ portal_username: username, portal_auth_user_id: authUserId, portal_token: portalToken }).eq("id", clientId);
   if (saveError) {
-    if (created && authUserId) await admin.auth.admin.deleteUser(authUserId);
+    await admin.auth.admin.deleteUser(authUserId);
+    if (previousUserId) await admin.auth.admin.updateUserById(previousUserId, { email: previousEmail, email_confirm: true });
     return reply({ error: "No se pudo vincular el acceso al cliente." }, 500);
   }
+  if (previousUserId) await admin.auth.admin.deleteUser(previousUserId);
   return reply({ username, portalToken });
 });
