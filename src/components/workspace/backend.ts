@@ -69,7 +69,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
     }
     case "invoices": {
       const value = item as Collections["invoices"];
-      return { ...base, project_id: value.projectId, title: value.title || `Factura ${value.number}`, number: value.number, amount: value.amount, currency: value.currency, due_date: value.due, paid: value.paid, paid_at: value.paidAt || null, payment_info: "", invoice_date: value.date, line_items: value.lines || [], storage_path: value.fileId || null, file_name: value.fileName || null, receipt_storage_path: value.receiptFileId || null, receipt_file_name: value.receiptFileName || null };
+      return { ...base, project_id: value.projectId, title: value.title || `Factura ${value.number}`, number: value.number, amount: value.amount, currency: value.currency, due_date: value.due, paid: value.paid, paid_at: value.paidAt || null, payment_info: value.paymentInfo || "", invoice_date: value.date, line_items: value.lines || [], storage_path: value.fileId || null, file_name: value.fileName || null, receipt_storage_path: value.receiptFileId || null, receipt_file_name: value.receiptFileName || null };
     }
     case "approvals": {
       const value = item as Collections["approvals"];
