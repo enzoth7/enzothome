@@ -27,6 +27,11 @@ const portalDescriptions: Partial<Record<View, string>> = {
   approvals: "Follow each project stage and see what's done and what's next.",
   resources: "Quick access to project tools and files.",
 };
+const projectStatusTone = (status: string): "success" | "warning" | "info" | undefined => {
+  if (["Completada", "Completado", "Finalizado"].includes(status)) return "success";
+  if (["En curso", "En revisión"].includes(status)) return "info";
+  if (["Pendiente", "Por comenzar"].includes(status)) return "warning";
+};
 
 export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
   const ops = mode === "ops";
@@ -81,7 +86,8 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
         const requestedView = params.get("view") as View;
         const allowed = ops ? ["home", "clients", "projects", "checklist", "documents", "invoices", "banking", "approvals", "resources", "messages", "settings"] : ["home", "projects", "documents", "invoices", "approvals", "resources"];
         setView(allowed.includes(requestedView) ? requestedView : "home");
-        setProjectId("all"); setSearch(""); setFilter("Todos");
+        const requestedProject = params.get("project");
+        setProjectId(requestedProject && current?.projects.some(project => project.id === requestedProject) ? requestedProject : "all"); setSearch(""); setFilter("Todos");
     };
     const syncStorage = (event: StorageEvent) => {
         if (event.key !== STORAGE_KEY || !event.newValue) return;
@@ -239,10 +245,10 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
       setNotice(error instanceof Error ? error.message : t("No se pudo abrir el archivo.", "Could not open the file."));
     }
   }
-  function navigate(next: View, client = clientId) {
-    setView(next); setClientId(client); setSearch(""); setFilter("Todos"); setProjectId("all"); setMobileMoreOpen(false);
+  function navigate(next: View, client = clientId, selectedProject = "all") {
+    setView(next); setClientId(client); setSearch(""); setFilter("Todos"); setProjectId(selectedProject); setMobileMoreOpen(false);
     const access = !ops && portalAuthenticated ? "" : !ops && portalAccessToken ? `access=${encodeURIComponent(portalAccessToken)}&` : `client=${encodeURIComponent(client)}&`;
-    window.history.pushState({}, "", `/${mode}?${access}view=${next}`);
+    window.history.pushState({}, "", `/${mode}?${access}view=${next}${selectedProject !== "all" ? `&project=${encodeURIComponent(selectedProject)}` : ""}`);
   }
   function newItem(collection: Collection) {
     if (collection !== "clients" && !data?.clients.length) { setNotice("Primero creá un cliente."); return; }
@@ -309,10 +315,10 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
     return <Fragment key={project.id}>
       <tr className="ew-project-summary-row">
         {ops && <td><strong>{companyFor(project.id)}</strong></td>}
-        <td><strong>{project.title}</strong><small><Badge>{t(project.status)}</Badge></small></td>
+        <td><strong>{project.title}</strong><small><Badge tone={projectStatusTone(project.status)}>{t(project.status)}</Badge></small></td>
         {ops && <td className="ew-tabular"><strong>{project.value ? money(project.value, project.currency || "USD") : "—"}</strong></td>}
         <td className="ew-project-scope">{project.description || "—"}</td>
-        <td className="ew-project-current">{currentMilestone ? <><strong>{currentMilestone.title}</strong><small><Badge>{t(currentMilestone.status)}</Badge></small></> : "—"}</td>
+        <td className="ew-project-current">{currentMilestone ? <><strong>{currentMilestone.title}</strong><small><Badge tone={projectStatusTone(currentMilestone.status)}>{t(currentMilestone.status)}</Badge></small></> : "—"}</td>
         <td className="ew-tabular">{currentMilestone ? dateLabel(currentMilestone.due, english ? "en-GB" : "es-UY") : "—"}</td>
         <td className="ew-tabular">{dateLabel(project.start, english ? "en-GB" : "es-UY")}</td>
         <td className="ew-tabular">{dateLabel(project.due, english ? "en-GB" : "es-UY")}</td>
@@ -329,10 +335,12 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
         {milestones.length ? <div className="ew-project-path" role="list" aria-label={`${t("Camino general del proyecto", "Project overview")} · ${project.title}`}>{milestones.map((task, index) => {
           const complete = task.status === "Completada";
           const current = ["En curso", "En revisión"].includes(task.status);
-          return <div className={`ew-project-stage ${complete ? "is-complete" : current ? "is-current" : ""}`} role="listitem" aria-current={current ? "step" : undefined} key={task.id}>
-            <div className="ew-project-stage-marker">{complete ? <Icon name="check" size={14} /> : index + 1}</div>
-            <strong>{task.title}</strong>
-            <div className="ew-project-stage-detail">{t(task.status)} · {dateLabel(task.due, english ? "en-GB" : "es-UY")}</div>
+          return <div className={`ew-project-stage ${complete ? "is-complete" : current ? "is-current" : task.status === "Pendiente" ? "is-pending" : ""}`} role="listitem" aria-current={current ? "step" : undefined} key={task.id}>
+            <button type="button" className="ew-project-stage-link" onClick={() => navigate("approvals", clientId, project.id)} aria-label={`${t("Ver etapa", "View stage")}: ${task.title} · ${project.title}`}>
+              <span className="ew-project-stage-marker">{index + 1}</span>
+              <strong>{task.title}</strong>
+              <span className="ew-project-stage-detail">{t(task.status)} · {dateLabel(task.due, english ? "en-GB" : "es-UY")}</span>
+            </button>
             {ops && <div className="ew-table-actions ew-project-stage-actions"><button className={`ew-icon-button ew-action-button ${complete ? "is-paid" : ""}`} aria-label={complete ? `${task.title} completada` : `Marcar ${task.title} como completada`} title={complete ? "Fase completada" : "Marcar como completada"} disabled={complete} onClick={() => action(() => save("tasks", { ...task, status: "Completada" }))}><Icon name="check" size={17} /></button>{editButton("tasks", task)}</div>}
           </div>;
         })}</div> : <div className="ew-project-path-empty">{t("Las etapas generales aparecerán aquí.", "The main stages will appear here.")}</div>}
@@ -343,10 +351,10 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
     const stages = data.tasks.filter(task => task.projectId === project.id && task.kind === "Hito").sort((a, b) => a.due.localeCompare(b.due));
     const current = stages.find(task => ["En curso", "En revisión"].includes(task.status)) || stages.find(task => task.status !== "Completada");
     return <article className="ew-mobile-card" key={project.id}>
-      <div className="ew-mobile-card-head"><h3>{project.title}</h3><Badge>{t(project.status)}</Badge></div>
+      <div className="ew-mobile-card-head"><h3>{project.title}</h3><Badge tone={projectStatusTone(project.status)}>{t(project.status)}</Badge></div>
       {project.description && <p>{project.description}</p>}
       <dl className="ew-mobile-facts"><div><dt>{t("Inicio del proyecto", "Project start")}</dt><dd>{dateLabel(project.start, english ? "en-GB" : "es-UY")}</dd></div><div><dt>{t("Fin del proyecto", "Project end")}</dt><dd>{dateLabel(project.due, english ? "en-GB" : "es-UY")}</dd></div>{current && <div><dt>{t("Etapa actual", "Current stage")}</dt><dd>{current.title} · {dateLabel(current.due, english ? "en-GB" : "es-UY")}</dd></div>}</dl>
-      <details className="ew-mobile-details"><summary>{t("Ver etapas", "View stages")} ({stages.length})</summary>{stages.length ? <ol className="ew-mobile-timeline">{stages.map(stage => <li key={stage.id} className={stage.status === "Completada" ? "is-complete" : ""}><strong>{stage.title}</strong><span>{t(stage.status)} · {dateLabel(stage.due, english ? "en-GB" : "es-UY")}</span></li>)}</ol> : <p>{t("Las etapas generales aparecerán aquí.", "The main stages will appear here.")}</p>}</details>
+      <details className="ew-mobile-details"><summary>{t("Ver etapas", "View stages")} ({stages.length})</summary>{stages.length ? <ol className="ew-mobile-timeline">{stages.map(stage => <li key={stage.id} className={stage.status === "Completada" ? "is-complete" : ["En curso", "En revisión"].includes(stage.status) ? "is-current" : stage.status === "Pendiente" ? "is-pending" : ""}><button type="button" onClick={() => navigate("approvals", clientId, project.id)} aria-label={`${t("Ver etapa", "View stage")}: ${stage.title} · ${project.title}`}><strong>{stage.title}</strong><span>{t(stage.status)} · {dateLabel(stage.due, english ? "en-GB" : "es-UY")}</span></button></li>)}</ol> : <p>{t("Las etapas generales aparecerán aquí.", "The main stages will appear here.")}</p>}</details>
     </article>;
   };
   const portalDocumentCard = (item: Document) => <article className="ew-mobile-card" key={item.id}>
