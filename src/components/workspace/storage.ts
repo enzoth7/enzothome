@@ -58,7 +58,7 @@ export async function exportBackup(data: WorkspaceData) {
   }
   download(new Blob([JSON.stringify({ data, files }, null, 2)], { type: "application/json" }), `enzo-workspace-${new Date().toISOString().slice(0, 10)}.json`);
 }
-export async function importBackup(file: File): Promise<WorkspaceData> {
+export async function importBackup(file: File, preserveRemoteFiles = false): Promise<WorkspaceData> {
   if (file.size > 100 * 1024 * 1024) throw new Error("El respaldo supera el límite de 100 MB.");
   const parsed = JSON.parse(await file.text());
   if (!isWorkspaceData(parsed.data) || !parsed.files || typeof parsed.files !== "object") throw new Error("El archivo no es un respaldo válido de este espacio.");
@@ -72,18 +72,21 @@ export async function importBackup(file: File): Promise<WorkspaceData> {
   };
   for (const client of data.clients) {
     if (!client.logoFileId) continue;
+    if (preserveRemoteFiles && !parsed.files[client.logoFileId]) continue;
     const blob = restoreFile(parsed.files[client.logoFileId]);
     client.logoFileId = crypto.randomUUID();
     attachments.push({ id: client.logoFileId, blob });
   }
   for (const account of data.bankAccounts || []) {
     if (!account.iconFileId) continue;
+    if (preserveRemoteFiles && !parsed.files[account.iconFileId]) continue;
     const blob = restoreFile(parsed.files[account.iconFileId]);
     account.iconFileId = crypto.randomUUID();
     attachments.push({ id: account.iconFileId, blob });
   }
   for (const doc of data.documents) {
     if (!doc.fileId) continue;
+    if (preserveRemoteFiles && !parsed.files[doc.fileId]) continue;
     const blob = restoreFile(parsed.files[doc.fileId]);
     // New keys preserve existing attachments if the import is interrupted.
     doc.fileId = crypto.randomUUID();
