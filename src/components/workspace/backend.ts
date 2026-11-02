@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { isWorkspaceData, type BankAccount, type Collection, type Collections, type InvoiceLine, type MessageAttachment, type StageAction, type WorkspaceData } from "./model";
+import { isWorkspaceData, type BankAccount, type CalendarEvent, type Collection, type Collections, type InvoiceLine, type MessageAttachment, type StageAction, type WorkspaceData } from "./model";
 import { getSupabaseBrowserClient, getSupabasePortalClient, hasSupabaseConfig } from "@/src/lib/supabase/client";
 
 type Row = Record<string, unknown>;
@@ -160,6 +160,45 @@ export async function loadAdminWorkspace(): Promise<WorkspaceData> {
     clientIds: assignments.filter(item => text(item.bank_account_id) === text(row.id)).map(item => text(item.client_id)),
   }));
   return { ...(Object.fromEntries([["version", 1], ...results]) as WorkspaceData), bankAccounts };
+}
+
+function calendarEventFromRow(row: Row): CalendarEvent {
+  return { id: text(row.id), title: text(row.title), date: text(row.event_date), startTime: text(row.start_time), endTime: text(row.end_time), notes: text(row.notes), projectId: text(row.project_id) };
+}
+
+function calendarEventToRow(event: CalendarEvent) {
+  return { id: event.id, title: event.title, event_date: event.date, start_time: event.startTime || null, end_time: event.endTime || null, notes: event.notes, project_id: event.projectId || null, updated_at: new Date().toISOString() };
+}
+
+export async function loadCalendarEvents(start: string, end: string): Promise<CalendarEvent[]> {
+  const { data, error } = await client().from("calendar_events").select("id,title,event_date,start_time,end_time,notes,project_id").gte("event_date", start).lt("event_date", end).order("event_date").order("start_time");
+  if (error) throw new Error(errorMessage(error, "No se pudo cargar el calendario"));
+  return ((data || []) as Row[]).map(calendarEventFromRow);
+}
+
+export async function loadAllCalendarEvents(): Promise<CalendarEvent[]> {
+  const { data, error } = await client().from("calendar_events").select("id,title,event_date,start_time,end_time,notes,project_id").order("event_date").limit(10000);
+  if (error) throw new Error(errorMessage(error, "No se pudo respaldar el calendario"));
+  return ((data || []) as Row[]).map(calendarEventFromRow);
+}
+
+export async function saveCalendarEvent(event: CalendarEvent): Promise<void> {
+  const { error } = await client().from("calendar_events").upsert(calendarEventToRow(event));
+  if (error) throw new Error(errorMessage(error, "No se pudo guardar el evento"));
+}
+
+export async function deleteCalendarEvent(id: string): Promise<void> {
+  const { error } = await client().from("calendar_events").delete().eq("id", id);
+  if (error) throw new Error(errorMessage(error, "No se pudo eliminar el evento"));
+}
+
+export async function replaceCalendarEvents(events: CalendarEvent[]): Promise<void> {
+  const { error: deleteError } = await client().from("calendar_events").delete().gte("event_date", "0001-01-01");
+  if (deleteError) throw new Error(errorMessage(deleteError, "No se pudo restaurar el calendario"));
+  if (events.length) {
+    const { error } = await client().from("calendar_events").upsert(events.map(calendarEventToRow));
+    if (error) throw new Error(errorMessage(error, "No se pudo restaurar el calendario"));
+  }
 }
 
 export async function loadPortalWorkspace(accessToken: string): Promise<WorkspaceData> {

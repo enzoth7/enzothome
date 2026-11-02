@@ -1,0 +1,262 @@
+{
+  "services": [
+    {
+      "id": "SRV-001",
+      "category": "E-commerce & Catálogos Digitales",
+      "name": "Optimización de WhatsApp Business",
+      "hours": 0.5,
+      "baseUsd": 50.0,
+      "complexity": "Baja",
+      "includes": "Foto, descripción, horarios, links, perfil comercial y orden general."
+    },
+    {
+      "id": "SRV-002",
+      "category": "Excel & Hojas de Cálculo",
+      "name": "Soluciones en Excel y Google Sheets",
+      "hours": 2.0,
+      "baseUsd": 100.0,
+      "complexity": "Baja",
+      "includes": "Orden y limpieza de datos, tablas, formatos, fórmulas necesarias, validaciones básicas y archivo listo para usar."
+    },
+    {
+      "id": "SRV-003",
+      "category": "E-commerce & Catálogos Digitales",
+      "name": "Configuración de atención automatizada en WhatsApp y Meta",
+      "hours": 2.0,
+      "baseUsd": 100.0,
+      "complexity": "Media",
+      "includes": "Mensaje de bienvenida, ausencia, preguntas frecuentes, respuestas rápidas, derivación a persona y pruebas."
+    },
+    {
+      "id": "SRV-004",
+      "category": "E-commerce & Catálogos Digitales",
+      "name": "Catálogos e inventario digital",
+      "hours": 4.0,
+      "baseUsd": 150.0,
+      "complexity": "Baja",
+      "includes": "Carga u organización de productos, fotos, nombres, precios, categorías y estructura básica de catálogo o inventario."
+    },
+    {
+      "id": "SRV-005",
+      "category": "Agentes Conversacionales IA",
+      "name": "Implementación de agente conversacional existente",
+      "hours": 4.0,
+      "baseUsd": 250.0,
+      "complexity": "Media",
+      "includes": "El cliente ya tiene el agente o la plataforma: vos lo conectás, cargás información, configurás respuestas, derivaciones y lo dejás funcionando."
+    },
+    {
+      "id": "SRV-006",
+      "category": "Automatizaciones & Datos",
+      "name": "Automatizaciones e integraciones",
+      "hours": 20.0,
+      "baseUsd": 300.0,
+      "complexity": "Alta",
+      "includes": "Conexión entre herramientas, disparadores, acciones automáticas, manejo básico de errores y pruebas del flujo."
+    },
+    {
+      "id": "SRV-007",
+      "category": "BI & Dashboards",
+      "name": "Dashboards y reportes de gestión",
+      "hours": 10.0,
+      "baseUsd": 420.0,
+      "complexity": "Media",
+      "includes": "Definición de KPIs, organización de datos, gráficos, filtros o segmentadores y tablero listo para seguimiento."
+    },
+    {
+      "id": "SRV-008",
+      "category": "Desarrollo Web & Frontend",
+      "name": "Herramientas y aplicaciones web a medida",
+      "hours": 20.0,
+      "baseUsd": 500.0,
+      "complexity": "Media",
+      "includes": "Diseño de la herramienta, pantallas, lógica personalizada, formularios, conexión de datos necesaria y pruebas."
+    },
+    {
+      "id": "SRV-009",
+      "category": "Desarrollo Web & Frontend",
+      "name": "Landing pages y sitios web",
+      "hours": 30.0,
+      "baseUsd": 550.0,
+      "complexity": "Alta",
+      "includes": "Diseño y armado responsive, secciones principales, información del negocio, formulario o contacto, links y publicación."
+    },
+    {
+      "id": "SRV-010",
+      "category": "Automatizaciones & Datos",
+      "name": "Integración y automatización de datos",
+      "hours": 10.0,
+      "baseUsd": 800.0,
+      "complexity": "Media",
+      "includes": "Relevamiento del flujo, conexión de fuentes, limpieza o transformación de datos, automatización y pruebas de funcionamiento."
+    },
+    {
+      "id": "SRV-011",
+      "category": "Agentes Conversacionales IA",
+      "name": "Agentes IA para atención y ventas",
+      "hours": 40.0,
+      "baseUsd": 800.0,
+      "complexity": "Muy Alta",
+      "includes": "Diseño de agente IA desde cero, instrucciones, base de conocimiento, flujos de conversación, derivación humana, integraciones acordadas y pruebas."
+    },
+    {
+      "id": "SRV-012",
+      "category": "Comercio electrónico",
+      "name": "Tienda online (e-commerce)",
+      "hours": null,
+      "baseUsd": 1000,
+      "complexity": "Alta",
+      "includes": "Tienda con catálogo, carrito, pagos y configuración inicial de envíos. La cantidad de productos, carga de contenido e integraciones se definen para cada proyecto."
+    },
+    {
+      "id": "SRV-013",
+      "category": "Integraciones",
+      "name": "Conexión MCP",
+      "hours": null,
+      "baseUsd": null,
+      "complexity": "Media",
+      "includes": "Conectar una herramienta mediante MCP, definir permisos y comprobar el caso de uso acordado. El precio depende del alcance y del valor de esa conexión."
+    },
+    {
+      "id": "SRV-014",
+      "category": "SEO",
+      "name": "SEO inicial",
+      "hours": null,
+      "baseUsd": null,
+      "complexity": "Media",
+      "includes": "Revisión técnica, títulos y metadatos, indexación y medición inicial. Contenido nuevo y trabajo mensual se presupuestan aparte."
+    }
+  ],
+  "factors": {
+    "Mercado / País": [
+      {
+        "label": "Uruguay Interior",
+        "value": 0.45
+      },
+      {
+        "label": "Uruguay Capital (Montevideo)",
+        "value": 1.0
+      },
+      {
+        "label": "Argentina",
+        "value": 1.1
+      },
+      {
+        "label": "LATAM Promedio",
+        "value": 1.05
+      },
+      {
+        "label": "España / Europa",
+        "value": 1.12
+      },
+      {
+        "label": "USA / UK",
+        "value": 1.2
+      }
+    ],
+    "Tamaño de Empresa": [
+      {
+        "label": "Emprendedor / Independiente",
+        "value": 0.98
+      },
+      {
+        "label": "Comercio local / Pyme chica",
+        "value": 1.0
+      },
+      {
+        "label": "Empresa mediana",
+        "value": 1.04
+      },
+      {
+        "label": "Empresa grande / Corporativo",
+        "value": 1.08
+      }
+    ],
+    "Impacto / Uso": [
+      {
+        "label": "Uso interno de equipo",
+        "value": 1.0
+      },
+      {
+        "label": "Comercial / Ventas directas",
+        "value": 1.08
+      },
+      {
+        "label": "Pauta publicitaria / Core del negocio",
+        "value": 1.15
+      },
+      {
+        "label": "Misión crítica / Alto tráfico",
+        "value": 1.22
+      }
+    ],
+    "Urgencia": [
+      {
+        "label": "Normal / Flexible",
+        "value": 1.0
+      },
+      {
+        "label": "Estándar (1-2 semanas)",
+        "value": 1.05
+      },
+      {
+        "label": "Prioritario (72 horas)",
+        "value": 1.25
+      },
+      {
+        "label": "Urgencia crítica (24-48 horas)",
+        "value": 1.45
+      }
+    ],
+    "Estado de Datos": [
+      {
+        "label": "Requerimientos claros y datos listos",
+        "value": 1.0
+      },
+      {
+        "label": "Idea definida pero sin estructurar",
+        "value": 1.06
+      },
+      {
+        "label": "Sin definición / Crear desde cero",
+        "value": 1.12
+      },
+      {
+        "label": "Datos caóticos / Requiere rescate",
+        "value": 1.2
+      }
+    ],
+    "Revisiones & Soporte": [
+      {
+        "label": "1 ronda de feedback",
+        "value": 1.0
+      },
+      {
+        "label": "2 rondas de feedback",
+        "value": 1.05
+      },
+      {
+        "label": "3 rondas + 15 días de soporte",
+        "value": 1.1
+      }
+    ],
+    "Reserva para imprevistos": [
+      {
+        "label": "0% (Sin reserva)",
+        "value": 1.0
+      },
+      {
+        "label": "10% (Reserva estándar)",
+        "value": 1.1
+      },
+      {
+        "label": "18% (Reserva media)",
+        "value": 1.18
+      },
+      {
+        "label": "25% (Reserva alta)",
+        "value": 1.25
+      }
+    ]
+  }
+}

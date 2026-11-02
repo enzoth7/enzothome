@@ -1,0 +1,19 @@
+.page { min-height: 100svh; display: grid; place-items: center; padding: 24px; background: #faf9f6; color: #0f172a; }
+.card { width: min(100%, 560px); border: 1px solid #0f172a; background: #faf9f6; }
+.brand { padding: 22px 28px; background: #0f172a; color: #faf9f6; font-family: Georgia, serif; font-size: 32px; line-height: 1; }
+.body { padding: clamp(24px, 5vw, 44px); }
+.eyebrow { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.body h1 { margin: 0 0 18px; font-size: clamp(28px, 6vw, 38px); line-height: 1.1; }
+.body p { line-height: 1.5; }
+.form { display: grid; gap: 10px; margin-top: 24px; }
+.form label { font-weight: 700; }
+.form input { min-height: 48px; padding: 10px 12px; border: 1px solid #0f172a; background: #faf9f6; color: #0f172a; font: inherit; font-size: 16px; }
+.body button { min-height: 48px; padding: 11px 18px; border: 1px solid #0f172a; background: #0f172a; color: #faf9f6; font: inherit; font-weight: 700; cursor: pointer; }
+.body button:focus-visible, .form input:focus-visible { outline: 3px solid #0f172a; outline-offset: 3px; }
+.permissions { padding: 16px 18px; margin: 24px 0; border: 1px solid #0f172a; }
+.permissions p { margin: 0 0 10px; }
+.permissions p:last-child { margin-bottom: 0; }
+.scopes { font-size: 13px; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.body .secondary { background: #faf9f6; color: #0f172a; }
+.error { border-left: 4px solid #0f172a; padding-left: 12px; }

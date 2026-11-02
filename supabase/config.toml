@@ -392,6 +392,10 @@ verify_jwt = false
 [functions.send-workspace-email]
 verify_jwt = false
 
+# OAuth middleware in the function validates tokens; discovery must be public.
+[functions.ops-mcp]
+verify_jwt = false
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
