@@ -7,8 +7,9 @@ import Editor, { type Entity } from "./Editor";
 import BudgetView from "./BudgetView";
 import CalendarView from "./CalendarView";
 import MeetingEmailPreview, { meetingEmailLabels } from "./MeetingEmailPreview";
+import PortalLogsView from "./PortalLogsView";
 import { calendarEmail, type CalendarEmailKind } from "../../../supabase/functions/_shared/calendar-email";
-import { clientTimeZone, eventStart } from "./calendar-time";
+import { clientTimeZone, eventStart, wallTimeToInstant } from "./calendar-time";
 import PortalCalendar, { nextPortalMeeting, PortalMeetingNotice } from "./PortalCalendar";
 import StagesView, { stageProgress } from "./StagesView";
 import { portalText } from "./copy";
@@ -16,23 +17,23 @@ import { Badge, Icon, Modal } from "./ui";
 import { createWorkspaceSeed, dateLabel, documentKinds, internalChecklistItems, invoiceOutstandingByCurrency, invoiceStatus, isWorkspaceData, money, projectPaymentSummary, safeUrl, today, uid, type BankAccount, type CalendarEvent, type Client, type Collection, type Document, type Invoice, type Message, type MessageAttachment, type Project, type WorkspaceData } from "./model";
 import { invoicePdfDetails } from "./pdf-details";
 import { download, exportBackup, getFile, importBackup, saveFile, STORAGE_KEY } from "./storage";
-import { deleteBankAccount, deleteWorkspaceEntity, deleteWorkspaceProject, downloadAdminDocument, downloadPortalDocument, downloadPortalInvoice, getPortalFileUrl, getCurrentUser, hasSupabaseConfig, importWorkspaceData, loadAdminWorkspace, loadAllCalendarEvents, loadPortalWorkspace, publicLogoUrl, replaceCalendarEvents, resolvePortalAccess, saveBankAccount, savePortalEntity, saveWorkspaceEntity, sendAdminMagicLink, sendWorkspaceEmail, setPortalCredentials, signInPortal, signOutPortal, uploadWorkspaceFile, type WorkspaceFileKind } from "./backend";
+import { createPortalMeeting, deleteBankAccount, deleteWorkspaceEntity, deleteWorkspaceProject, downloadAdminDocument, downloadPortalDocument, downloadPortalInvoice, getPortalFileUrl, getCurrentUser, hasSupabaseConfig, importWorkspaceData, loadAdminWorkspace, loadAllCalendarEvents, loadPortalWorkspace, publicLogoUrl, recordPortalView, replaceCalendarEvents, reschedulePortalMeeting, resolvePortalAccess, saveBankAccount, savePortalEntity, saveWorkspaceEntity, sendAdminMagicLink, sendWorkspaceEmail, setPortalCredentials, signInPortal, signOutPortal, uploadWorkspaceFile, type WorkspaceFileKind } from "./backend";
 import "./workspace.css";
 
-type View = "home" | "calendar" | "budget" | Collection | "banking" | "checklist" | "settings";
+type View = "home" | "calendar" | "budget" | Collection | "banking" | "checklist" | "settings" | "logs";
 type Dialog = { kind: "editor"; collection: Collection; item?: Entity } | { kind: "portal-credentials"; item: Client } | { kind: "document"; item: Document } | { kind: "invoice"; item: Invoice } | { kind: "delete"; collection: Collection; item: Entity } | { kind: "message"; clientId?: string; item?: Message } | { kind: "meeting-email-preview"; emailKind: CalendarEmailKind } | { kind: "bank-account"; item?: BankAccount } | { kind: "delete-bank-account"; item: BankAccount } | { kind: "payment"; item: Invoice } | { kind: "receipt-picker" } | { kind: "intake"; item: Project } | null;
-const navLabels: Partial<Record<View, string>> = { calendar: "Calendario", home: "Vista general", clients: "Clientes", projects: "Proyectos", checklist: "Checklist web", documents: "Documentos", invoices: "Facturas y pagos", banking: "Cuentas bancarias", budget: "Presupuestador", approvals: "Etapas", resources: "Enlaces útiles", messages: "Comunicaciones", settings: "Respaldo y datos" };
+const navLabels: Partial<Record<View, string>> = { calendar: "Calendario", home: "Vista general", clients: "Clientes", projects: "Proyectos", checklist: "Checklist web", documents: "Documentos", invoices: "Facturas y pagos", banking: "Cuentas bancarias", budget: "Presupuestador", approvals: "Etapas", resources: "Enlaces útiles", messages: "Comunicaciones", logs: "Logs", settings: "Respaldo y datos" };
 const opsGroups: { label: string; icon: string; views: View[] }[] = [
   { label: "Inicio", icon: "home", views: ["calendar", "home"] },
   { label: "Clientes", icon: "clients", views: ["clients", "messages"] },
   { label: "Proyectos", icon: "projects", views: ["projects", "approvals", "documents"] },
   { label: "Finanzas", icon: "invoices", views: ["budget", "invoices", "banking"] },
-  { label: "Herramientas", icon: "settings", views: ["checklist", "resources", "settings"] },
+  { label: "Herramientas", icon: "settings", views: ["checklist", "resources", "logs", "settings"] },
 ];
 const portalNav: View[] = ["home", "calendar", "projects", "documents", "invoices", "approvals", "resources"];
 const portalNavLabels: Partial<Record<View, string>> = { home: "Overview", calendar: "Calendar", projects: "Projects", documents: "Documents", invoices: "Invoices & payments", approvals: "Stages", resources: "Useful links" };
 const descriptions: Partial<Record<View, string>> = {
-  calendar: "Reuniones, fechas del proyecto y plazos de cada etapa en tu hora local.", budget: "Calculá precios sugeridos para tus servicios.", clients: "Cada relación, con su contexto y su espacio de trabajo.", projects: "Alcance, etapa actual y fechas clave de cada trabajo.", checklist: "Control interno de salida para cada proyecto web. Esta información nunca aparece en el portal del cliente.", documents: "Contratos, alcances y propuestas, siempre a mano.", invoices: "Líneas, importes y estado de cada factura.", banking: "Tus cuentas y qué clientes pueden ver cada una.", approvals: "Acciones por etapa para mostrar dónde estamos y qué falta.", resources: "Accesos directos a las herramientas y archivos del proyecto.", messages: "Prepará emails y revisá los tres avisos de cada reunión.", settings: "Los datos de este espacio se guardan en este navegador.",
+  calendar: "Reuniones, fechas del proyecto y plazos de cada etapa en tu hora local.", budget: "Calculá precios sugeridos para tus servicios.", clients: "Cada relación, con su contexto y su espacio de trabajo.", projects: "Alcance, etapa actual y fechas clave de cada trabajo.", checklist: "Control interno de salida para cada proyecto web. Esta información nunca aparece en el portal del cliente.", documents: "Contratos, alcances y propuestas, siempre a mano.", invoices: "Líneas, importes y estado de cada factura.", banking: "Tus cuentas y qué clientes pueden ver cada una.", approvals: "Acciones por etapa para mostrar dónde estamos y qué falta.", resources: "Accesos directos a las herramientas y archivos del proyecto.", messages: "Prepará emails y revisá los avisos de cada reunión.", logs: "Inicios de sesión y secciones visitadas por los clientes.", settings: "Los datos de este espacio se guardan en este navegador.",
 };
 const portalDescriptions: Partial<Record<View, string>> = {
   calendar: "Meetings, project dates and stage deadlines in your local time.",
@@ -99,7 +100,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
         if (current && requestedClient && (current.clients.some(c => c.id === requestedClient) || (ops && requestedClient === "all"))) setClientId(requestedClient);
         else if (!ops && current) setClientId(current.clients[0]?.id || "");
         const requestedView = params.get("view") as View;
-        const allowed = ops ? ["calendar", "home", "clients", "projects", "checklist", "documents", "invoices", "banking", "budget", "approvals", "resources", "messages", "settings"] : portalNav;
+        const allowed = ops ? ["calendar", "home", "clients", "projects", "checklist", "documents", "invoices", "banking", "budget", "approvals", "resources", "messages", "logs", "settings"] : portalNav;
         setView(allowed.includes(requestedView) ? requestedView : ops ? "calendar" : "home");
         const requestedProject = params.get("project");
         setProjectId(requestedProject && current?.projects.some(project => project.id === requestedProject) ? requestedProject : "all"); setSearch(""); setFilter("Todos");
@@ -134,6 +135,8 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
           const remote = await loadPortalWorkspace(token);
           setWorkspace(remote);
           setClientId(remote.clients[0]?.id || "");
+          const requestedView = new URLSearchParams(window.location.search).get("view") as View;
+          void recordPortalView(portalNav.includes(requestedView) ? requestedView : "home", token, Boolean(linkToken)).catch(() => undefined);
         }
       } finally {
         loadingRemote = false;
@@ -275,6 +278,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
     setView(next); setClientId(client); setSearch(""); setFilter("Todos"); setProjectId(selectedProject); setMobileMoreOpen(false); setOpsMenuOpen(false);
     const access = !ops && portalAuthenticated ? "" : !ops && portalAccessToken ? `access=${encodeURIComponent(portalAccessToken)}&` : `client=${encodeURIComponent(client)}&`;
     window.history.pushState({}, "", `/${mode}?${access}view=${next}${selectedProject !== "all" ? `&project=${encodeURIComponent(selectedProject)}` : ""}`);
+    if (!ops && backend && portalAccessToken && portalNav.includes(next)) void recordPortalView(next, portalAccessToken, !portalAuthenticated).catch(() => undefined);
   }
   function newItem(collection: Collection) {
     if (collection !== "clients" && !data?.clients.length) { setNotice("Primero creá un cliente."); return; }
@@ -311,7 +315,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
       await saveWorkspaceEntity("messages", message);
       commit(current => ({ ...current, messages: [...current.messages.filter(item => item.id !== message.id), message] }));
       const result = await sendWorkspaceEmail(message.id);
-      const sent: Message = { ...message, status: "Enviado", sentAt: result.sentAt, resendId: result.resendId };
+      const sent: Message = { ...message, title: result.title || message.title, content: result.content || message.content, status: "Enviado", sentAt: result.sentAt, resendId: result.resendId };
       commit(current => ({ ...current, messages: current.messages.map(item => item.id === message.id ? sent : item) }));
       setNotice(`Reunión guardada. Confirmación enviada a ${meetingClient.email}.`);
     } catch (cause) {
@@ -325,6 +329,34 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
   const client = data.clients.find(c => c.id === clientId);
   const english = !ops && client?.language === "Inglés";
   const t = (es: string, en?: string) => en ? (english ? en : es) : portalText(es, english);
+  async function reloadPortalAfterMeetingChange() {
+    const updated = await loadPortalWorkspace(portalAccessToken);
+    dataRef.current = updated;
+    setData(updated);
+  }
+  async function createClientMeeting(meeting: Pick<CalendarEvent, "projectId" | "title" | "date" | "startTime" | "endTime" | "meetingUrl">) {
+    if (!client) throw new Error("Cliente no disponible.");
+    if (backend) {
+      await createPortalMeeting(portalAccessToken, meeting);
+      await reloadPortalAfterMeetingChange();
+    } else {
+      const zone = clientTimeZone(client);
+      const entry: CalendarEvent = { ...meeting, id: uid(), notes: "", kind: "meeting", timeZone: zone, startsAt: wallTimeToInstant(meeting.date, meeting.startTime, zone)?.toISOString(), endsAt: wallTimeToInstant(meeting.date, meeting.endTime, zone)?.toISOString() };
+      commit(current => ({ ...current, calendarEvents: [...(current.calendarEvents || []), entry] }));
+    }
+    setNotice(t("Reunión creada en tu calendario.", "Meeting added to your calendar."));
+  }
+  async function changeClientMeeting(meeting: CalendarEvent, date: string, startTime: string, endTime: string) {
+    if (!client) throw new Error("Cliente no disponible.");
+    if (backend) {
+      await reschedulePortalMeeting(portalAccessToken, meeting, date, startTime, endTime);
+      await reloadPortalAfterMeetingChange();
+    } else {
+      const zone = clientTimeZone(client);
+      commit(current => ({ ...current, calendarEvents: (current.calendarEvents || []).map(item => item.id === meeting.id ? { ...item, date, startTime, endTime, timeZone: zone, startsAt: wallTimeToInstant(date, startTime, zone)?.toISOString(), endsAt: wallTimeToInstant(date, endTime, zone)?.toISOString() } : item) }));
+    }
+    setNotice(t("Horario de la reunión actualizado.", "Meeting time updated."));
+  }
   const clientProjects = data.projects.filter(p => clientId === "all" || p.clientId === clientId);
   const projects = clientProjects.filter(p => projectId === "all" || p.id === projectId);
   const checklistProject = clientProjects.find(project => project.id === projectId) || clientProjects[0];
@@ -454,11 +486,12 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
     <div className="ew-main-wrap">
       <header className="ew-topbar">{ops && <button className="ew-ops-menu-toggle" aria-label="Abrir menú" aria-expanded={opsMenuOpen} onClick={() => setOpsMenuOpen(open => !open)}><Icon name="menu" size={22} /></button>}<div>{ops ? "Operaciones" : client?.company || t("Tu espacio", "Your space")}<b>/</b>{t(navLabels[view] || "", portalNavLabels[view] || "")}</div><Link className="ew-site-link" href="/">enzothome.com <Icon name="external" size={14} /></Link></header>
       <main id="main-content" className="ew-main">
-        <header className="ew-page-heading"><div><h1>{view === "home" ? ops ? "Todo, en su lugar." : t(`Hola, ${client?.name || "bienvenido"}.`, `Hello, ${client?.name || "there"}.`) : t(navLabels[view] || "", portalNavLabels[view] || "")}</h1>{!(view === "budget" || (view === "calendar" && ops)) && <div className="ew-intro">{view === "home" ? ops ? "Una vista clara de tus clientes, tus proyectos y lo que necesita atención." : t("Este es tu espacio. Lo que estamos construyendo y todo lo que necesitás, a mano.", "Your projects, reviews and documents are all here.") : t(descriptions[view] || "", portalDescriptions[view] || "")}</div>}</div><div className="ew-heading-action">{view === "home" ? ops ? addButton("projects", "Nuevo proyecto") : <button className="ew-button" onClick={() => navigate("approvals")}>{t("Ver etapas", "View stages")}<Icon name="arrow" size={17} /></button> : view === "banking" && ops ? <button className="ew-button" onClick={() => setDialog({ kind: "bank-account" })}><Icon name="plus" size={17} />Nueva cuenta</button> : ops && !["calendar", "budget", "settings", "messages", "checklist", "approvals"].includes(view) ? <>{addButton(view as Collection, ({ clients: "Nuevo cliente", projects: "Nuevo proyecto", tasks: "Nueva tarea", documents: "Nuevo documento", invoices: "Nueva factura", approvals: "Pedir revisión", resources: "Agregar enlace" } as Record<string, string>)[view])}{view === "invoices" && <button className="ew-button ew-secondary" onClick={() => setDialog({ kind: "receipt-picker" })}><Icon name="plus" size={17} />Nuevo recibo</button>}</> : view === "messages" ? <button className="ew-button" onClick={() => setDialog({ kind: "message" })}><Icon name="plus" size={17} />Preparar email</button> : null}</div></header>
+        <header className="ew-page-heading"><div><h1>{view === "home" ? ops ? "Todo, en su lugar." : t(`Hola, ${client?.name || "bienvenido"}.`, `Hello, ${client?.name || "there"}.`) : t(navLabels[view] || "", portalNavLabels[view] || "")}</h1>{!(view === "budget" || (view === "calendar" && ops)) && <div className="ew-intro">{view === "home" ? ops ? "Una vista clara de tus clientes, tus proyectos y lo que necesita atención." : t("Este es tu espacio. Lo que estamos construyendo y todo lo que necesitás, a mano.", "Your projects, reviews and documents are all here.") : t(descriptions[view] || "", portalDescriptions[view] || "")}</div>}</div><div className="ew-heading-action">{view === "home" ? ops ? addButton("projects", "Nuevo proyecto") : <button className="ew-button" onClick={() => navigate("approvals")}>{t("Ver etapas", "View stages")}<Icon name="arrow" size={17} /></button> : view === "banking" && ops ? <button className="ew-button" onClick={() => setDialog({ kind: "bank-account" })}><Icon name="plus" size={17} />Nueva cuenta</button> : ops && !["calendar", "budget", "settings", "messages", "logs", "checklist", "approvals"].includes(view) ? <>{addButton(view as Collection, ({ clients: "Nuevo cliente", projects: "Nuevo proyecto", tasks: "Nueva tarea", documents: "Nuevo documento", invoices: "Nueva factura", approvals: "Pedir revisión", resources: "Agregar enlace" } as Record<string, string>)[view])}{view === "invoices" && <button className="ew-button ew-secondary" onClick={() => setDialog({ kind: "receipt-picker" })}><Icon name="plus" size={17} />Nuevo recibo</button>}</> : view === "messages" ? <button className="ew-button" onClick={() => setDialog({ kind: "message" })}><Icon name="plus" size={17} />Preparar email</button> : null}</div></header>
 
         {view === "calendar" && ops && <CalendarView projects={clientProjects} clients={data.clients} stages={data.tasks.filter(stage => clientProjects.some(project => project.id === stage.projectId))} backend={backend} localEvents={data.calendarEvents || []} onLocalChange={calendarEvents => commit(current => ({ ...current, calendarEvents }))} onOpenSource={(next, selectedProject) => navigate(next, clientId, selectedProject)} onMeetingCreated={sendMeetingCreated} />}
-        {view === "calendar" && !ops && client && <PortalCalendar client={client} projects={clientProjects} stages={data.tasks} events={data.calendarEvents || []} english={english} />}
+        {view === "calendar" && !ops && client && <PortalCalendar client={client} projects={clientProjects} stages={data.tasks} events={data.calendarEvents || []} english={english} onCreateMeeting={createClientMeeting} onRescheduleMeeting={changeClientMeeting} />}
         {view === "budget" && ops && <BudgetView />}
+        {view === "logs" && ops && <PortalLogsView key={clientId} clients={data.clients} clientId={clientId} backend={backend} />}
 
         {view === "home" && <>
           {!ops && client && nextMeeting && <PortalMeetingNotice client={client} meeting={nextMeeting} english={english} onCalendar={() => navigate("calendar")} />}
@@ -491,7 +524,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
           </div>
         </section> : <div className="ew-empty"><Icon name="checklist" size={30} /><h3>No hay proyectos para revisar</h3><div>Creá un proyecto y su checklist aparecerá acá.</div></div>)}
 
-        {!["home", "calendar", "budget", "settings", "messages", "checklist", "approvals"].includes(view) && <div className="ew-toolbar"><label className="ew-search"><Icon name="search" size={19} /><input type="search" aria-label={t(`Buscar en ${navLabels[view]}`, `Search ${portalNavLabels[view]}`)} placeholder={t("Buscar en esta sección…")} value={search} onChange={e => setSearch(e.target.value)} /></label>{!["clients", "projects", "banking"].includes(view) && <select aria-label={t("Filtrar por proyecto")} value={projectId} onChange={e => setProjectId(e.target.value)}><option value="all">{t("Todos los proyectos")}</option>{clientProjects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select>}{view === "documents" && <select aria-label={t("Tipo de documento")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", ...documentKinds].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}{view === "invoices" && <select aria-label={t("Estado de factura")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", "Pendiente", "Pago parcial", "Pagada", "Vencida"].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}</div>}
+        {!["home", "calendar", "budget", "settings", "messages", "logs", "checklist", "approvals"].includes(view) && <div className="ew-toolbar"><label className="ew-search"><Icon name="search" size={19} /><input type="search" aria-label={t(`Buscar en ${navLabels[view]}`, `Search ${portalNavLabels[view]}`)} placeholder={t("Buscar en esta sección…")} value={search} onChange={e => setSearch(e.target.value)} /></label>{!["clients", "projects", "banking"].includes(view) && <select aria-label={t("Filtrar por proyecto")} value={projectId} onChange={e => setProjectId(e.target.value)}><option value="all">{t("Todos los proyectos")}</option>{clientProjects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select>}{view === "documents" && <select aria-label={t("Tipo de documento")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", ...documentKinds].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}{view === "invoices" && <select aria-label={t("Estado de factura")} value={filter} onChange={e => setFilter(e.target.value)}>{["Todos", "Pendiente", "Pago parcial", "Pagada", "Vencida"].map(v => <option key={v} value={v}>{t(v)}</option>)}</select>}</div>}
 
         {view === "projects" && <div className="ew-table-wrap ew-project-table-wrap"><table className="ew-table ew-data-table ew-project-table"><thead><tr>{ops && <th>{t("Cliente")}</th>}<th>{t("Proyecto")}</th>{ops && <th>{t("Valor")}</th>}<th>{t("Alcance acordado")}</th><th>{t("Etapa actual")}</th><th>{t("Fin de etapa")}</th><th>{t("Inicio del proyecto", "Project start")}</th><th>{t("Fin del proyecto")}</th><th>{t("Acciones")}</th></tr></thead><tbody>{projects.filter(matches).map(projectRow)}{!projects.filter(matches).length && emptyRow(projectColumns, t("No hay proyectos para mostrar"), t("Probá otra búsqueda o creá un nuevo proyecto."))}</tbody></table></div>}
 
@@ -592,7 +625,7 @@ export default function Workspace({ mode }: { mode: "portal" | "ops" }) {
       const saved = await save("messages", item);
       if (!saved) throw new Error("No se pudo guardar el email antes del envío.");
       const result = await sendWorkspaceEmail(item.id);
-      const sent = { ...item, status: "Enviado" as const, sentAt: result.sentAt, resendId: result.resendId, lastError: "" };
+      const sent = { ...item, title: result.title || item.title, content: result.content || item.content, status: "Enviado" as const, sentAt: result.sentAt, resendId: result.resendId, lastError: "" };
       commit(current => ({ ...current, messages: current.messages.map(message => message.id === sent.id ? sent : message) }));
       setNotice(`Email enviado a ${data.clients.find(client => client.id === item.clientId)?.email || "el cliente"}.`);
     }} onClose={() => setDialog(null)} />}

@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.117.3";
 import { corsHeaders } from "jsr:@supabase/supabase-js@2/cors";
+import { calendarEmail } from "../_shared/calendar-email.ts";
 
 const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json" };
 const replyTo = "enzothome1@gmail.com";
@@ -86,11 +87,24 @@ Deno.serve(async request => {
     const messageId = typeof body.messageId === "string" ? body.messageId : "";
     if (!messageId || messageId.length > 256) return response({ error: "Invalid request" }, 400);
 
-    const { data: message } = await supabase.from("messages").select("id, client_id, title, content, attachments").eq("id", messageId).maybeSingle();
-    if (!message || !message.title || !validHtml(message.content)) return response({ error: "El email no tiene contenido HTML válido." }, 400);
+    const { data: message } = await supabase.from("messages").select("id, client_id, title, content, kind, attachments").eq("id", messageId).maybeSingle();
+    if (!message) return response({ error: "No se encontró el email." }, 404);
 
-    const { data: client } = await supabase.from("clients").select("email").eq("id", message.client_id).maybeSingle();
+    const { data: client } = await supabase.from("clients").select("email,name,language,time_zone").eq("id", message.client_id).maybeSingle();
     if (!client || !validEmail(client.email || "")) return response({ error: "El cliente no tiene un email válido." }, 400);
+    let outgoing = { ...message };
+    if (message.kind === "Reunión creada") {
+      const { data: meeting, error: meetingError } = await supabase.from("calendar_events").select("title,meeting_url,starts_at,project_id").eq("id", message.id).eq("kind", "meeting").maybeSingle();
+      if (meetingError) return response({ error: "No se pudo comprobar la reunión." }, 500);
+      if (!meeting?.starts_at) return response({ error: "La reunión ya no está disponible. No se envió el email preparado." }, 400);
+      const { data: project } = await supabase.from("projects").select("client_id").eq("id", meeting.project_id).maybeSingle();
+      if (project?.client_id !== message.client_id) return response({ error: "La reunión no corresponde al cliente del email." }, 400);
+      const latest = calendarEmail("created", { title: meeting.title, startsAt: meeting.starts_at, meetingUrl: meeting.meeting_url, clientName: client.name, clientLanguage: client.language, clientTimeZone: client.time_zone });
+      outgoing = { ...message, title: latest.subject, content: latest.html };
+      const { error: refreshError } = await supabase.from("messages").update({ title: latest.subject, content: latest.html }).eq("id", message.id);
+      if (refreshError) return response({ error: "No se pudo actualizar el borrador de la reunión." }, 500);
+    }
+    if (!outgoing.title || !validHtml(outgoing.content)) return response({ error: "El email no tiene contenido HTML válido." }, 400);
 
     const attachments = (Array.isArray(message.attachments) ? message.attachments : []) as Attachment[];
     if (attachments.length > 10) return response({ error: "Hay demasiados archivos adjuntos." }, 400);
@@ -110,14 +124,14 @@ Deno.serve(async request => {
       headers: {
         Authorization: `Bearer ${resendKey}`,
         "Content-Type": "application/json",
-        "Idempotency-Key": await deliveryKey(message),
+        "Idempotency-Key": await deliveryKey(outgoing),
       },
       body: JSON.stringify({
         from,
         to: [client.email],
         reply_to: replyTo,
-        subject: message.title.slice(0, 240),
-        html: message.content,
+        subject: outgoing.title.slice(0, 240),
+        html: outgoing.content,
         attachments: resendAttachments,
       }),
     });
@@ -130,7 +144,7 @@ Deno.serve(async request => {
 
     const sentAt = new Date().toISOString();
     await supabase.from("messages").update({ status: "Enviado", sent_at: sentAt, resend_email_id: resendResult.id, last_error: "" }).eq("id", message.id);
-    return response({ ok: true, sentAt, resendId: resendResult.id });
+    return response({ ok: true, sentAt, resendId: resendResult.id, title: outgoing.title, content: outgoing.content });
   } catch {
     return response({ error: "Invalid request" }, 400);
   }

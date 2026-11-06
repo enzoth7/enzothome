@@ -111,12 +111,13 @@ export async function signOutAdmin() {
 }
 
 export async function signInPortal(username: string, password: string) {
-  const instance = getSupabasePortalClient();
+  const instance: SupabaseClient | null = getSupabasePortalClient();
   if (!instance) throw new Error("Supabase todavía no está configurado.");
   const clean = username.trim().toLowerCase();
   if (!/^[a-z0-9][a-z0-9._-]{2,39}$/.test(clean) || !password) throw new Error("Ingresá un usuario y contraseña válidos.");
   const { error } = await instance.auth.signInWithPassword({ email: `${clean}@portal.enzothome.com`, password });
   if (error) throw new Error("Usuario o contraseña incorrectos.");
+  try { await instance.rpc("record_portal_activity", { p_event_type: "login", p_view_name: "", p_access_token: null }); } catch { /* Login remains available if logging fails. */ }
 }
 
 export async function signOutPortal() {
@@ -132,6 +133,39 @@ export async function resolvePortalAccess() {
   const { data, error } = await instance.functions.invoke("portal-credentials", { body: { mode: "resolve" } });
   if (error || typeof data?.accessToken !== "string") throw new Error("No se pudo verificar el acceso al portal.");
   return data.accessToken as string;
+}
+
+export async function recordPortalView(view: string, accessToken: string, viaLink: boolean) {
+  const instance: SupabaseClient | null = viaLink ? client() : getSupabasePortalClient();
+  if (!instance) return;
+  await instance.rpc("record_portal_activity", {
+    p_event_type: "view",
+    p_view_name: view,
+    p_access_token: viaLink ? accessToken : null,
+  });
+}
+
+export type PortalAccessLog = {
+  id: number;
+  clientId: string;
+  actorLabel: string;
+  eventType: "login" | "view";
+  viewName: string;
+  createdAt: string;
+};
+
+export async function loadPortalAccessLogs(clientId: string): Promise<PortalAccessLog[]> {
+  let query = client().from("portal_access_logs")
+    .select("id,client_id,actor_label,event_type,view_name,created_at")
+    .order("created_at", { ascending: false }).limit(300);
+  if (clientId !== "all") query = query.eq("client_id", clientId);
+  const { data, error } = await query;
+  if (error) throw new Error(errorMessage(error, "No se pudieron cargar los accesos"));
+  return (data || []).map(row => ({
+    id: Number(row.id), clientId: String(row.client_id), actorLabel: String(row.actor_label),
+    eventType: row.event_type === "login" ? "login" : "view", viewName: String(row.view_name),
+    createdAt: String(row.created_at),
+  }));
 }
 
 export async function setPortalCredentials(clientId: string, username: string, password: string) {
@@ -222,6 +256,33 @@ export async function loadPortalWorkspace(accessToken: string): Promise<Workspac
   };
   if (!isWorkspaceData(merged)) throw new Error("No se pudo leer el calendario del cliente.");
   return merged;
+}
+
+export async function createPortalMeeting(accessToken: string, meeting: Pick<CalendarEvent, "projectId" | "title" | "date" | "startTime" | "endTime" | "meetingUrl">): Promise<void> {
+  const { error } = await client().rpc("portal_create_meeting", {
+    p_access_token: accessToken,
+    p_project_id: meeting.projectId,
+    p_title: meeting.title,
+    p_event_date: meeting.date,
+    p_start_time: meeting.startTime,
+    p_end_time: meeting.endTime,
+    p_meeting_url: meeting.meetingUrl || "",
+  });
+  if (error) throw new Error(errorMessage(error, "No se pudo crear la reunión"));
+}
+
+export async function reschedulePortalMeeting(accessToken: string, meeting: CalendarEvent, date: string, startTime: string, endTime: string): Promise<void> {
+  const { data, error } = await client().rpc("portal_reschedule_meeting", {
+    p_access_token: accessToken,
+    p_event_id: meeting.id,
+    p_expected_starts_at: meeting.startsAt,
+    p_expected_ends_at: meeting.endsAt,
+    p_event_date: date,
+    p_start_time: startTime,
+    p_end_time: endTime,
+  });
+  if (error) throw new Error(errorMessage(error, "No se pudo cambiar la reunión"));
+  if (!data) throw new Error("La reunión cambió desde que abriste el calendario. Actualizá la página y volvé a intentarlo.");
 }
 
 export async function saveWorkspaceEntity<K extends Collection>(collection: K, item: Collections[K]) {
@@ -354,5 +415,5 @@ export async function sendWorkspaceEmail(messageId: string) {
     throw new Error(errorMessage(error, "No se pudo enviar el email"));
   }
   if (!data?.ok) throw new Error(typeof data?.error === "string" ? data.error : "No se pudo enviar el email.");
-  return data as { ok: true; sentAt: string; resendId: string };
+  return data as { ok: true; sentAt: string; resendId: string; title?: string; content?: string };
 }

@@ -9,6 +9,7 @@ import { Modal } from "./ui";
 
 export const meetingEmailLabels: Record<CalendarEmailKind, string> = {
   created: "Reunión creada",
+  rescheduled: "Reunión reprogramada",
   day: "Recordatorio 24 horas antes",
   halfHour: "Recordatorio 30 minutos antes",
 };
@@ -48,7 +49,7 @@ export default function MeetingEmailPreview({ data, backend, clientId, kind, onC
 
   return <Modal title={meetingEmailLabels[kind]} onClose={onClose} extraWide>
     <div className="ew-dialog-content ew-meeting-email-preview">
-      <p>{kind === "created" ? "La confirmación se envía al crear una reunión nueva. Las reuniones ya existentes se muestran para revisar el formato y no se reenvían desde aquí." : "Vista previa con los datos de la reunión seleccionada. Los recordatorios usan este mismo contenido cuando está activado su envío automático."}</p>
+      <p>{kind === "created" ? "La confirmación se envía al crear una reunión nueva. Las reuniones ya existentes se muestran para revisar el formato y no se reenvían desde aquí." : kind === "rescheduled" ? "Se envía cuando el cliente cambia la fecha o la hora de una reunión. Esta vista previa muestra los datos actuales." : "Vista previa con los datos de la reunión seleccionada. Los recordatorios usan este mismo contenido cuando está activado su envío automático."}</p>
       <div className="ew-field"><label htmlFor="meeting-email-event">Reunión</label><select id="meeting-email-event" value={selected?.id || ""} onChange={event => setSelectedId(event.target.value)} disabled={!meetings.length}>
         {!meetings.length && <option value="">{backend && !error ? "Cargando reuniones..." : "No hay reuniones disponibles"}</option>}
         {meetings.map(meeting => {

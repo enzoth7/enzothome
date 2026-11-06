@@ -3,7 +3,7 @@ import { calendarEmail } from "../_shared/calendar-email.ts";
 
 type DueReminder = {
   event_id: string;
-  reminder_minutes: 30 | 1440;
+  reminder_minutes: -1 | 0 | 30 | 1440;
   revision: string;
   title: string;
   meeting_url: string;
@@ -38,11 +38,15 @@ Deno.serve(async request => {
   if (secretError || !cronSecret || request.headers.get("x-cron-secret") !== cronSecret) return new Response("Unauthorized", { status: 401 });
   const { data, error } = await supabase.rpc("claim_due_calendar_reminders");
   if (error) return new Response(JSON.stringify({ error: "Could not claim reminders" }), { status: 500 });
-  let sent = 0, failed = 0;
+  let sent = 0, failed = 0, skipped = 0;
   for (const reminder of (data || []) as DueReminder[]) {
     try {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reminder.client_email)) throw new Error("Invalid client email");
-      const { subject, html } = calendarEmail(reminder.reminder_minutes === 1440 ? "day" : "halfHour", {
+      const { data: current, error: currentError } = await supabase.from("calendar_events").select("updated_at,starts_at").eq("id", reminder.event_id).maybeSingle();
+      if (currentError) throw currentError;
+      if (!current || Date.parse(current.updated_at) !== Date.parse(reminder.revision) || Date.parse(current.starts_at) !== Date.parse(reminder.starts_at)) { skipped++; continue; }
+      const kind = reminder.reminder_minutes === -1 ? "created" : reminder.reminder_minutes === 0 ? "rescheduled" : reminder.reminder_minutes === 1440 ? "day" : "halfHour";
+      const { subject, html } = calendarEmail(kind, {
         title: reminder.title,
         startsAt: reminder.starts_at,
         meetingUrl: reminder.meeting_url,
@@ -53,7 +57,7 @@ Deno.serve(async request => {
       const result = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json", "Idempotency-Key": await idempotencyKey(reminder) },
-        body: JSON.stringify({ from: Deno.env.get("RESEND_FROM_EMAIL") || "Enzo Thome <portal@enzothome.com>", to: [reminder.client_email], reply_to: "enzothome1@gmail.com", subject: subject.slice(0, 240), html }),
+        body: JSON.stringify({ from: Deno.env.get("RESEND_FROM_EMAIL") || "Enzo Thome <portal@enzothome.com>", to: [reminder.client_email], bcc: reminder.reminder_minutes <= 0 && reminder.client_email.toLowerCase() !== "enzothome1@gmail.com" ? ["enzothome1@gmail.com"] : undefined, reply_to: "enzothome1@gmail.com", subject: subject.slice(0, 240), html }),
       });
       const response = await result.json().catch(() => ({}));
       if (!result.ok || typeof response.id !== "string") throw new Error(typeof response.message === "string" ? response.message.slice(0, 500) : "Resend rejected the email");
@@ -66,5 +70,5 @@ Deno.serve(async request => {
       await supabase.from("calendar_reminder_deliveries").update({ last_error: message }).eq("event_id", reminder.event_id).eq("reminder_minutes", reminder.reminder_minutes).eq("revision", reminder.revision);
     }
   }
-  return new Response(JSON.stringify({ claimed: (data || []).length, sent, failed }), { headers: { "Content-Type": "application/json" }, status: failed ? 207 : 200 });
+  return new Response(JSON.stringify({ claimed: (data || []).length, sent, failed, skipped }), { headers: { "Content-Type": "application/json" }, status: failed ? 207 : 200 });
 });

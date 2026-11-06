@@ -11,8 +11,8 @@ const meeting = {
   clientTimeZone: "Europe/London",
 };
 
-test("all three meeting emails use the client's time and link", () => {
-  for (const kind of ["created", "day", "halfHour"]) {
+test("meeting emails use the client's time and link", () => {
+  for (const kind of ["created", "rescheduled", "day", "halfHour"]) {
     const email = calendarEmail(kind, meeting);
     assert.match(email.html, /07 November 2026|7 November 2026/i);
     assert.match(email.html, /12:00/);
@@ -21,6 +21,7 @@ test("all three meeting emails use the client's time and link", () => {
   }
   assert.match(calendarEmail("day", meeting).subject, /tomorrow/);
   assert.match(calendarEmail("halfHour", meeting).subject, /30 minutes/);
+  assert.match(calendarEmail("rescheduled", meeting).subject, /rescheduled/);
 });
 
 test("meeting details cannot inject HTML or an unsafe link", () => {

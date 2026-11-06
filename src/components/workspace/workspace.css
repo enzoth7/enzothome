@@ -618,6 +618,8 @@
 .ew-portal-agenda-item { display: grid; gap: 4px; padding: 14px 0; border-top: 1px solid var(--ew-line); overflow-wrap: anywhere; }
 .ew-portal-agenda-item span, .ew-portal-agenda-item small { color: var(--ew-muted); font-size: 12px; }
 .ew-portal-agenda-item .ew-button { justify-self: start; margin-top: 8px; }
+.ew-portal-meeting-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.ew-portal-meeting-actions .ew-button { margin-top: 0; }
 @media (max-width: 700px) { .ew-meeting-notice { display: grid; padding: 18px; } .ew-meeting-actions .ew-button { flex: 1; } .ew-portal-calendar .ew-calendar-day { min-height: 68px; } }
 .ew-budget { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); grid-template-areas: "controls summary"; align-items: start; gap: 20px; min-width: 0; }
 .ew-budget-controls { grid-area: controls; display: grid; gap: 12px; min-width: 0; }

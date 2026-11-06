@@ -39,12 +39,18 @@ export default function CalendarView({ projects, clients, stages, backend, local
   useEffect(() => {
     if (!backend) return;
     let active = true;
-    void loadCalendarEvents(queryStart, queryEnd).then(events => {
-      if (active) { setRemoteEvents(events); setLoadedPeriod({ key: periodKey, error: "" }); }
-    }).catch(cause => {
-      if (active) setLoadedPeriod({ key: periodKey, error: cause instanceof Error ? cause.message : "No se pudo cargar el calendario." });
-    });
-    return () => { active = false; };
+    const refresh = () => {
+      if (document.hidden) return;
+      void loadCalendarEvents(queryStart, queryEnd).then(events => {
+        if (active) { setRemoteEvents(events); setLoadedPeriod({ key: periodKey, error: "" }); }
+      }).catch(cause => {
+        if (active) setLoadedPeriod({ key: periodKey, error: cause instanceof Error ? cause.message : "No se pudo cargar el calendario." });
+      });
+    };
+    refresh();
+    const interval = window.setInterval(refresh, 60_000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => { active = false; window.clearInterval(interval); document.removeEventListener("visibilitychange", refresh); };
   }, [backend, queryStart, queryEnd, periodKey]);
   const events = backend ? remoteEvents : localEvents;
   const items: CalendarItem[] = [

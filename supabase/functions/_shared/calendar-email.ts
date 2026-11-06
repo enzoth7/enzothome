@@ -1,4 +1,4 @@
-export type CalendarEmailKind = "created" | "day" | "halfHour";
+export type CalendarEmailKind = "created" | "rescheduled" | "day" | "halfHour";
 
 export type CalendarEmailDetails = {
   title: string;
@@ -24,6 +24,9 @@ export function calendarEmail(kind: CalendarEmailKind, details: CalendarEmailDet
     created: english
       ? { subject: `Meeting scheduled: ${details.title}`, lead: "Our meeting is scheduled. Here are the details:" }
       : { subject: `Reunión programada: ${details.title}`, lead: "Nuestra reunión quedó programada. Estos son los detalles:" },
+    rescheduled: english
+      ? { subject: `Meeting rescheduled: ${details.title}`, lead: "The date or time of our meeting has changed. Here are the updated details:" }
+      : { subject: `Reunión reprogramada: ${details.title}`, lead: "Cambió la fecha o la hora de nuestra reunión. Estos son los datos actualizados:" },
     day: english
       ? { subject: `Meeting tomorrow: ${details.title}`, lead: "This is a reminder that we have a meeting tomorrow." }
       : { subject: `Reunión mañana: ${details.title}`, lead: "Te recuerdo que tenemos una reunión mañana." },

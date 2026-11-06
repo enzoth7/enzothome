@@ -12,7 +12,13 @@ El calendario del cliente muestra fechas de proyectos, inicio y fin de etapas y 
 
 La migración genera el secreto del programador. Ninguna clave se guarda en el repositorio. El correo de un día se envía si la reunión ya existía al llegar ese momento; el de treinta minutos se procesa de forma independiente. Los reintentos usan una clave estable por reunión, versión y aviso para evitar duplicados.
 
-Al crear una reunión nueva desde Operaciones, el navegador guarda una confirmación en Comunicaciones y la envía mediante `send-workspace-email` si el cliente tiene email y Resend está disponible. Una reunión ya existente no recibe esa confirmación de manera retroactiva. Las tres plantillas se pueden revisar en Comunicaciones con los datos de una reunión concreta; los recordatorios comparten el mismo generador de HTML que la función automática.
+Al crear una reunión nueva desde Operaciones, el navegador guarda una confirmación en Comunicaciones y la envía mediante `send-workspace-email` si el cliente tiene email y Resend está disponible. Una reunión ya existente no recibe esa confirmación de manera retroactiva. Las plantillas se pueden revisar en Comunicaciones con los datos de una reunión concreta; los recordatorios comparten el mismo generador de HTML que la función automática.
+
+## Reuniones creadas o reprogramadas por el cliente
+
+La migración `20261106145940_portal_client_meetings.sql` permite crear reuniones futuras de proyectos propios y cambiar únicamente la fecha y el horario de reuniones futuras, incluidas las creadas en Operaciones. La escritura se hace mediante funciones que verifican el token del portal y la pertenencia del proyecto. Un cambio concurrente de horario exige volver a cargar el calendario antes de guardar.
+
+Resend no recibe los recordatorios con anticipación: la función programada los prepara al llegar el momento a partir de la versión actual de la reunión. Si el cliente cambia una reunión, la confirmación de creación que todavía no salió queda obsoleta, se encola un correo de reprogramación y los próximos recordatorios toman el nuevo horario. La función vuelve a comprobar la versión inmediatamente antes de enviar. Los correos ya enviados conservan su contenido histórico; el aviso de reprogramación comunica la fecha y hora nuevas al cliente y envía una copia oculta a Enzo. Si un borrador manual de confirmación sigue sin enviarse, `send-workspace-email` actualiza su contenido con el horario vigente antes de enviarlo.
 
 ## Verificación
 
