@@ -63,6 +63,10 @@ export default function StagesView({ projects, project, stages, ops, english, on
     return <div className={`ew-stage-name ${(stage.actions?.length || 0) >= 3 ? "has-many-actions" : ""}`}><div className="ew-stage-name-content"><strong>{stage.title}</strong><StageDonut stage={stage} english={english} /></div>{ops && <button type="button" className="ew-icon-button ew-action-button" title="Editar etapa y fecha" aria-label={`Editar etapa ${stage.title}`} onClick={() => onEditStage(stage)}><Icon name="edit" size={18} /></button>}</div>;
   }
 
+  function stageDates(stage: Task) {
+    return <>{stage.start && <span>{english ? "Starts" : "Inicio"}: {dateLabel(stage.start, locale)}<br /></span>}<span>{english ? "Due" : "Fin"}: {dateLabel(stage.due, locale)}</span></>;
+  }
+
   function actionStatus(stage: Task, item: StageAction) {
     if (!ops) return <span className={`ew-stage-state ${statusTone[item.status]}`}>{english ? englishStatus[item.status] : item.status}</span>;
     return <div className="ew-stage-status-control"><select className={statusTone[item.status]} aria-label={`Estado de ${item.title}`} value={item.status} onChange={event => void updateAction(stage, item.id, { status: event.target.value as StageAction["status"] })}>{statuses.map(status => <option key={status} value={status}>{status}</option>)}</select><button type="button" className="ew-icon-button ew-delete" aria-label={`Eliminar ${item.title}`} title="Eliminar acción" onClick={() => void removeAction(stage, item.id)}><Icon name="close" size={16} /></button></div>;
@@ -79,15 +83,15 @@ export default function StagesView({ projects, project, stages, ops, english, on
       <div className="ew-stages-summary"><strong>{project.title}</strong><span>{progress.completed} / {progress.total} {english ? "actions completed" : "acciones completadas"}</span></div>
       <progress className="ew-checklist-progressbar" value={progress.completed} max={Math.max(progress.total, 1)} aria-label={`${progress.completed} de ${progress.total} acciones completadas`} />
       {!stages.length ? <div className="ew-empty">{english ? "The project stages will appear here." : "Agregá una etapa para empezar a organizar el proyecto."}</div> : <>
-        <div className="ew-table-wrap ew-stage-table-wrap"><table className="ew-table ew-data-table ew-stage-table"><thead><tr><th>{english ? "Stage" : "Etapa"}</th><th>{english ? "Date" : "Fecha"}</th><th>{english ? "Actions" : "Acciones"}</th><th>{english ? "Status" : "Estado"}</th></tr></thead>{stages.map(stage => {
+        <div className="ew-table-wrap ew-stage-table-wrap"><table className="ew-table ew-data-table ew-stage-table"><thead><tr><th>{english ? "Stage" : "Etapa"}</th><th>{english ? "Dates" : "Fechas"}</th><th>{english ? "Actions" : "Acciones"}</th><th>{english ? "Status" : "Estado"}</th></tr></thead>{stages.map(stage => {
           const actions = stage.actions || [];
           const rows = Math.max(actions.length, 1) + (ops && actions.length ? 1 : 0);
           return <tbody key={stage.id}>
-            {actions.length ? actions.map((item, index) => <tr className={index === 0 ? "ew-stage-first-row" : undefined} key={item.id}>{index === 0 && <><th scope="rowgroup" rowSpan={rows}>{stageName(stage)}</th><td rowSpan={rows} className="ew-tabular">{dateLabel(stage.due, locale)}</td></>}<td>{item.title}</td><td>{actionStatus(stage, item)}</td></tr>) : <tr className="ew-stage-first-row"><th scope="row">{stageName(stage)}</th><td className="ew-tabular">{dateLabel(stage.due, locale)}</td><td>{ops ? addActionForm(stage, "desktop") : english ? "No actions added yet." : "Todavía no hay acciones."}</td><td>—</td></tr>}
+            {actions.length ? actions.map((item, index) => <tr className={index === 0 ? "ew-stage-first-row" : undefined} key={item.id}>{index === 0 && <><th scope="rowgroup" rowSpan={rows}>{stageName(stage)}</th><td rowSpan={rows} className="ew-tabular">{stageDates(stage)}</td></>}<td>{item.title}</td><td>{actionStatus(stage, item)}</td></tr>) : <tr className="ew-stage-first-row"><th scope="row">{stageName(stage)}</th><td className="ew-tabular">{stageDates(stage)}</td><td>{ops ? addActionForm(stage, "desktop") : english ? "No actions added yet." : "Todavía no hay acciones."}</td><td>—</td></tr>}
             {ops && actions.length > 0 && <tr className="ew-stage-add-row"><td colSpan={2}>{addActionForm(stage, "desktop")}</td></tr>}
           </tbody>;
         })}</table></div>
-        <div className="ew-stage-mobile-list">{stages.map(stage => <article className="ew-stage-mobile-group" key={stage.id}><div className="ew-stage-mobile-heading">{stageName(stage)}<span>{dateLabel(stage.due, locale)}</span></div><div className="ew-stage-mobile-actions">{(stage.actions || []).map(item => <div className="ew-stage-mobile-action" key={item.id}><strong>{item.title}</strong>{actionStatus(stage, item)}</div>)}{!stage.actions?.length && <p>{english ? "No actions added yet." : "Todavía no hay acciones."}</p>}</div>{ops && addActionForm(stage, "mobile")}</article>)}</div>
+        <div className="ew-stage-mobile-list">{stages.map(stage => <article className="ew-stage-mobile-group" key={stage.id}><div className="ew-stage-mobile-heading">{stageName(stage)}<span>{stageDates(stage)}</span></div><div className="ew-stage-mobile-actions">{(stage.actions || []).map(item => <div className="ew-stage-mobile-action" key={item.id}><strong>{item.title}</strong>{actionStatus(stage, item)}</div>)}{!stage.actions?.length && <p>{english ? "No actions added yet." : "Todavía no hay acciones."}</p>}</div>{ops && addActionForm(stage, "mobile")}</article>)}</div>
       </>}
     </>}
   </section>;

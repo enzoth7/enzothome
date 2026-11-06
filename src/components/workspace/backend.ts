@@ -26,7 +26,7 @@ function invoiceLines(value: unknown): InvoiceLine[] {
 function fromRow(collection: Collection, row: Row): Collections[Collection] {
   switch (collection) {
     case "clients": return {
-      id: text(row.id), company: text(row.company), name: text(row.name), email: text(row.email), phone: text(row.phone), country: text(row.country), language: text(row.language), notes: text(row.notes),
+      id: text(row.id), company: text(row.company), name: text(row.name), email: text(row.email), phone: text(row.phone), country: text(row.country), timeZone: text(row.time_zone), language: text(row.language), notes: text(row.notes),
       logoFileId: text(row.logo_path), logoFileName: text(row.logo_file_name), portalToken: text(row.portal_token), portalUsername: text(row.portal_username),
     };
     case "projects": return {
@@ -35,7 +35,7 @@ function fromRow(collection: Collection, row: Row): Collections[Collection] {
       ...(row.intake && typeof row.intake === "object" ? { intake: row.intake as Collections["projects"]["intake"] } : {}),
       internalChecklist: Array.isArray(row.internal_checklist) ? row.internal_checklist.filter(item => typeof item === "string") as string[] : [],
     };
-    case "tasks": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), status: text(row.status), due: text(row.due_date), owner: text(row.owner), kind: text(row.kind), actions: Array.isArray(row.actions) ? row.actions as StageAction[] : [] };
+    case "tasks": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), status: text(row.status), start: text(row.start_date), due: text(row.due_date), owner: text(row.owner), kind: text(row.kind), actions: Array.isArray(row.actions) ? row.actions as StageAction[] : [] };
     case "documents": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), kind: text(row.kind), status: text(row.status), date: text(row.document_date), content: text(row.content), fileId: text(row.storage_path), fileName: text(row.file_name) };
     case "invoices": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), number: text(row.number), amount: number(row.amount), currency: text(row.currency), due: text(row.due_date), paid: number(row.paid), paidAt: text(row.paid_at), paymentInfo: text(row.payment_info), date: text(row.invoice_date), lines: invoiceLines(row.line_items), fileId: text(row.storage_path), fileName: text(row.file_name), receiptFileId: text(row.receipt_storage_path), receiptFileName: text(row.receipt_file_name) };
     case "approvals": return { id: text(row.id), projectId: text(row.project_id), title: text(row.title), description: text(row.description), status: text(row.status), due: text(row.due_date), response: text(row.response), respondedAt: text(row.responded_at) };
@@ -53,7 +53,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
   switch (collection) {
     case "clients": {
       const value = item as Collections["clients"];
-      return { ...base, company: value.company, name: value.name, email: value.email, phone: value.phone || "", country: value.country || "", language: value.language, notes: value.notes, logo_path: value.logoFileId || null, logo_file_name: value.logoFileName || null };
+      return { ...base, company: value.company, name: value.name, email: value.email, phone: value.phone || "", country: value.country || "", time_zone: value.timeZone || "", language: value.language, notes: value.notes, logo_path: value.logoFileId || null, logo_file_name: value.logoFileName || null };
     }
     case "projects": {
       const value = item as Collections["projects"];
@@ -61,7 +61,7 @@ function toRow(collection: Collection, item: Collections[Collection]): Row {
     }
     case "tasks": {
       const value = item as Collections["tasks"];
-      return { ...base, project_id: value.projectId, title: value.title, status: value.status, due_date: value.due, owner: value.owner, kind: value.kind, actions: value.actions || [] };
+      return { ...base, project_id: value.projectId, title: value.title, status: value.status, start_date: value.start || null, due_date: value.due, owner: value.owner, kind: value.kind, actions: value.actions || [] };
     }
     case "documents": {
       const value = item as Collections["documents"];
@@ -163,21 +163,21 @@ export async function loadAdminWorkspace(): Promise<WorkspaceData> {
 }
 
 function calendarEventFromRow(row: Row): CalendarEvent {
-  return { id: text(row.id), title: text(row.title), date: text(row.event_date), startTime: text(row.start_time), endTime: text(row.end_time), notes: text(row.notes), projectId: text(row.project_id) };
+  return { id: text(row.id), title: text(row.title), date: text(row.event_date), startTime: text(row.start_time), endTime: text(row.end_time), notes: text(row.notes), projectId: text(row.project_id), kind: text(row.kind) === "meeting" ? "meeting" : "event", meetingUrl: text(row.meeting_url), timeZone: text(row.time_zone) || "America/Montevideo", startsAt: text(row.starts_at), endsAt: text(row.ends_at) };
 }
 
 function calendarEventToRow(event: CalendarEvent) {
-  return { id: event.id, title: event.title, event_date: event.date, start_time: event.startTime || null, end_time: event.endTime || null, notes: event.notes, project_id: event.projectId || null, updated_at: new Date().toISOString() };
+  return { id: event.id, title: event.title, event_date: event.date, start_time: event.startTime || null, end_time: event.endTime || null, notes: event.notes, project_id: event.projectId || null, kind: event.kind || "event", meeting_url: event.meetingUrl || "", time_zone: event.timeZone || "America/Montevideo", updated_at: new Date().toISOString() };
 }
 
 export async function loadCalendarEvents(start: string, end: string): Promise<CalendarEvent[]> {
-  const { data, error } = await client().from("calendar_events").select("id,title,event_date,start_time,end_time,notes,project_id").gte("event_date", start).lt("event_date", end).order("event_date").order("start_time");
+  const { data, error } = await client().from("calendar_events").select("id,title,event_date,start_time,end_time,notes,project_id,kind,meeting_url,time_zone,starts_at,ends_at").gte("event_date", start).lt("event_date", end).order("event_date").order("start_time");
   if (error) throw new Error(errorMessage(error, "No se pudo cargar el calendario"));
   return ((data || []) as Row[]).map(calendarEventFromRow);
 }
 
 export async function loadAllCalendarEvents(): Promise<CalendarEvent[]> {
-  const { data, error } = await client().from("calendar_events").select("id,title,event_date,start_time,end_time,notes,project_id").order("event_date").limit(10000);
+  const { data, error } = await client().from("calendar_events").select("id,title,event_date,start_time,end_time,notes,project_id,kind,meeting_url,time_zone,starts_at,ends_at").order("event_date").limit(10000);
   if (error) throw new Error(errorMessage(error, "No se pudo respaldar el calendario"));
   return ((data || []) as Row[]).map(calendarEventFromRow);
 }
@@ -203,10 +203,25 @@ export async function replaceCalendarEvents(events: CalendarEvent[]): Promise<vo
 
 export async function loadPortalWorkspace(accessToken: string): Promise<WorkspaceData> {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(accessToken)) throw new Error("El enlace del portal no es válido.");
-  const { data, error } = await client().rpc("get_portal_workspace", { p_access_token: accessToken });
+  const [{ data, error }, calendar] = await Promise.all([
+    client().rpc("get_portal_workspace", { p_access_token: accessToken }),
+    client().rpc("get_portal_calendar", { p_access_token: accessToken }),
+  ]);
   if (error) throw new Error(errorMessage(error, "No se pudo abrir el portal"));
   if (!isWorkspaceData(data)) throw new Error("Este enlace no corresponde a un portal activo.");
-  return data;
+  if (calendar.error?.code === "PGRST202") return data;
+  if (calendar.error) throw new Error(errorMessage(calendar.error, "No se pudo abrir el calendario"));
+  const detail = calendar.data as { country?: unknown; timeZone?: unknown; stageStarts?: unknown; events?: unknown } | null;
+  if (!detail || !Array.isArray(detail.events) || !Array.isArray(detail.stageStarts)) throw new Error("No se pudo leer el calendario del cliente.");
+  const starts = new Map(detail.stageStarts.filter((item): item is { id: string; start: string } => Boolean(item) && typeof item.id === "string" && typeof item.start === "string").map(item => [item.id, item.start]));
+  const merged: WorkspaceData = {
+    ...data,
+    clients: data.clients.map(item => ({ ...item, country: typeof detail.country === "string" ? detail.country : "", timeZone: typeof detail.timeZone === "string" ? detail.timeZone : "" })),
+    tasks: data.tasks.map(item => ({ ...item, start: starts.get(item.id) || "" })),
+    calendarEvents: (detail.events as Row[]).map(calendarEventFromRow),
+  };
+  if (!isWorkspaceData(merged)) throw new Error("No se pudo leer el calendario del cliente.");
+  return merged;
 }
 
 export async function saveWorkspaceEntity<K extends Collection>(collection: K, item: Collections[K]) {

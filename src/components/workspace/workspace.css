@@ -349,6 +349,12 @@
 .ew-preview-pane { display: flex; flex-direction: column; min-width: 0; }
 .ew-preview-label { margin-bottom: 8px; font-size: 13px; font-weight: 500; }
 .ew-preview-pane iframe { flex: 1; width: 100%; min-height: 480px; border: 1px solid var(--ew-line); background: var(--ew-white); }
+.ew-meeting-email-preview { gap: 18px; }
+.ew-meeting-email-preview > p { margin: 0; color: var(--ew-muted); font-size: 13px; }
+.ew-meeting-email-preview .ew-field select { width: 100%; }
+.ew-meeting-email-meta { display: grid; gap: 10px; padding: 17px 20px; border: 1px solid var(--ew-line); }
+.ew-meeting-email-meta > div { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; font-size: 13px; overflow-wrap: anywhere; }
+.ew-meeting-email-preview .ew-preview-pane iframe { min-height: 540px; }
 .ew-full { grid-column: 1 / -1; }
 .ew-field label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
 .ew-field textarea { resize: vertical; }
@@ -551,7 +557,7 @@
   .is-portal .ew-dialog .ew-row-actions { display: grid; grid-template-columns: 1fr; }
   .is-portal .ew-dialog .ew-row-actions .ew-button { width: 100%; min-height: 48px; }
   .is-portal .ew-toast { bottom: calc(82px + env(safe-area-inset-bottom)); }
-  .ew-mobile-nav { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); min-height: calc(68px + env(safe-area-inset-bottom)); padding: 4px max(4px, env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-right)); border-top: 1px solid var(--ew-line); background: var(--ew-white); box-shadow: 0 -5px 20px color-mix(in srgb, var(--ew-navy) 8%, transparent); }
+  .ew-mobile-nav { position: fixed; z-index: 30; inset: auto 0 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); min-height: calc(68px + env(safe-area-inset-bottom)); padding: 4px max(4px, env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-right)); border-top: 1px solid var(--ew-line); background: var(--ew-white); box-shadow: 0 -5px 20px color-mix(in srgb, var(--ew-navy) 8%, transparent); }
   .ew-mobile-nav > button { position: relative; min-width: 0; min-height: 60px; display: grid; place-items: center; padding: 5px; border: 0; border-radius: 5px; background: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .ew-mobile-nav > button[aria-current="page"] { color: var(--ew-navy); background: var(--ew-tint); font-weight: 700; }
   .ew-mobile-nav > button[aria-current="page"]::after { content: ""; position: absolute; align-self: end; width: 18px; height: 2px; margin-bottom: 4px; border-radius: 2px; background: var(--ew-navy); }
@@ -589,7 +595,7 @@
 .ew-calendar-day { min-width: 0; min-height: 86px; padding: 9px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; border: 0; background: var(--ew-white); text-align: left; }
 .ew-calendar-day:hover:not(.is-selected):not(.is-today) { background: var(--ew-tint); }
 .ew-calendar-day.is-outside { color: var(--ew-muted); }
-.ew-calendar-day.is-selected:not(.is-today), .ew-calendar-day.is-selected:not(.is-today):hover { background: #FEF3C7; color: var(--ew-navy); }
+.ew-calendar-day.is-selected:not(.is-today), .ew-calendar-day.is-selected:not(.is-today):hover { background: var(--ew-tint); color: var(--ew-navy); box-shadow: inset 0 0 0 2px var(--ew-navy); }
 .ew-calendar-day.is-today, .ew-calendar-day.is-today:hover { background: var(--ew-navy); color: var(--ew-white); }
 .ew-calendar-day.is-today .ew-calendar-day-number { font-weight: 700; }
 .ew-calendar-day.is-today:focus-visible { outline-color: var(--ew-white); outline-offset: -3px; }
@@ -600,6 +606,19 @@
 .ew-calendar-agenda p { color: var(--ew-muted); }
 .ew-calendar-agenda-item { width: 100%; min-height: 58px; display: grid; gap: 2px; padding: 12px 0; border: 0; border-top: 1px solid var(--ew-line); background: none; text-align: left; overflow-wrap: anywhere; }
 .ew-calendar-agenda-item span, .ew-calendar-agenda-item small { color: var(--ew-muted); font-size: 12px; }
+.ew-meeting-notice { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 26px; border: 1px solid #E8C960; background: #E8C960; color: var(--ew-navy); margin-bottom: 30px; }
+.ew-meeting-notice h2 { margin: 0 0 5px; font-size: 23px; }
+.ew-meeting-notice p { margin: 0; }
+.ew-meeting-notice small { color: var(--ew-navy); }
+.ew-portal-calendar .ew-calendar-toolbar p { color: var(--ew-muted); }
+.ew-meeting-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.ew-meeting-actions .ew-button.ew-secondary { background: var(--ew-white); border-color: var(--ew-white); color: var(--ew-navy) !important; }
+.ew-meeting-actions .ew-button.ew-secondary:hover { border-color: var(--ew-navy); }
+.ew-portal-calendar .ew-calendar-toolbar p { margin: 4px 0 0; }
+.ew-portal-agenda-item { display: grid; gap: 4px; padding: 14px 0; border-top: 1px solid var(--ew-line); overflow-wrap: anywhere; }
+.ew-portal-agenda-item span, .ew-portal-agenda-item small { color: var(--ew-muted); font-size: 12px; }
+.ew-portal-agenda-item .ew-button { justify-self: start; margin-top: 8px; }
+@media (max-width: 700px) { .ew-meeting-notice { display: grid; padding: 18px; } .ew-meeting-actions .ew-button { flex: 1; } .ew-portal-calendar .ew-calendar-day { min-height: 68px; } }
 .ew-budget { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); grid-template-areas: "controls summary"; align-items: start; gap: 20px; min-width: 0; }
 .ew-budget-controls { grid-area: controls; display: grid; gap: 12px; min-width: 0; }
 .ew-budget-card { min-width: 0; padding: 22px; border: 1px solid var(--ew-line); background: color-mix(in srgb, var(--ew-navy) 2%, var(--ew-white)); }
